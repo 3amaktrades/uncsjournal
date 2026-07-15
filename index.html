@@ -834,7 +834,12 @@ const ro=new IntersectionObserver(entries=>{
     }
   });
 },{threshold:.12});
-document.querySelectorAll('.reveal,.reveal-pop').forEach(el=>ro.observe(el));
+const revealEls=document.querySelectorAll('.reveal,.reveal-pop');
+revealEls.forEach(el=>ro.observe(el));
+// Safety net: content starts invisible and only appears once the observer fires.
+// If that never happens for any reason (a stalled tab, an extension interfering,
+// a browser quirk), don't leave text permanently blank — force it visible.
+setTimeout(()=>{revealEls.forEach(el=>el.classList.add('in'));},1800);
 
 // Hero chart bars
 (function(){
