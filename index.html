@@ -96,22 +96,25 @@ nav.scrolled{box-shadow:0 4px 24px rgba(12,16,24,.06)}
 .chrome-dots{display:flex;gap:6px}
 .chrome-dots span{width:9px;height:9px;border-radius:50%}
 .chrome-title{font-size:11px;color:rgba(255,255,255,.2);font-weight:600;letter-spacing:.5px}
-.app-tabs{display:flex;background:#111820;border-bottom:1px solid rgba(255,255,255,.05);padding:0 14px}
-.atab{padding:9px 14px;font-size:11px;color:rgba(255,255,255,.3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:inherit;background:none;border-top:none;border-left:none;border-right:none}
-.atab:hover{color:rgba(255,255,255,.6)}
-.atab.on{color:#C9A84C;border-bottom-color:#C9A84C}
-.app-body{padding:18px}
-.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}
-.kpi-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);border-radius:7px;padding:11px 13px}
-.kpi-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:3px;line-height:1}
-.kpi-lbl{font-size:9px;color:rgba(255,255,255,.3);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
-.chart-box{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:7px;padding:10px 12px;height:72px;display:flex;align-items:flex-end;gap:3px;margin-bottom:12px;overflow:hidden}
-.chart-bar{border-radius:2px 2px 0 0;flex:1;transition:height .4s ease}
-.trade-rows{display:flex;flex-direction:column;gap:5px}
-.trow{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);border-radius:6px;padding:8px 11px;display:flex;align-items:center;justify-content:space-between;transition:background .2s}
-.trow:hover{background:rgba(255,255,255,.06)}
-.trow-info .sym{font-size:11px;font-weight:700;color:#fff}
-.trow-info .dt{font-size:9px;color:rgba(255,255,255,.28);margin-top:2px}
+.app-mock{display:flex;min-height:340px}
+.mock-side{width:112px;flex-shrink:0;background:#111820;padding:14px 10px;display:flex;flex-direction:column;gap:2px;border-right:1px solid rgba(255,255,255,.05)}
+.mock-nav{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:6px;font-size:10px;color:rgba(255,255,255,.4);font-weight:600}
+.mock-nav span{font-size:11px}
+.mock-nav.on{background:rgba(201,168,76,.1);color:#C9A84C}
+.mock-addbtn{margin-top:auto;background:#C9A84C;color:#0C1018;border-radius:6px;padding:8px;font-size:10px;font-weight:800;text-align:center}
+.mock-main{flex:1;background:#F4F1EC;padding:16px}
+.mock-greet{font-size:13px;font-weight:800;color:var(--dark);margin-bottom:10px}
+.mock-tf{display:flex;gap:5px;margin-bottom:12px}
+.mock-tf span{font-size:9px;font-weight:700;color:var(--text3);background:#fff;border:1px solid var(--border);border-radius:20px;padding:4px 9px}
+.mock-tf span.on{color:#B8912A;border-color:#B8912A;background:#FBF5E6}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.kpi-box{background:#fff;border:1px solid var(--border);border-radius:7px;padding:10px 11px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;line-height:1;color:var(--dark)}
+.kpi-lbl{font-size:8px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.trade-rows{display:flex;flex-direction:column;gap:6px}
+.trow{background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px 11px;display:flex;align-items:center;justify-content:space-between}
+.trow-info .sym{font-size:11px;font-weight:700;color:var(--dark)}
+.trow-info .dt{font-size:9px;color:var(--text3);margin-top:2px}
 .rtag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
 .rtag.pos{background:rgba(74,222,128,.1);color:#4ADE80}
 .rtag.neg{background:rgba(248,113,113,.1);color:#F87171}
@@ -343,7 +346,6 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
   .proof-n{font-size:17px}
   .cta-section .sec-h2{font-size:34px!important}
   .foot-inner{gap:14px}
-  .app-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
 }
 
 /* ── ALTERNATING FEATURE ROWS ── */
@@ -453,24 +455,32 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
             <span style="background:#28CA41"></span>
           </div>
           <span class="chrome-title">UNC'S JOURNAL</span>
-          <span style="font-size:10px;color:rgba(255,255,255,.12)">● ● ●</span>
+          <span style="width:34px"></span>
         </div>
-        <div class="app-tabs">
-          <button class="atab on" onclick="switchTab(this,'dashboard')">Dashboard</button>
-          <button class="atab" onclick="switchTab(this,'trades')">Trades</button>
-          <button class="atab" onclick="switchTab(this,'analytics')">Analytics</button>
-        </div>
-        <div class="app-body" id="mock-dashboard">
-          <div class="kpi-grid">
-            <div class="kpi-box"><div class="kpi-val" style="color:#4ADE80">+18.4R</div><div class="kpi-lbl">Total R</div></div>
-            <div class="kpi-box"><div class="kpi-val" style="color:#C9A84C">68%</div><div class="kpi-lbl">Win Rate</div></div>
-            <div class="kpi-box"><div class="kpi-val" style="color:#60A5FA">2.4</div><div class="kpi-lbl">Profit Factor</div></div>
+        <div class="app-mock">
+          <div class="mock-side">
+            <div class="mock-nav on"><span>📊</span>Dashboard</div>
+            <div class="mock-nav"><span>📝</span>Log trade</div>
+            <div class="mock-nav"><span>📋</span>Trade log</div>
+            <div class="mock-nav"><span>📈</span>Analytics</div>
+            <div class="mock-nav"><span>🏆</span>Leaderboard</div>
+            <div class="mock-addbtn">+ Quick Add Trade</div>
           </div>
-          <div class="chart-box" id="hero-chart"></div>
-          <div class="trade-rows">
-            <div class="trow"><div class="trow-info"><div class="sym">NQ / Long</div><div class="dt">Today, 9:32 AM</div></div><div class="rtag pos">+2.5R</div></div>
-            <div class="trow"><div class="trow-info"><div class="sym">ES / Short</div><div class="dt">Today, 11:14 AM</div></div><div class="rtag pos">+1.8R</div></div>
-            <div class="trow"><div class="trow-info"><div class="sym">GC / Long</div><div class="dt">Yesterday</div></div><div class="rtag neg">-1R</div></div>
+          <div class="mock-main" id="mock-dashboard">
+            <div class="mock-greet">Good afternoon, Trader! 👋</div>
+            <div class="mock-tf">
+              <span>Week</span><span>Month</span><span class="on">Year</span><span>All</span>
+            </div>
+            <div class="kpi-grid">
+              <div class="kpi-box"><div class="kpi-lbl">Total R</div><div class="kpi-val" style="color:#1A7A3F">+21.5R</div></div>
+              <div class="kpi-box"><div class="kpi-lbl">Win Rate</div><div class="kpi-val">70%</div></div>
+              <div class="kpi-box"><div class="kpi-lbl">Profit Factor</div><div class="kpi-val">3.49</div></div>
+            </div>
+            <div class="trade-rows">
+              <div class="trow"><div class="trow-info"><div class="sym">NQ</div><div class="dt">Jun 24</div></div><div class="rtag pos">+3.2R</div></div>
+              <div class="trow"><div class="trow-info"><div class="sym">ES</div><div class="dt">Jun 22</div></div><div class="rtag pos">+2.0R</div></div>
+              <div class="trow"><div class="trow-info"><div class="sym">GC</div><div class="dt">Jun 16</div></div><div class="rtag neg">-0.5R</div></div>
+            </div>
           </div>
         </div>
       </div>
@@ -840,20 +850,6 @@ revealEls.forEach(el=>ro.observe(el));
 // If that never happens for any reason (a stalled tab, an extension interfering,
 // a browser quirk), don't leave text permanently blank — force it visible.
 setTimeout(()=>{revealEls.forEach(el=>el.classList.add('in'));},1800);
-
-// Hero chart bars
-(function(){
-  const b=document.getElementById('hero-chart');if(!b)return;
-  const d=[22,42,32,60,38,78,52,82,42,68,28,72,58,88,48,62];
-  const c=['#4ADE80','#4ADE80','#F87171','#4ADE80','#F87171','#4ADE80','#4ADE80','#C9A84C','#4ADE80','#4ADE80','#F87171','#4ADE80','#4ADE80','#C9A84C','#4ADE80','#4ADE80'];
-  b.innerHTML=d.map((h,i)=>`<div class="chart-bar" style="height:${h}%;background:${c[i]};opacity:.8"></div>`).join('');
-})();
-
-// Mockup tab switcher
-function switchTab(btn,tab){
-  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));
-  btn.classList.add('on');
-}
 
 // Cursor glow on hero
 const glow=document.getElementById('cursor-glow');
