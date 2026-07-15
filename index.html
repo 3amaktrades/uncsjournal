@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Unc's Journal — يومية التداول الذكية</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230F1923'/><line x1='16' y1='4' x2='16' y2='9' stroke='%23C9A84C' stroke-width='2.5' stroke-linecap='round'/><rect x='11' y='9' width='10' height='14' rx='1.5' fill='none' stroke='%23C9A84C' stroke-width='2.5'/><line x1='16' y1='23' x2='16' y2='28' stroke='%23C9A84C' stroke-width='2.5' stroke-linecap='round'/></svg>"/>
+<meta name="description" content="سجّل صفقاتك، تتبع أداءك، واحصل على تحليل AI. يومية التداول للمتداول الجاد."/>
+<link rel="canonical" href="https://uncsjournal.com"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Unc's Journal"/>
+<meta property="og:title" content="Unc's Journal — Smart Trading Journal"/>
+<meta property="og:description" content="Log trades, track performance, and get AI-powered analysis. A trading journal for the serious trader."/>
+<meta property="og:url" content="https://uncsjournal.com"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Unc's Journal — Smart Trading Journal"/>
+<meta name="twitter:description" content="Log trades, track performance, and get AI-powered analysis."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FAFAF8;
+  --bg2:#F4F1EC;
+  --card:#FFFFFF;
+  --border:#E0DCD5;
+  --border2:#CCC8C0;
+  --text:#0C1018;
+  --text2:#4E4B46;
+  --text3:#9C9890;
+  --gold:#B8912A;
+  --gold2:#D4A93C;
+  --gold-bg:#FBF5E6;
+  --dark:#0C1018;
+  --r:8px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.6;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(250,250,248,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 48px;transition:box-shadow .3s}
+nav.scrolled{box-shadow:0 4px 24px rgba(12,16,24,.06)}
+.nav-inner{width:100%;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--dark);letter-spacing:-.3px}
+.logo-icon{flex-shrink:0}
+.logo em{font-style:normal;color:var(--gold)}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-size:13px;color:var(--text3);text-decoration:none;font-weight:500;transition:color .2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
+.btn-ghost{padding:7px 16px;border:1px solid var(--border2);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--text);background:transparent;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-solid{padding:8px 18px;border-radius:var(--r);font-size:13px;font-weight:700;color:#fff;background:var(--dark);border:none;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none}
+.btn-solid:hover{background:#1a2232;transform:translateY(-1px)}
+.lang-btn{padding:6px 13px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;font-weight:600;color:var(--text3);background:transparent;cursor:pointer;font-family:inherit;transition:all .2s}
+.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── HERO ── */
+.hero-video-bg{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;z-index:0}
+.hero-video-bg video{position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;width:auto;height:auto;object-fit:cover;filter:saturate(1.08) sepia(.12) hue-rotate(-8deg) brightness(1.02) contrast(1.04);animation:heroKenBurns 22s ease-in-out infinite alternate}
+@keyframes heroKenBurns{0%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-50%,-50%) scale(1.12)}}
+.hero-video-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(20,15,5,.35) 100%)}
+.hero-video-overlay{position:absolute;inset:0;background:linear-gradient(100deg,rgba(250,250,248,.92) 0%,rgba(250,250,248,.65) 38%,rgba(250,250,248,.1) 70%,rgba(250,250,248,.05) 100%);z-index:1}
+[dir="rtl"] .hero-video-overlay{background:linear-gradient(260deg,rgba(250,250,248,.92) 0%,rgba(250,250,248,.65) 38%,rgba(250,250,248,.1) 70%,rgba(250,250,248,.05) 100%)!important}
+.hero-section{position:relative;z-index:2}
+.hero-proof{width:fit-content;background:rgba(255,255,255,.65);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:14px 22px!important;box-shadow:0 4px 20px rgba(12,16,24,.06)}
+.hero-section .proof-l{color:var(--text2)!important}
+.hero-section .proof-div{background:rgba(12,16,24,.12)!important}
+
+.hero-section{padding:64px 48px 80px;max-width:1200px;margin:60px auto 0;min-height:78vh;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);margin-bottom:22px}
+.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold)}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:68px;line-height:1.04;letter-spacing:-2px;color:var(--dark);margin-bottom:20px;font-weight:700}
+.hero-h1 em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:16px;color:var(--text2);line-height:1.75;margin-bottom:36px;max-width:440px;font-weight:400}
+.hero-ctas{display:flex;align-items:center;gap:14px;margin-bottom:40px;flex-wrap:wrap}
+.btn-hero{padding:13px 26px;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;letter-spacing:-.1px}
+.btn-hero-dark{background:var(--dark);color:#fff;border:none}
+.btn-hero-dark:hover{background:#1a2232;transform:translateY(-2px);box-shadow:0 10px 30px rgba(12,16,24,.22)}
+.btn-hero-outline{background:transparent;color:var(--text2);border:1.5px solid var(--border2)}
+.btn-hero-outline:hover{border-color:var(--text);color:var(--text)}
+.hero-proof{display:flex;align-items:center;gap:24px}
+.proof-item{text-align:center}
+.proof-n{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--dark)}
+.proof-l{font-size:11px;color:var(--text3);margin-top:2px;font-weight:500}
+.proof-div{width:1px;height:32px;background:var(--border)}
+
+/* Mockup */
+.hero-visual{position:relative}
+.cursor-glow{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(184,145,42,.08),transparent 70%);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);z-index:0;transition:opacity .3s}
+.app-shell{background:#0C1018;border-radius:14px;overflow:hidden;box-shadow:0 40px 90px rgba(12,16,24,.28),0 0 0 1px rgba(255,255,255,.05);position:relative;z-index:1}
+.app-chrome{background:#111820;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05)}
+.chrome-dots{display:flex;gap:6px}
+.chrome-dots span{width:9px;height:9px;border-radius:50%}
+.chrome-title{font-size:11px;color:rgba(255,255,255,.2);font-weight:600;letter-spacing:.5px}
+.app-tabs{display:flex;background:#111820;border-bottom:1px solid rgba(255,255,255,.05);padding:0 14px}
+.atab{padding:9px 14px;font-size:11px;color:rgba(255,255,255,.3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:inherit;background:none;border-top:none;border-left:none;border-right:none}
+.atab:hover{color:rgba(255,255,255,.6)}
+.atab.on{color:#C9A84C;border-bottom-color:#C9A84C}
+.app-body{padding:18px}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}
+.kpi-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);border-radius:7px;padding:11px 13px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:3px;line-height:1}
+.kpi-lbl{font-size:9px;color:rgba(255,255,255,.3);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.chart-box{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:7px;padding:10px 12px;height:72px;display:flex;align-items:flex-end;gap:3px;margin-bottom:12px;overflow:hidden}
+.chart-bar{border-radius:2px 2px 0 0;flex:1;transition:height .4s ease}
+.trade-rows{display:flex;flex-direction:column;gap:5px}
+.trow{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);border-radius:6px;padding:8px 11px;display:flex;align-items:center;justify-content:space-between;transition:background .2s}
+.trow:hover{background:rgba(255,255,255,.06)}
+.trow-info .sym{font-size:11px;font-weight:700;color:#fff}
+.trow-info .dt{font-size:9px;color:rgba(255,255,255,.28);margin-top:2px}
+.rtag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.rtag.pos{background:rgba(74,222,128,.1);color:#4ADE80}
+.rtag.neg{background:rgba(248,113,113,.1);color:#F87171}
+
+.float-badge{position:absolute;bottom:-12px;right:-16px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(12,16,24,.1);z-index:2}
+.badge-pulse{width:8px;height:8px;border-radius:50%;background:#4ADE80;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}50%{box-shadow:0 0 0 6px rgba(74,222,128,0)}}
+.badge-text{font-size:11px;font-weight:700;color:var(--dark)}
+.badge-sub{font-size:10px;color:var(--text3)}
+
+/* ── STRIP ── */
+.strip{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg2);padding:12px 0;overflow:hidden}
+.strip-mask{position:relative}
+.strip-mask::before,.strip-mask::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:1;pointer-events:none}
+.strip-mask::before{left:0;background:linear-gradient(to right,var(--bg2),transparent)}
+.strip-mask::after{right:0;background:linear-gradient(to left,var(--bg2),transparent)}
+.strip-track{display:flex;gap:48px;animation:scroll 28s linear infinite;white-space:nowrap}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.sitem{display:flex;align-items:center;gap:8px;flex-shrink:0;font-size:12px;color:var(--text3);font-weight:500}
+.sitem strong{color:var(--text2);font-weight:700}
+.sdot{width:4px;height:4px;border-radius:50%;background:var(--border2);flex-shrink:0}
+
+/* ── SECTIONS ── */
+.section{padding:100px 48px;max-width:1200px;margin:0 auto}
+.sec-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.sec-eyebrow::before{content:'';width:20px;height:1px;background:var(--gold)}
+.sec-h2{font-family:'Cormorant Garamond',serif;font-size:52px;line-height:1.08;letter-spacing:-1.5px;color:var(--dark);margin-bottom:14px;font-weight:700}
+.sec-h2 em{font-style:italic;color:var(--gold)}
+.sec-body{font-size:16px;color:var(--text2);line-height:1.75;margin-bottom:56px;max-width:500px}
+
+/* Features — tabs design */
+.feat-layout{display:grid;grid-template-columns:280px 1fr;gap:40px;align-items:stretch}
+.feat-tabs{display:flex;flex-direction:column;gap:4px}
+.ftab{padding:14px 18px;border-radius:var(--r);cursor:pointer;transition:all .22s;border:1.5px solid transparent;text-align:start;display:flex;flex-direction:column}
+.ftab:hover{background:var(--card);border-color:var(--border)}
+.ftab.on{background:var(--card);border-color:var(--border2);box-shadow:0 2px 12px rgba(12,16,24,.06)}
+.ftab-num{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.5px;margin-bottom:5px;transition:color .2s}
+.ftab.on .ftab-num{color:var(--gold)}
+.ftab-title{font-size:14px;font-weight:700;color:var(--text2);letter-spacing:-.1px;transition:color .2s}
+.ftab.on .ftab-title{color:var(--dark)}
+.ftab-desc{font-size:12px;color:var(--text3);margin-top:4px;line-height:1.55;display:none;min-height:3.1em}
+.ftab.on .ftab-desc{display:block;color:var(--text2)}
+.feat-preview{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;min-height:320px;position:relative;overflow:hidden;transition:all .3s;display:flex;flex-direction:column;justify-content:center}
+.feat-preview::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-bg),transparent);opacity:.4;pointer-events:none}
+.feat-preview-icon{font-size:40px;margin-bottom:16px}
+.feat-preview-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;letter-spacing:-.5px;color:var(--dark);margin-bottom:10px}
+.feat-preview-body{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:24px;max-width:400px}
+.feat-preview-bullets{display:flex;flex-direction:column;gap:8px}
+.bullet{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)}
+.bullet::before{content:'↗';font-size:12px;color:var(--gold);font-weight:700;flex-shrink:0}
+
+/* ── HOW IT WORKS ── */
+.how-section{background:var(--dark);padding:100px 0}
+.how-inner{max-width:1200px;margin:0 auto;padding:0 48px}
+.how-section .sec-eyebrow{color:#C9A84C}
+.how-section .sec-eyebrow::before{background:#C9A84C}
+.how-section .sec-h2{color:#fff}
+.how-section .sec-body{color:rgba(255,255,255,.4)}
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden}
+.step{padding:36px 32px;border-right:1px solid rgba(255,255,255,.07);transition:background .25s;position:relative}
+.step:last-child{border-right:none}
+.step:hover{background:rgba(255,255,255,.03)}
+.step-n{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:rgba(255,255,255,.1);letter-spacing:1px;margin-bottom:20px}
+.step-icon-wrap{width:48px;height:48px;border:1px solid rgba(201,168,76,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;background:rgba(201,168,76,.05)}
+.step-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;letter-spacing:-.2px}
+.step-desc{font-size:13px;color:rgba(255,255,255,.38);line-height:1.72}
+.step-arrow{position:absolute;top:50%;right:-1px;transform:translateY(-50%);width:24px;height:24px;background:rgba(201,168,76,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#C9A84C;z-index:1}
+
+/* ── STATS ── */
+.stats-section{padding:0;border-bottom:1px solid var(--border);border-top:1px solid var(--border)}
+.stats-inner{max-width:1200px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:repeat(4,1fr)}
+.stat-box{padding:48px 32px;border-right:1px solid var(--border);text-align:center;position:relative;overflow:hidden;transition:background .2s;cursor:default}
+.stat-box:last-child{border-right:none}
+.stat-box:hover{background:var(--bg2)}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .4s}
+.stat-box:hover::before{transform:scaleX(1)}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;letter-spacing:-2px;color:var(--dark);line-height:1;margin-bottom:6px}
+.stat-l{font-size:13px;color:var(--text3);font-weight:500}
+
+/* ── CALCULATOR ── */
+.calc-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:96px 48px}
+.calc-inner{max-width:840px;margin:0 auto}
+.calc-header{text-align:center;margin-bottom:40px}
+.calc-header .sec-body{margin:0 auto;text-align:center}
+.calc-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(12,16,24,.05)}
+.calc-tabs-row{display:flex;border-bottom:1px solid var(--border)}
+.ctab{flex:1;padding:16px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;background:transparent;color:var(--text3);transition:all .2s;letter-spacing:-.1px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ctab.on{color:var(--dark);border-bottom-color:var(--dark)}
+.ctab:hover:not(.on){color:var(--text2)}
+.calc-body{padding:30px}
+.cfields{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.cf label{display:block;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.cf input,.cf select{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r);font-size:13px;font-family:inherit;color:var(--text);background:#fff;outline:none;transition:border .2s;-webkit-appearance:none}
+.cf input:focus,.cf select:focus{border-color:var(--dark)}
+.calc-run{width:100%;padding:13px;background:var(--dark);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-bottom:16px;letter-spacing:-.1px;position:relative;overflow:hidden}
+.calc-run::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,transparent,rgba(255,255,255,.06),transparent);transform:translateX(-100%);transition:transform .5s}
+.calc-run:hover::after{transform:translateX(100%)}
+.calc-run:hover{background:#1a2232}
+.cres{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;display:none;animation:fadeIn .3s ease}
+.cres.show{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.cres-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}
+.cres-v{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--dark)}
+.cres-l{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+
+/* ── CTA ── */
+.cta-section{padding:120px 48px;text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(184,145,42,.07),transparent 70%);pointer-events:none}
+.cta-section::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--border),transparent)}
+.cta-inner{position:relative;max-width:600px;margin:0 auto}
+.cta-section .sec-h2{font-size:60px;margin-bottom:16px}
+.cta-section .sec-body{margin:0 auto 40px;font-size:17px}
+.cta-note{font-size:12px;color:var(--text3);margin-top:16px;font-weight:500}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:36px 48px}
+.foot-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.foot-logo{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--dark);text-decoration:none}
+.foot-logo em{font-style:normal;color:var(--gold)}
+.foot-links{display:flex;gap:20px}
+.foot-links a{font-size:12px;color:var(--text3);text-decoration:none;font-weight:500;transition:color .2s}
+.foot-links a:hover{color:var(--text)}
+.foot-copy{font-size:12px;color:var(--text3);font-weight:500}
+
+/* ── ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.reveal.in{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+.reveal-delay-5{transition-delay:.5s}
+.reveal-pop{opacity:0;transform:translateY(30px) scale(.94);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal-pop.in{opacity:1;transform:none}
+
+/* ── CHATBOT ── */
+#chat-btn{position:fixed;bottom:24px;right:24px;z-index:900;width:50px;height:50px;background:var(--dark);border-radius:50%;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(12,16,24,.25);display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s}
+#chat-btn:hover{transform:scale(1.08);background:#1a2232}
+#chat-panel{position:fixed;bottom:86px;right:24px;z-index:900;width:320px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 48px rgba(12,16,24,.12);display:none;flex-direction:column;overflow:hidden;max-height:440px}
+#chat-panel.open{display:flex;animation:ci .2s ease}
+@keyframes ci{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.ch-header{background:var(--dark);padding:13px 16px;display:flex;align-items:center;justify-content:space-between}
+.ch-left{display:flex;align-items:center;gap:9px}
+.ch-av{width:28px;height:28px;background:rgba(201,168,76,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px}
+.ch-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:-.1px}
+.ch-sub{font-size:10px;color:rgba(255,255,255,.32);margin-top:1px}
+.ch-close{background:none;border:none;color:rgba(255,255,255,.32);cursor:pointer;font-size:14px;padding:4px;line-height:1;transition:color .15s}
+.ch-close:hover{color:#fff}
+.ch-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:7px;min-height:130px}
+.cmsg{max-width:85%;padding:8px 11px;border-radius:8px;font-size:12px;line-height:1.55;animation:mi .2s ease}
+@keyframes mi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.cmsg.user{background:var(--dark);color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.cmsg.ai{background:var(--bg2);color:var(--text);align-self:flex-start;border-bottom-left-radius:2px;border:1px solid var(--border)}
+.cmsg.typing{background:var(--bg2);align-self:flex-start;border-bottom-left-radius:2px;border:1px solid var(--border)}
+.dots{display:flex;gap:3px;padding:2px 0}
+.dots span{width:5px;height:5px;background:var(--text3);border-radius:50%;animation:d 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes d{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+.ch-sugs{padding:0 10px 9px;display:flex;gap:5px;flex-wrap:wrap}
+.csug{padding:4px 9px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;font-size:11px;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;font-weight:500}
+.csug:hover{border-color:var(--dark);color:var(--dark)}
+.ch-inp-row{padding:10px;border-top:1px solid var(--border);display:flex;gap:7px}
+.ch-inp{flex:1;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:7px 10px;font-size:12px;color:var(--text);font-family:inherit;outline:none;resize:none;max-height:64px;line-height:1.5;transition:border .15s}
+.ch-inp:focus{border-color:var(--dark)}
+.ch-send{width:30px;height:30px;background:var(--dark);border:none;border-radius:var(--r);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;align-self:flex-end;color:#fff}
+.ch-send:hover{background:#1a2232}
+.ch-send:disabled{opacity:.3;cursor:not-allowed}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hero-video-overlay,[dir="rtl"] .hero-video-overlay{background:linear-gradient(180deg,rgba(250,250,248,.55) 0%,rgba(250,250,248,.85) 40%,rgba(250,250,248,.96) 75%,rgba(250,250,248,.98) 100%)!important}
+  .hero-video-vignette{background:radial-gradient(ellipse at center,rgba(0,0,0,0) 30%,rgba(20,15,5,.45) 100%)!important}
+  nav{padding:0 16px}
+  .nav-links{display:none}
+  .hero-section{grid-template-columns:1fr;gap:40px;padding:100px 16px 60px;text-align:center}
+  .hero-h1{font-size:44px}
+  .hero-ctas,.hero-proof{justify-content:center}
+  .hero-sub{margin:0 auto 28px}
+  .hero-eyebrow{margin:0 auto 18px}
+  .hero-visual{order:-1}
+  .section{padding:64px 16px}
+  .how-inner{padding:0 16px}
+  .how-section{padding:64px 0}
+  .sec-h2{font-size:36px}
+  .feat-layout{grid-template-columns:1fr}
+  .feat-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+  .ftab{padding:10px 12px;justify-content:center}
+  .ftab-desc{display:none!important}
+  .steps-row{grid-template-columns:1fr}
+  .step{border-right:none;border-bottom:1px solid rgba(255,255,255,.07)}
+  .step:last-child{border-bottom:none}
+  .step-arrow{display:none}
+  .stats-inner{grid-template-columns:1fr 1fr;padding:0 16px}
+  .stat-box{border-right:none;border-bottom:1px solid var(--border)}
+  .stat-box:nth-child(odd){border-right:1px solid var(--border)}
+  .stat-n{font-size:40px}
+  .calc-section{padding:64px 16px}
+  .cfields{grid-template-columns:1fr}
+  .cta-section{padding:80px 16px}
+  .cta-section .sec-h2{font-size:42px}
+  footer{padding:28px 16px}
+  .foot-inner{flex-direction:column;gap:20px;text-align:center}
+  .foot-links{flex-wrap:wrap;justify-content:center}
+  #chat-panel{right:8px;left:8px;width:auto;bottom:82px}
+}
+
+@media(max-width:480px){
+  .nav-r .btn-ghost{padding:5px 9px!important;font-size:11px!important}
+  .btn-solid{padding:6px 12px!important;font-size:11px!important}
+  .lang-btn{padding:4px 8px!important;font-size:10px!important}
+  .logo{font-size:13px}
+  .hero-h1{font-size:36px!important;letter-spacing:-1px}
+  .sec-h2{font-size:30px!important}
+  .hero-section{padding:90px 14px 50px}
+  
+  .nav-r{gap:6px}
+  .btn-solid{padding:7px 14px;font-size:12px}
+  .cfields{grid-template-columns:1fr!important}
+  .calc-body{padding:18px}
+  .btn-hero{padding:11px 18px;font-size:13px}
+  .feat-tabs{grid-template-columns:1fr 1fr;display:grid}
+  .ftab{min-width:unset}
+  .steps-row{gap:0}
+  .stats-inner{grid-template-columns:1fr 1fr}
+  .stat-box{padding:28px 16px}
+  .stat-n{font-size:32px}
+  .hero-proof{gap:14px}
+  .proof-n{font-size:17px}
+  .cta-section .sec-h2{font-size:34px!important}
+  .foot-inner{gap:14px}
+  .app-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+
+/* ── ALTERNATING FEATURE ROWS ── */
+.feat-rows{max-width:1040px;margin:0 auto;padding:20px 48px 60px}
+.feat-row{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;padding:48px 0;border-bottom:1px solid var(--border)}
+.feat-row:last-child{border-bottom:none}
+.feat-row.rev{direction:rtl}
+.feat-row.rev .feat-row-text,.feat-row.rev .feat-row-visual{direction:ltr}
+.feat-row-num{font-size:12px;font-weight:800;color:var(--gold);letter-spacing:1.5px;margin-bottom:10px}
+.feat-row-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;letter-spacing:-.5px;color:var(--dark);margin-bottom:12px}
+.feat-row-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:18px;max-width:420px}
+.feat-row-bullets{display:flex;flex-direction:column;gap:8px}
+.feat-row-bullets .bullet{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)}
+.feat-row-bullets .bullet::before{content:'↗';color:var(--gold);font-weight:700;font-size:12px}
+.feat-row-visual{height:200px;border-radius:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(12,16,24,.05);transition:transform .35s ease}
+.feat-row-visual span{font-size:64px}
+.feat-row:hover .feat-row-visual{transform:scale(1.03)}
+@media(max-width:768px){
+  .feat-rows{padding:10px 16px 40px}
+  .feat-row,.feat-row.rev{grid-template-columns:1fr;gap:24px;direction:ltr;padding:32px 0}
+  .feat-row-visual{height:140px;order:-1}
+  .feat-row-visual span{font-size:48px}
+  .feat-row-title{font-size:24px}
+  .feat-row-desc{max-width:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div id="scroll-progress" style="position:absolute;bottom:0;left:0;height:2px;background:#C9A84C;width:0%;transition:width .1s linear"></div>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <!-- Candlestick Icon from logo -->
+      <svg class="logo-icon" id="nav-logo-icon" width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="transition:transform .12s linear;transform-origin:center">
+        <line x1="8" y1="0" x2="8" y2="5" stroke="#B8912A" stroke-width="1.8" stroke-linecap="round"/>
+        <rect x="2.5" y="5.5" width="11" height="13" rx="0.5" stroke="#B8912A" stroke-width="1.5"/>
+        <line x1="8" y1="18.5" x2="8" y2="24" stroke="#B8912A" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      Unc's<em>Journal</em>
+    </a>
+    <div class="nav-links">
+      <a href="#features" class="t" data-ar="المميزات" data-en="Features">المميزات</a>
+      <a href="#how" class="t" data-ar="كيف يعمل" data-en="How it works">كيف يعمل</a>
+      <a href="#calculator" class="t" data-ar="الحاسبة" data-en="Calculator">الحاسبة</a>
+    </div>
+    <div class="nav-r">
+      <button class="lang-btn" onclick="toggleLang()" id="lang-btn">EN</button>
+      <a href="/app?signin=1" class="btn-ghost t" data-ar="دخول" data-en="Sign in">دخول</a>
+      <a href="/app" class="btn-solid t" data-ar="ابدأ مجاناً ←" data-en="Get started →">ابدأ مجاناً ←</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="position:relative">
+  <div class="hero-video-bg">
+    <video autoplay muted loop playsinline preload="auto">
+      <source src="/assets/hero-trader.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-video-vignette"></div>
+  <div class="hero-video-overlay"></div>
+  <div class="hero-section">
+    <div>
+      <div class="hero-eyebrow t reveal" data-ar="يومية التداول الذكية" data-en="Smart Trading Journal">يومية التداول الذكية</div>
+      <h1 class="hero-h1 t reveal reveal-delay-1"
+          data-ar="صفقاتك.<br/>بياناتك.<br/><em>تفوّقك.</em>"
+          data-en="Your trades.<br/>Your data.<br/><em>Your edge.</em>">
+        صفقاتك.<br/>بياناتك.<br/><em>تفوّقك.</em>
+      </h1>
+      <p class="hero-sub t reveal reveal-delay-2"
+         data-ar="يومية التداول الذكية للعقود الآجلة، الفوركس، العملات الرقمية، والأسهم. سجّل صفقاتك، تتبّع أداءك، واحصل على تدريب AI مخصص لأسلوبك."
+         data-en="The intelligent trading journal for futures, forex, crypto, and stocks. Log every trade, track your performance, and get AI-powered coaching built around how you actually trade.">
+        يومية التداول الذكية للعقود الآجلة، الفوركس، العملات الرقمية، والأسهم. سجّل صفقاتك، تتبّع أداءك، واحصل على تدريب AI مخصص لأسلوبك.
+      </p>
+      <div class="hero-ctas reveal reveal-delay-3">
+        <a href="/app" class="btn-hero btn-hero-dark t" data-ar="ابدأ مجاناً — بدون بطاقة" data-en="Get started free — no card">ابدأ مجاناً — بدون بطاقة</a>
+        <a href="#features" class="btn-hero btn-hero-outline t" data-ar="اكتشف المميزات" data-en="Explore features">اكتشف المميزات</a>
+      </div>
+      <div class="hero-proof reveal reveal-delay-4">
+        <div class="proof-item">
+          <div class="proof-n">100%</div>
+          <div class="proof-l t" data-ar="مجاني للتسجيل" data-en="Free to log">مجاني للتسجيل</div>
+        </div>
+        <div class="proof-div"></div>
+        <div class="proof-item">
+          <div class="proof-n">AI</div>
+          <div class="proof-l t" data-ar="لكل صفقة" data-en="Per trade">لكل صفقة</div>
+        </div>
+        <div class="proof-div"></div>
+        <div class="proof-item">
+          <div class="proof-n">∞</div>
+          <div class="proof-l t" data-ar="صفقات" data-en="Trades">صفقات</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal reveal-delay-2">
+      <div class="cursor-glow" id="cursor-glow"></div>
+      <div class="app-shell reveal-pop">
+        <div class="app-chrome">
+          <div class="chrome-dots">
+            <span style="background:#FF5F57"></span>
+            <span style="background:#FFBD2E"></span>
+            <span style="background:#28CA41"></span>
+          </div>
+          <span class="chrome-title">UNC'S JOURNAL</span>
+          <span style="font-size:10px;color:rgba(255,255,255,.12)">● ● ●</span>
+        </div>
+        <div class="app-tabs">
+          <button class="atab on" onclick="switchTab(this,'dashboard')">Dashboard</button>
+          <button class="atab" onclick="switchTab(this,'trades')">Trades</button>
+          <button class="atab" onclick="switchTab(this,'analytics')">Analytics</button>
+        </div>
+        <div class="app-body" id="mock-dashboard">
+          <div class="kpi-grid">
+            <div class="kpi-box"><div class="kpi-val" style="color:#4ADE80">+18.4R</div><div class="kpi-lbl">Total R</div></div>
+            <div class="kpi-box"><div class="kpi-val" style="color:#C9A84C">68%</div><div class="kpi-lbl">Win Rate</div></div>
+            <div class="kpi-box"><div class="kpi-val" style="color:#60A5FA">2.4</div><div class="kpi-lbl">Profit Factor</div></div>
+          </div>
+          <div class="chart-box" id="hero-chart"></div>
+          <div class="trade-rows">
+            <div class="trow"><div class="trow-info"><div class="sym">NQ / Long</div><div class="dt">Today, 9:32 AM</div></div><div class="rtag pos">+2.5R</div></div>
+            <div class="trow"><div class="trow-info"><div class="sym">ES / Short</div><div class="dt">Today, 11:14 AM</div></div><div class="rtag pos">+1.8R</div></div>
+            <div class="trow"><div class="trow-info"><div class="sym">GC / Long</div><div class="dt">Yesterday</div></div><div class="rtag neg">-1R</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="float-badge">
+        <div class="badge-pulse"></div>
+        <div>
+          <div class="badge-text t" data-ar="AI يعمل" data-en="AI active">AI يعمل</div>
+          <div class="badge-sub t" data-ar="يحلل صفقتك الأخيرة" data-en="Analyzing last trade">يحلل صفقتك الأخيرة</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-mask">
+    <div class="strip-track">
+      <div class="sitem"><div class="sdot"></div><strong>Futures</strong> NQ · ES · YM · GC</div>
+      <div class="sitem"><div class="sdot"></div><strong>Forex</strong> EUR/USD · GBP/USD · USD/JPY</div>
+      <div class="sitem"><div class="sdot"></div><strong>Crypto</strong> BTC · ETH · SOL · BNB</div>
+      <div class="sitem"><div class="sdot"></div><strong>Commodities</strong> Gold · Silver · Oil</div>
+      <div class="sitem"><div class="sdot"></div><strong>Indices</strong> DAX · FTSE · Nikkei · CAC</div>
+      <div class="sitem"><div class="sdot"></div><strong>Options</strong> Equity · Index · ETF</div>
+      <div class="sitem"><div class="sdot"></div><strong>Futures</strong> NQ · ES · YM · GC</div>
+      <div class="sitem"><div class="sdot"></div><strong>Forex</strong> EUR/USD · GBP/USD · USD/JPY</div>
+      <div class="sitem"><div class="sdot"></div><strong>Crypto</strong> BTC · ETH · SOL · BNB</div>
+      <div class="sitem"><div class="sdot"></div><strong>Commodities</strong> Gold · Silver · Oil</div>
+      <div class="sitem"><div class="sdot"></div><strong>Indices</strong> DAX · FTSE · Nikkei · CAC</div>
+      <div class="sitem"><div class="sdot"></div><strong>Options</strong> Equity · Index · ETF</div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-section">
+  <div class="stats-inner">
+    <div class="stat-box reveal">
+      <div class="stat-n" data-target="0">∞</div>
+      <div class="stat-l t" data-ar="صفقات يمكن تسجيلها" data-en="Trades you can log">صفقات يمكن تسجيلها</div>
+    </div>
+    <div class="stat-box reveal reveal-delay-1">
+      <div class="stat-n count" data-target="29" data-suffix="+">0</div>
+      <div class="stat-l t" data-ar="ميزات أساسية" data-en="Core features">ميزات أساسية</div>
+    </div>
+    <div class="stat-box reveal reveal-delay-2">
+      <div class="stat-n">1-tap</div>
+      <div class="stat-l t" data-ar="تحليل AI فوري" data-en="AI analysis">تحليل AI فوري</div>
+    </div>
+    <div class="stat-box reveal reveal-delay-3">
+      <div class="stat-n">100%</div>
+      <div class="stat-l t" data-ar="بياناتك ملكك" data-en="Your data, yours">بياناتك ملكك</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section">
+    <div class="reveal" style="text-align:center;max-width:640px;margin:0 auto 24px">
+      <span class="sec-eyebrow t" data-ar="المميزات" data-en="Features">المميزات</span>
+      <h2 class="sec-h2 t" data-ar="أداة للمتداول <em>الجاد</em>" data-en="Built for <em>serious</em> traders">أداة للمتداول <em>الجاد</em></h2>
+      <p class="sec-body t"
+         data-ar="29+ ميزة مصممة لتساعدك على التعلم من كل صفقة وتطوير أدائك باستمرار."
+         data-en="29+ features designed to help you learn from every trade and continuously improve your performance.">
+        29+ features designed to help you learn from every trade and continuously improve your performance.
+      </p>
+    </div>
+  </div>
+
+  <div class="feat-rows">
+
+    <div class="feat-row reveal">
+      <div class="feat-row-text">
+        <div class="feat-row-num">01</div>
+        <h3 class="feat-row-title t" data-ar="تسجيل متكامل" data-en="Complete Logging">Complete Logging</h3>
+        <p class="feat-row-desc t" data-ar="سجّل كل تفاصيل الصفقة — الإعداد، المدخلات، الأهداف، السيكولوجيا، والنتيجة. يدعم أي استراتيجية تتداول بها." data-en="Log every detail — setup, entries, targets, psychology, and outcome. Build your own custom templates for any strategy you trade.">Log every detail — setup, entries, targets, psychology, and outcome. Build your own custom templates for any strategy you trade.</p>
+        <div class="feat-row-bullets">
+          <div class="bullet t" data-ar="جميع الحقول الأساسية" data-en="All essential fields">All essential fields</div>
+          <div class="bullet t" data-ar="لقطات الشاشة وملاحظات الصفقة" data-en="Screenshots and trade notes">Screenshots and trade notes</div>
+          <div class="bullet t" data-ar="نماذج مخصصة تبنيها بنفسك" data-en="Build your own custom templates">Build your own custom templates</div>
+        </div>
+      </div>
+      <div class="feat-row-visual" style="background:linear-gradient(135deg,#FBF5E6,#F4E8C8)"><span>📋</span></div>
+    </div>
+
+    <div class="feat-row reveal rev">
+      <div class="feat-row-text">
+        <div class="feat-row-num">02</div>
+        <h3 class="feat-row-title t" data-ar="تحليل AI لكل صفقة" data-en="AI Trade Analysis">AI Trade Analysis</h3>
+        <p class="feat-row-desc t" data-ar="تقييم فوري وموضوعي لكل صفقة. نقاط القوة، الأخطاء، وما يجب تحسينه — مباشرة بعد التسجيل." data-en="Instant, objective evaluation for every trade. Strengths, mistakes, and what to improve — right after you log it.">Instant, objective evaluation for every trade. Strengths, mistakes, and what to improve — right after you log it.</p>
+        <div class="feat-row-bullets">
+          <div class="bullet t" data-ar="تقييم فوري لكل صفقة" data-en="Instant per-trade evaluation">Instant per-trade evaluation</div>
+          <div class="bullet t" data-ar="نقاط القوة والضعف" data-en="Strengths and weaknesses">Strengths and weaknesses</div>
+          <div class="bullet t" data-ar="مدعوم بالذكاء الاصطناعي" data-en="Powered by Claude AI">Powered by Claude AI</div>
+        </div>
+      </div>
+      <div class="feat-row-visual" style="background:linear-gradient(135deg,#E6F1FB,#D4E8FA)"><span>⚡</span></div>
+    </div>
+
+    <div class="feat-row reveal">
+      <div class="feat-row-text">
+        <div class="feat-row-num">03</div>
+        <h3 class="feat-row-title t" data-ar="مساعد AI ذكي" data-en="AI Coach Chat">AI Coach Chat</h3>
+        <p class="feat-row-desc t" data-ar="تحدث مع مدربك الشخصي. اسأله عن أنماطك، نسبة فوزك، أين تكسر القواعد — يعرف كل بياناتك." data-en="Talk to your personal trading coach. Ask about your patterns, win rate, where you break rules — it knows your full history.">Talk to your personal trading coach. Ask about your patterns, win rate, where you break rules — it knows your full history.</p>
+        <div class="feat-row-bullets">
+          <div class="bullet t" data-ar="يتحدث عربي وإنجليزي" data-en="Speaks Arabic and English">Speaks Arabic and English</div>
+          <div class="bullet t" data-ar="وصول كامل لجميع صفقاتك" data-en="Full access to your trade data">Full access to your trade data</div>
+          <div class="bullet t" data-ar="إجابات فورية ومباشرة" data-en="Instant, direct answers">Instant, direct answers</div>
+        </div>
+      </div>
+      <div class="feat-row-visual" style="background:linear-gradient(135deg,#0C1018,#1A2535)"><span>🤖</span></div>
+    </div>
+
+    <div class="feat-row reveal rev">
+      <div class="feat-row-text">
+        <div class="feat-row-num">04</div>
+        <h3 class="feat-row-title t" data-ar="شارك صفقاتك" data-en="Share Your Wins">Share Your Wins</h3>
+        <p class="feat-row-desc t" data-ar="حوّل أي صفقة إلى بطاقة جاهزة للمشاركة — للإنستغرام، واتساب، أو تيليجرام. بجودة عالية الدقة." data-en="Turn any trade into a ready-to-post card — for Instagram, WhatsApp, or Telegram. Exported in crisp, high resolution.">Turn any trade into a ready-to-post card — for Instagram, WhatsApp, or Telegram. Exported in crisp, high resolution.</p>
+        <div class="feat-row-bullets">
+          <div class="bullet t" data-ar="تصميم احترافي بضغطة واحدة" data-en="One-tap professional design">One-tap professional design</div>
+          <div class="bullet t" data-ar="حجم Instagram Story جاهز" data-en="Instagram Story size ready">Instagram Story size ready</div>
+          <div class="bullet t" data-ar="أضف لقطة الشاشة ورسالتك" data-en="Add your screenshot and message">Add your screenshot and message</div>
+        </div>
+      </div>
+      <div class="feat-row-visual" style="background:linear-gradient(135deg,#F0EBF9,#E2D5F5)"><span>📤</span></div>
+    </div>
+
+    <div class="feat-row reveal">
+      <div class="feat-row-text">
+        <div class="feat-row-num">05</div>
+        <h3 class="feat-row-title t" data-ar="إحصائيات كاملة" data-en="Full Analytics">Full Analytics</h3>
+        <p class="feat-row-desc t" data-ar="Win Rate، Profit Factor، Equity Curve، السلاسل، التحليل اليومي — كل رقم تحتاجه لفهم أدائك." data-en="Win Rate, Profit Factor, Equity Curve, Streaks, daily breakdown — every number you need to understand your edge.">Win Rate, Profit Factor, Equity Curve, Streaks, daily breakdown — every number you need to understand your edge.</p>
+        <div class="feat-row-bullets">
+          <div class="bullet t" data-ar="Win Rate و Profit Factor" data-en="Win Rate & Profit Factor">Win Rate & Profit Factor</div>
+          <div class="bullet t" data-ar="Equity Curve تفاعلية" data-en="Interactive Equity Curve">Interactive Equity Curve</div>
+          <div class="bullet t" data-ar="تحليل يومي وأسبوعي" data-en="Daily & weekly breakdown">Daily & weekly breakdown</div>
+        </div>
+      </div>
+      <div class="feat-row-visual" style="background:linear-gradient(135deg,#EAF3DE,#D6EAC0)"><span>📈</span></div>
+    </div>
+
+    <div class="feat-row reveal rev">
+      <div class="feat-row-text">
+        <div class="feat-row-num">06</div>
+        <h3 class="feat-row-title t" data-ar="ملاحظات صوتية" data-en="Voice Notes">Voice Notes</h3>
+        <p class="feat-row-desc t" data-ar="سجّل ملاحظة صوتية مباشرة بعد الصفقة بدل الكتابة. أسرع وأصدق وأنت لا زلت في اللحظة." data-en="Record a voice note right after the trade instead of typing. Faster and more honest while you're still in the moment.">Record a voice note right after the trade instead of typing. Faster and more honest while you're still in the moment.</p>
+        <div class="feat-row-bullets">
+          <div class="bullet t" data-ar="تسجيل حتى 60 ثانية" data-en="Record up to 60 seconds">Record up to 60 seconds</div>
+          <div class="bullet t" data-ar="استماع لاحق من سجل الصفقات" data-en="Play back anytime from your log">Play back anytime from your log</div>
+          <div class="bullet t" data-ar="أسرع من الكتابة على الجوال" data-en="Faster than typing on mobile">Faster than typing on mobile</div>
+        </div>
+      </div>
+      <div class="feat-row-visual" style="background:linear-gradient(135deg,#FBE6E6,#F5CFCF)"><span>🎙</span></div>
+    </div>
+
+    <div class="feat-row reveal">
+      <div class="feat-row-text">
+        <div class="feat-row-num">07</div>
+        <h3 class="feat-row-title t" data-ar="حاسبة مخاطر" data-en="Risk Calculator">Risk Calculator</h3>
+        <p class="feat-row-desc t" data-ar="احسب حجم صفقتك بدقة للعقود الآجلة والفوركس. مدمجة ومجانية." data-en="Calculate exact position size for futures and forex. Built in and free.">Calculate exact position size for futures and forex. Built in and free.</p>
+        <div class="feat-row-bullets">
+          <div class="bullet t" data-ar="عقود آجلة وفوركس" data-en="Futures and forex">Futures and forex</div>
+          <div class="bullet t" data-ar="حسابات دقيقة وفورية" data-en="Precise instant calculations">Precise instant calculations</div>
+          <div class="bullet t" data-ar="أكثر من 15 أداة وزوج" data-en="15+ instruments & pairs">15+ instruments & pairs</div>
+        </div>
+      </div>
+      <div class="feat-row-visual" style="background:linear-gradient(135deg,#FBF5E6,#F4E8C8)"><span>🧮</span></div>
+    </div>
+
+    <div class="feat-row reveal rev">
+      <div class="feat-row-text">
+        <div class="feat-row-num">08</div>
+        <h3 class="feat-row-title t" data-ar="تصدير CSV" data-en="CSV Export">CSV Export</h3>
+        <p class="feat-row-desc t" data-ar="بياناتك ملكك — صدّر كل صفقاتك بضغطة واحدة. يفتح في Excel وGoogle Sheets." data-en="Your data is yours — export everything in one click. Opens in Excel and Google Sheets.">Your data is yours — export everything in one click. Opens in Excel and Google Sheets.</p>
+        <div class="feat-row-bullets">
+          <div class="bullet t" data-ar="تصدير بضغطة واحدة" data-en="Export in one click">Export in one click</div>
+          <div class="bullet t" data-ar="متوافق مع Excel" data-en="Excel & Sheets compatible">Excel & Sheets compatible</div>
+          <div class="bullet t" data-ar="بياناتك ملكك دائماً" data-en="Your data, always yours">Your data, always yours</div>
+        </div>
+      </div>
+      <div class="feat-row-visual" style="background:linear-gradient(135deg,#E6F1FB,#D4E8FA)"><span>📥</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="how-section" id="how">
+  <div class="how-inner">
+    <span class="sec-eyebrow t reveal" data-ar="كيف يعمل" data-en="How it works">كيف يعمل</span>
+    <h2 class="sec-h2 t reveal reveal-delay-1" data-ar="ثلاث خطوات للتحسّن <em>الحقيقي</em>" data-en="Three steps to <em>real</em> improvement">ثلاث خطوات للتحسّن <em>الحقيقي</em></h2>
+    <p class="sec-body t reveal reveal-delay-2" data-ar="الفرق بين المحترف والمبتدئ: المحترف يتعلم من كل صفقة." data-en="The difference between professionals and amateurs: professionals learn from every trade.">الفرق بين المحترف والمبتدئ: المحترف يتعلم من كل صفقة.</p>
+    <div class="steps-row reveal reveal-delay-3">
+      <div class="step">
+        <div class="step-n">STEP 01</div>
+        <div class="step-icon-wrap">📝</div>
+        <div class="step-title t" data-ar="سجّل الصفقة" data-en="Log the trade">سجّل الصفقة</div>
+        <div class="step-desc t" data-ar="أدخل التفاصيل الكاملة قبل وبعد الصفقة. نماذج مرنة تناسب أي استراتيجية." data-en="Enter full details before and after. Flexible forms that fit any strategy.">أدخل التفاصيل الكاملة قبل وبعد الصفقة. نماذج مرنة تناسب أي استراتيجية.</div>
+        <div class="step-arrow">→</div>
+      </div>
+      <div class="step">
+        <div class="step-n">STEP 02</div>
+        <div class="step-icon-wrap">⚡</div>
+        <div class="step-title t" data-ar="احصل على تحليل AI" data-en="Get AI analysis">احصل على تحليل AI</div>
+        <div class="step-desc t" data-ar="بضغطة واحدة، يقيّم AI صفقتك بموضوعية ويعطيك تقريراً مفصلاً فورياً." data-en="One tap — AI evaluates your trade objectively and delivers instant detailed feedback.">بضغطة واحدة، يقيّم AI صفقتك بموضوعية ويعطيك تقريراً مفصلاً فورياً.</div>
+        <div class="step-arrow">→</div>
+      </div>
+      <div class="step">
+        <div class="step-n">STEP 03</div>
+        <div class="step-icon-wrap">📊</div>
+        <div class="step-title t" data-ar="تطوّر باستمرار" data-en="Improve continuously">تطوّر باستمرار</div>
+        <div class="step-desc t" data-ar="تتبّع أنماطك، اكتشف نقاط ضعفك، وحسّن استراتيجيتك بناءً على بيانات حقيقية." data-en="Track patterns, discover weaknesses, and improve your strategy based on real data.">تتبّع أنماطك، اكتشف نقاط ضعفك، وحسّن استراتيجيتك بناءً على بيانات حقيقية.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<div class="calc-section" id="calculator">
+  <div class="calc-inner">
+    <div class="calc-header reveal">
+      <span class="sec-eyebrow t" data-ar="مجاناً دائماً" data-en="Always free">مجاناً دائماً</span>
+      <h2 class="sec-h2 t" data-ar="حاسبة <em>المخاطر</em>" data-en="Risk <em>Calculator</em>">حاسبة <em>المخاطر</em></h2>
+      <p class="sec-body t" data-ar="احسب حجم صفقتك بدقة للعقود الآجلة والفوركس." data-en="Calculate your exact position size for futures and forex.">احسب حجم صفقتك بدقة للعقود الآجلة والفوركس.</p>
+    </div>
+    <div class="calc-card reveal reveal-delay-1">
+      <div class="calc-tabs-row">
+        <button class="ctab on" onclick="cTab('f')" id="ctab-f"><span class="t" data-ar="عقود آجلة" data-en="Futures">عقود آجلة</span></button>
+        <button class="ctab" onclick="cTab('fx')" id="ctab-fx"><span class="t" data-ar="فوركس" data-en="Forex">فوركس</span></button>
+      </div>
+      <div class="calc-body">
+        <div id="calc-f">
+          <div class="cfields">
+            <div class="cf"><label class="t" data-ar="رأس المال ($)" data-en="Account ($)">رأس المال ($)</label><input type="number" id="f-account" value="25000"/></div>
+            <div class="cf"><label class="t" data-ar="المخاطرة (%)" data-en="Risk (%)">المخاطرة (%)</label><input type="number" id="f-risk" value="1" step="0.1"/></div>
+            <div class="cf"><label class="t" data-ar="العقد" data-en="Contract">العقد</label><select id="f-sym" onchange="updateTickInfo()"><option value="NQ">NQ</option><option value="ES">ES</option><option value="YM">YM</option><option value="RTY">RTY</option><option value="GC">GC</option><option value="SI">SI</option><option value="CL">CL</option><option value="MNQ">MNQ</option><option value="MES">MES</option></select></div>
+            <div class="cf"><label class="t" data-ar="سعر الدخول" data-en="Entry">سعر الدخول</label><input type="number" id="f-entry" placeholder="20000"/></div>
+            <div class="cf"><label class="t" data-ar="وقف الخسارة" data-en="Stop Loss">وقف الخسارة</label><input type="number" id="f-stop" placeholder="19950"/></div>
+            <div class="cf"><label id="tick-info" style="font-size:10px;color:var(--text3)">Tick info</label><input type="text" id="f-info" readonly style="background:var(--bg2);color:var(--text3);cursor:default"/></div>
+          </div>
+          <button class="calc-run t" data-ar="احسب الآن" data-en="Calculate now" onclick="cF()">احسب الآن</button>
+          <div class="cres" id="f-result"><div class="cres-grid"><div><div class="cres-v" id="f-r-c">—</div><div class="cres-l t" data-ar="العقود" data-en="Contracts">العقود</div></div><div><div class="cres-v" id="f-r-r">—</div><div class="cres-l t" data-ar="المبلغ" data-en="$ at risk">المبلغ</div></div><div><div class="cres-v" id="f-r-t">—</div><div class="cres-l t" data-ar="التيكات" data-en="Ticks">التيكات</div></div></div></div>
+        </div>
+        <div id="calc-fx" style="display:none">
+          <div class="cfields">
+            <div class="cf"><label class="t" data-ar="رأس المال ($)" data-en="Account ($)">رأس المال ($)</label><input type="number" id="fx-account" value="10000"/></div>
+            <div class="cf"><label class="t" data-ar="المخاطرة (%)" data-en="Risk (%)">المخاطرة (%)</label><input type="number" id="fx-risk" value="1" step="0.1"/></div>
+            <div class="cf"><label class="t" data-ar="الزوج" data-en="Pair">الزوج</label><select id="fx-pair"><option value="EURUSD">EUR/USD</option><option value="GBPUSD">GBP/USD</option><option value="USDJPY">USD/JPY</option><option value="USDCAD">USD/CAD</option><option value="AUDUSD">AUD/USD</option><option value="XAUUSD">XAU/USD</option></select></div>
+            <div class="cf"><label class="t" data-ar="الوقف (pips)" data-en="Stop (pips)">الوقف (pips)</label><input type="number" id="fx-sl" placeholder="20"/></div>
+            <div class="cf" style="grid-column:span 2"><label class="t" data-ar="نوع الحساب" data-en="Account type">نوع الحساب</label><select id="fx-type"><option value="standard">Standard (100k)</option><option value="mini">Mini (10k)</option><option value="micro">Micro (1k)</option></select></div>
+          </div>
+          <button class="calc-run t" data-ar="احسب الآن" data-en="Calculate now" onclick="cFx()">احسب الآن</button>
+          <div class="cres" id="fx-result"><div class="cres-grid"><div><div class="cres-v" id="fx-r-l">—</div><div class="cres-l t" data-ar="اللوت" data-en="Lots">اللوت</div></div><div><div class="cres-v" id="fx-r-u">—</div><div class="cres-l t" data-ar="الوحدات" data-en="Units">الوحدات</div></div><div><div class="cres-v" id="fx-r-r">—</div><div class="cres-l t" data-ar="المبلغ" data-en="$ at risk">المبلغ</div></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <span class="sec-eyebrow t reveal" style="display:inline-flex;margin-bottom:18px" data-ar="مجاناً — الآن" data-en="Free — right now">مجاناً — الآن</span>
+    <h2 class="sec-h2 t reveal reveal-delay-1" data-ar="جاهز لتداول <em>أذكى؟</em>" data-en="Ready to trade <em>smarter?</em>">جاهز لتداول <em>أذكى؟</em></h2>
+    <p class="sec-body t reveal reveal-delay-2" data-ar="انضم مجاناً وابدأ تسجيل صفقاتك اليوم. لا بطاقة بنكية مطلوبة." data-en="Join free and start logging your trades today. No credit card required.">انضم مجاناً وابدأ تسجيل صفقاتك اليوم. لا بطاقة بنكية مطلوبة.</p>
+    <a href="/app" class="btn-hero btn-hero-dark t reveal reveal-delay-3" style="font-size:15px;padding:15px 32px;display:inline-flex" data-ar="ابدأ الآن ←" data-en="Get started now →">ابدأ الآن ←</a>
+    <p class="cta-note t reveal reveal-delay-4" data-ar="تسجيل مجاني · لا بطاقة · جوال وكمبيوتر" data-en="Free signup · No card · Mobile &amp; desktop">تسجيل مجاني · لا بطاقة · جوال وكمبيوتر</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <a href="/" class="foot-logo">
+      <svg width="14" height="20" viewBox="0 0 16 24" fill="none"><line x1="8" y1="0" x2="8" y2="5" stroke="#B8912A" stroke-width="1.8" stroke-linecap="round"/><rect x="2.5" y="5.5" width="11" height="13" rx="0.5" stroke="#B8912A" stroke-width="1.5"/><line x1="8" y1="18.5" x2="8" y2="24" stroke="#B8912A" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Unc's<em>Journal</em>
+    </a>
+    <div class="foot-links">
+      <a href="/app" class="t" data-ar="التطبيق" data-en="App">التطبيق</a>
+      <a href="#features" class="t" data-ar="المميزات" data-en="Features">المميزات</a>
+      <a href="#calculator" class="t" data-ar="الحاسبة" data-en="Calculator">الحاسبة</a>
+      <a href="/privacy" class="t" data-ar="الخصوصية" data-en="Privacy">الخصوصية</a>
+      <a href="/terms" class="t" data-ar="الشروط" data-en="Terms">الشروط</a>
+    </div>
+    <div class="foot-copy">© 2026 Unc's Journal</div>
+  </div>
+</footer>
+
+<!-- CHATBOT -->
+<button id="chat-btn" onclick="toggleLandingChat()">💬</button>
+<div id="chat-panel">
+  <div class="ch-header">
+    <div class="ch-left"><div class="ch-av">⚡</div><div><div class="ch-title">Unc's AI</div><div class="ch-sub">Ask me anything</div></div></div>
+    <button class="ch-close" onclick="toggleLandingChat()">✕</button>
+  </div>
+  <div class="ch-msgs" id="lc-msgs"><div class="cmsg ai">Hey! Ask me anything about Unc's Journal or trading. 🚀</div></div>
+  <div class="ch-sugs" id="lc-sugs">
+    <button class="csug" onclick="lcSug(this)">What is Unc's Journal?</button>
+    <button class="csug" onclick="lcSug(this)">Is it free?</button>
+    <button class="csug" onclick="lcSug(this)">How does AI work?</button>
+  </div>
+  <div class="ch-inp-row">
+    <textarea class="ch-inp" id="lc-input" placeholder="Ask anything..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();lcSend();}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,64)+'px'"></textarea>
+    <button class="ch-send" id="lc-send" onclick="lcSend()">➤</button>
+  </div>
+</div>
+
+<script>
+// Auth redirect
+(function(){const h=location.hash;if(h&&h.includes('access_token')){location.href='/app'+h;}})();
+
+// Language
+var LANG=localStorage.getItem('utf_lang')||'ar';
+function toggleLang(){LANG=LANG==='ar'?'en':'ar';localStorage.setItem('utf_lang',LANG);applyLang();}
+function applyLang(){
+  const a=LANG==='ar';
+  document.documentElement.lang=a?'ar':'en';
+  document.documentElement.dir=a?'rtl':'ltr';
+  document.getElementById('lang-btn').textContent=a?'EN':'عربي';
+  document.querySelectorAll('.t').forEach(el=>{
+    const v=a?el.getAttribute('data-ar'):el.getAttribute('data-en');
+    if(v)el.innerHTML=v;
+  });
+}
+applyLang();
+
+// Nav scroll effect + scroll progress bar
+const scrollProg=document.getElementById('scroll-progress');
+const navLogoIcon=document.getElementById('nav-logo-icon');
+window.addEventListener('scroll',()=>{
+  document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>20);
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  const pct=h>0?(window.scrollY/h*100):0;
+  if(scrollProg) scrollProg.style.width=pct+'%';
+  if(navLogoIcon) navLogoIcon.style.transform='rotate('+(pct*3.6)+'deg)';
+},{ passive:true });
+
+// Scroll reveal (fade-up + pop-scale variants share the same observer)
+function animateCount(el){
+  const target=parseFloat(el.dataset.target);
+  if(!target||isNaN(target)){return;}
+  const suffix=el.dataset.suffix||(el.textContent.includes('%')?'%':'');
+  let cur=0;
+  const step=Math.max(1,Math.ceil(target/30));
+  const iv=setInterval(()=>{
+    cur+=step;
+    if(cur>=target){cur=target;clearInterval(iv);}
+    el.textContent=cur+suffix;
+  },28);
+}
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.classList.contains('count')) animateCount(e.target);
+      e.target.querySelectorAll('.count').forEach(animateCount);
+      ro.unobserve(e.target);
+    }
+  });
+},{threshold:.12});
+document.querySelectorAll('.reveal,.reveal-pop').forEach(el=>ro.observe(el));
+
+// Hero chart bars
+(function(){
+  const b=document.getElementById('hero-chart');if(!b)return;
+  const d=[22,42,32,60,38,78,52,82,42,68,28,72,58,88,48,62];
+  const c=['#4ADE80','#4ADE80','#F87171','#4ADE80','#F87171','#4ADE80','#4ADE80','#C9A84C','#4ADE80','#4ADE80','#F87171','#4ADE80','#4ADE80','#C9A84C','#4ADE80','#4ADE80'];
+  b.innerHTML=d.map((h,i)=>`<div class="chart-bar" style="height:${h}%;background:${c[i]};opacity:.8"></div>`).join('');
+})();
+
+// Mockup tab switcher
+function switchTab(btn,tab){
+  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// Cursor glow on hero
+const glow=document.getElementById('cursor-glow');
+const heroVis=document.querySelector('.hero-visual');
+if(heroVis&&glow){
+  heroVis.addEventListener('mousemove',e=>{
+    const r=heroVis.getBoundingClientRect();
+    glow.style.left=(e.clientX-r.left)+'px';
+    glow.style.top=(e.clientY-r.top)+'px';
+    glow.style.opacity='1';
+  });
+  heroVis.addEventListener('mouseleave',()=>{glow.style.opacity='0';});
+}
+
+
+// Calculator
+function cTab(t){
+  document.getElementById('calc-f').style.display=t==='f'?'':'none';
+  document.getElementById('calc-fx').style.display=t==='fx'?'':'none';
+  document.getElementById('ctab-f').classList.toggle('on',t==='f');
+  document.getElementById('ctab-fx').classList.toggle('on',t==='fx');
+}
+const TK={NQ:{tick:.25,val:5,pts:4},ES:{tick:.25,val:12.5,pts:4},YM:{tick:1,val:5,pts:1},RTY:{tick:.1,val:5,pts:10},GC:{tick:.1,val:10,pts:10},SI:{tick:.005,val:25,pts:200},CL:{tick:.01,val:10,pts:100},MNQ:{tick:.25,val:.5,pts:4},MES:{tick:.25,val:1.25,pts:4}};
+function updateTickInfo(){const s=document.getElementById('f-sym').value;const t=TK[s];const i=document.getElementById('f-info');if(t&&i)i.value='$'+t.val+'/tick · '+t.pts+' ticks/pt';}
+updateTickInfo();
+function cF(){
+  const a=parseFloat(document.getElementById('f-account').value)||0;
+  const r=parseFloat(document.getElementById('f-risk').value)||0;
+  const s=document.getElementById('f-sym').value;
+  const en=parseFloat(document.getElementById('f-entry').value)||0;
+  const st=parseFloat(document.getElementById('f-stop').value)||0;
+  if(!a||!r||!en||!st)return;
+  const t=TK[s];if(!t)return;
+  const rA=a*(r/100),pts=Math.abs(en-st),tks=pts*t.pts,rpc=tks*t.val;
+  const c=rpc>0?Math.floor(rA/rpc):0;
+  document.getElementById('f-r-c').textContent=c+' contracts';
+  document.getElementById('f-r-r').textContent='$'+(c*rpc).toFixed(0);
+  document.getElementById('f-r-t').textContent=tks.toFixed(0)+' ticks';
+  document.getElementById('f-result').classList.add('show');
+}
+function cFx(){
+  const a=parseFloat(document.getElementById('fx-account').value)||0;
+  const r=parseFloat(document.getElementById('fx-risk').value)||0;
+  const sl=parseFloat(document.getElementById('fx-sl').value)||0;
+  const ty=document.getElementById('fx-type').value;
+  const p=document.getElementById('fx-pair').value;
+  if(!a||!r||!sl)return;
+  const rA=a*(r/100),ls=ty==='standard'?100000:ty==='mini'?10000:1000;
+  const pv=p.includes('JPY')?.01:p==='XAUUSD'?.1:.0001;
+  const lots=rA/(sl*(pv*ls));
+  document.getElementById('fx-r-l').textContent=lots.toFixed(2)+' lots';
+  document.getElementById('fx-r-u').textContent=Math.round(lots*ls).toLocaleString();
+  document.getElementById('fx-r-r').textContent='$'+rA.toFixed(0);
+  document.getElementById('fx-result').classList.add('show');
+}
+
+// Chatbot
+var lcOpen=false,lcHistory=[],lcBusy=false;
+function toggleLandingChat(){
+  lcOpen=!lcOpen;
+  const p=document.getElementById('chat-panel'),b=document.getElementById('chat-btn');
+  if(lcOpen){p.classList.add('open');b.textContent='✕';setTimeout(()=>document.getElementById('lc-input')?.focus(),250);}
+  else{p.classList.remove('open');b.textContent='💬';}
+}
+function lcSug(btn){document.getElementById('lc-sugs').style.display='none';document.getElementById('lc-input').value=btn.textContent;lcSend();}
+function lcAddMsg(r,t){const m=document.getElementById('lc-msgs');const d=document.createElement('div');d.className='cmsg '+r;d.textContent=t;m.appendChild(d);m.scrollTop=m.scrollHeight;}
+async function lcSend(){
+  const i=document.getElementById('lc-input'),b=document.getElementById('lc-send'),t=i?.value.trim();
+  if(!t||lcBusy)return;
+  i.value='';i.style.height='auto';
+  lcAddMsg('user',t);lcHistory.push({role:'user',content:t});
+  lcBusy=true;if(b)b.disabled=true;
+  const m=document.getElementById('lc-msgs');
+  const ty=document.createElement('div');ty.className='cmsg typing';ty.id='lc-typing';
+  ty.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
+  m.appendChild(ty);m.scrollTop=m.scrollHeight;
+  try{
+    const res=await fetch('https://uncai.omar3halabi.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({system:`You are a helpful assistant for Unc's Journal, a smart trading journal at uncsjournal.com. Answer questions about the product and trading. Keep answers concise. Always encourage users to try the app for free.`,max_tokens:350,messages:lcHistory.slice(-6)})});
+    const data=await res.json();
+    const reply=data?.content?.[0]?.text||'Sorry, something went wrong.';
+    document.getElementById('lc-typing')?.remove();
+    lcAddMsg('ai',reply);lcHistory.push({role:'assistant',content:reply});
+  }catch(e){document.getElementById('lc-typing')?.remove();lcAddMsg('ai','Connection error. Please try again.');}
+  lcBusy=false;if(b)b.disabled=false;document.getElementById('lc-input')?.focus();
+}
+</script>
+</body>
+</html>

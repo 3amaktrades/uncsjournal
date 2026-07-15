@@ -1,0 +1,10 @@
+# Claude Code local session/tooling state — not part of the product
+.claude/
+
+# Unrelated project sharing this folder (separate PDF-generator tool)
+lesson-pdf-generator/
+course pdfs/
+
+# OS junk
+.DS_Store
+Thumbs.db
