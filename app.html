@@ -2459,7 +2459,7 @@ function buildSidebar(){
     el.id='sb-'+id;
     el.draggable=true;
     el.innerHTML='<span class="sb-icon">'+(ICONS[id]||'•')+'</span><span class="sb-label">'+(LABELS[id]||id)+'</span>';
-    let touchMoved=false;
+    let touchMoved=false,dragActive=false,holdTimer=null,touchStartX=0,touchStartY=0;
     el.addEventListener('click',function(){if(touchMoved){touchMoved=false;return;}showTab(id);});
     el.addEventListener('dragstart',function(e){sbDragSrc=id;el.style.opacity='.4';e.dataTransfer.effectAllowed='move';});
     el.addEventListener('dragend',function(){el.style.opacity='1';document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('drag-over');});});
@@ -2469,17 +2469,33 @@ function buildSidebar(){
       e.preventDefault();el.classList.remove('drag-over');
       if(sbDragSrc&&sbDragSrc!==id) reorderTabs(sbDragSrc,id);
     });
-    // Touch support — HTML5 drag-and-drop has no touch equivalent, so mobile needs its own handling
-    el.addEventListener('touchstart',function(){sbDragSrc=id;touchMoved=false;el.style.opacity='.4';},{passive:true});
+    // Touch support — HTML5 drag-and-drop has no touch equivalent. A touch only enters
+    // reorder mode after a genuine hold (450ms with minimal movement); anything that
+    // moves before then is a normal scroll and is left alone so the list stays scrollable.
+    el.addEventListener('touchstart',function(e){
+      touchMoved=false;dragActive=false;
+      const t=e.touches[0];touchStartX=t.clientX;touchStartY=t.clientY;
+      holdTimer=setTimeout(function(){
+        dragActive=true;sbDragSrc=id;el.style.opacity='.4';
+        if(navigator.vibrate)navigator.vibrate(15);
+      },450);
+    },{passive:true});
     el.addEventListener('touchmove',function(e){
+      const t=e.touches[0];
+      const moved=Math.abs(t.clientX-touchStartX)>10||Math.abs(t.clientY-touchStartY)>10;
+      if(!dragActive){
+        if(moved&&holdTimer){clearTimeout(holdTimer);holdTimer=null;}
+        return;
+      }
       touchMoved=true;
-      const touch=e.touches[0];
-      const over=document.elementFromPoint(touch.clientX,touch.clientY)?.closest('.sb-item');
+      const over=document.elementFromPoint(t.clientX,t.clientY)?.closest('.sb-item');
       document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('drag-over');});
       if(over) over.classList.add('drag-over');
       e.preventDefault();
     },{passive:false});
     el.addEventListener('touchend',function(e){
+      if(holdTimer){clearTimeout(holdTimer);holdTimer=null;}
+      if(!dragActive)return;
       el.style.opacity='1';
       const touch=e.changedTouches[0];
       const over=document.elementFromPoint(touch.clientX,touch.clientY)?.closest('.sb-item');
@@ -2488,6 +2504,7 @@ function buildSidebar(){
         const toId=over.id.replace('sb-','');
         if(sbDragSrc&&sbDragSrc!==toId) reorderTabs(sbDragSrc,toId);
       }
+      dragActive=false;
     });
     nav.appendChild(el);
   });
