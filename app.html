@@ -300,7 +300,21 @@ body.rtl,.rtl *{direction:rtl}
   /* Mobile sidebar — hidden, shown via JS */
   .sidebar{display:none!important;position:fixed!important;z-index:999;top:54px;left:0;height:calc(100vh - 54px);width:260px!important;min-width:260px!important;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:6px 0 24px rgba(0,0,0,.6)}
   .sidebar.collapsed,.sidebar.mob-open.collapsed{width:260px!important;min-width:260px!important}
-  .sidebar.mob-open{display:flex!important;flex-direction:column}
+  .sidebar.mob-open{
+    display:flex!important;flex-direction:column;
+    /* Scroll-position-aware fade: only shows a "more content" hint on whichever
+       edge actually has more to scroll to, so it's not just a static decoration. */
+    background-color:#0A1520;
+    background-image:
+      linear-gradient(#0A1520 30%, rgba(10,21,32,0)),
+      linear-gradient(rgba(10,21,32,0), #0A1520 70%),
+      radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.55), rgba(0,0,0,0)),
+      radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.55), rgba(0,0,0,0));
+    background-repeat:no-repeat;
+    background-size:100% 24px, 100% 24px, 100% 10px, 100% 10px;
+    background-position:top,bottom,top,bottom;
+    background-attachment:local,local,scroll,scroll;
+  }
   /* .sb-nav's own flex:1+overflow-y:auto (desktop) traps scrolling in a cramped
      inner box on mobile, leaving the rest of the drawer unreachable. Let it size
      to its natural content height so the outer .sidebar scrolls as one unit. */
@@ -733,7 +747,6 @@ var currentSession = null;
 var darkMode = localStorage.getItem('utf_dark') === '1';
 var notifEnabled = localStorage.getItem('utf_notif') === '1';
 var calendarEvents = [];
-var notifCheckInterval = null;
 var notifiedEvents = new Set();
 var notifEnabled = localStorage.getItem('utf_notif') === '1';
 var calendarEvents = [];
@@ -748,13 +761,11 @@ var histogramChart = null;
 var rollingChart = null;
 var lastChallengeResults = null;
 var notifEnabled = localStorage.getItem('utf_notif') === '1';
-var notifCheckInterval = null;
 var notifiedEvents = new Set();
 var calendarCache = null;
 var calendarCacheTime = 0;
 var notifEnabled = localStorage.getItem('utf_notif') === '1';
 var calendarData = [];
-var notifCheckInterval = null;
 var notifiedEvents = new Set();
 var calcTab = 'futures'; // 'futures' or 'forex'
 var forexCalcTab = 'lotsize'; // 'lotsize','margin','pnl','swap'
@@ -2237,7 +2248,6 @@ function getWeekRange(off){
 const fmtD=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 const getWK=s=>s.toISOString().split('T')[0];
 function getWeekTrades(s,e){return trades.filter(t=>{if(!t.date)return false;const d=new Date(t.date+'T12:00:00');return d>=s&&d<=e;});}
-function changeWeek(dir){if(weekOffset+dir>0)return;weekOffset+=dir;renderWeekly();}
 
 async function generateWeeklySummary(){
   const{start,end}=getWeekRange(weekOffset),wt=getWeekTrades(start,end),key=getWK(start);
@@ -3380,7 +3390,7 @@ function calcConsistency(trades){
   const wr=(wins.length+losses.length)?wins.length/(wins.length+losses.length):0;
   const sw=wins.reduce((a,t)=>a+(parseFloat(t.r)||0),0);
   const sl=Math.abs(losses.reduce((a,t)=>a+(parseFloat(t.r)||0),0));
-  const pf=sl>0?sw/sl:sw>0?10:0;
+  const pf=sl>0?sw/sl:(sw>0?Infinity:0);
   const rbs=trades.filter(t=>t.ruleBreak&&t.ruleBreak!=='None').length;
   const fp=trades.filter(t=>t.followedPlan).length;
   const mp=trades.filter(t=>t.metPlan).length;
@@ -3555,7 +3565,7 @@ function renderAnalytics(){
   const aW=wins.length?wins.reduce((a,x)=>a+(parseFloat(x.r)||0),0)/wins.length:0;
   const aL=losses.length?losses.reduce((a,x)=>a+(parseFloat(x.r)||0),0)/losses.length:0;
   const sw=wins.reduce((a,x)=>a+(parseFloat(x.r)||0),0),sl=Math.abs(losses.reduce((a,x)=>a+(parseFloat(x.r)||0),0));
-  const pf=sl>0?sw/sl:sw>0?99:0,ev=(wr*aW)+((losses.length/t.length)*aL);
+  const pf=sl>0?sw/sl:0,ev=(wr*aW)+((losses.length/t.length)*aL);
   let cum=0,peak=0,mdd=0;t.forEach(x=>{cum+=parseFloat(x.r)||0;peak=Math.max(peak,cum);mdd=Math.min(mdd,cum-peak);});
   const tier=getTier(rSec);
   const byDay=DAYS.map(day=>{const dt=t.filter(x=>x.date&&DAYS[new Date(x.date+'T12:00:00').getDay()]===day);const dtW=dt.filter(x=>parseFloat(x.r)>0).length,dtL=dt.filter(x=>parseFloat(x.r)<0).length;return{day:day.slice(0,3),r:dt.reduce((a,x)=>a+(parseFloat(x.r)||0),0),n:dt.length,wr:(dtW+dtL)?dtW/(dtW+dtL):0};}).filter(d=>d.n>0);
@@ -3714,7 +3724,7 @@ function renderAnalytics(){
     <div class="sg">
       <div class="sc"><div class="sl">Total trades</div><div class="sv">${t.length}</div><div class="ss">${wins.length}W · ${bes.length}BE · ${losses.length}L</div></div>
       <div class="sc"><div class="sl">R secured</div><div class="sv" style="color:${rSec>=0?'#1A5C3A':'#8B2020'}">${rSec>=0?'+':''}${f2(rSec)}R</div><div class="ss">AvgW +${f2(aW)}R · AvgL ${f2(aL)}R</div></div>
-      <div class="sc"><div class="sl">Win rate</div><div class="sv" style="color:${wrDisp>=.5?'#1A5C3A':'#8B2020'}">${pct(wrDisp)}%</div><div class="ss">EV ${f2(ev)}R · PF ${f2(pf)}x</div></div>
+      <div class="sc"><div class="sl">Win rate</div><div class="sv" style="color:${wrDisp>=.5?'#1A5C3A':'#8B2020'}">${pct(wrDisp)}%</div><div class="ss">EV ${f2(ev)}R · PF ${sl>0?f2(pf)+'x':(sw>0?'—':'0.00x')}</div></div>
       <div class="sc"><div class="sl">Max DD</div><div class="sv" style="color:#8B2020">${f2(mdd)}R</div><div class="ss">From peak</div></div>
     </div>
     <div class="g2">
@@ -4113,54 +4123,6 @@ function buildNotifToggle(){
   return '<button onclick="requestNotifPermission().then(function(){openSettings();})" style="background:#E0DED8;color:#888;border:none;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:bold;cursor:pointer">OFF</button>';
 }
 
-function showEventNotification(ev, mins){
-  try{
-    var title = LANG==='ar' ? '\u26a0\ufe0f \u062e\u0628\u0631 \u0639\u0627\u0644\u064a \u0627\u0644\u062a\u0623\u062b\u064a\u0631' : '\u26a0\ufe0f High Impact News';
-    var body = ev.title + ' \u2014 ' + ev.country + ' in ' + mins + ' min';
-    var n = new Notification(title, {
-      body: body,
-      tag: 'unc-' + ev.date,
-      requireInteraction: true
-    });
-    n.onclick = function(){ window.focus(); showTab('juice'); n.close(); };
-  } catch(e){ console.warn('Notification error:', e); }
-}
-
-function showInAppAlert(ev, mins){
-  var existing = document.getElementById('news-alert-banner');
-  if(existing) existing.remove();
-  var banner = document.createElement('div');
-  banner.id = 'news-alert-banner';
-  banner.className = 'notif-banner';
-  var viewLbl = LANG==='ar' ? '\u0639\u0631\u0636' : 'View';
-  var btnView = document.createElement('button');
-  btnView.className = 'nb-btn';
-  btnView.textContent = viewLbl;
-  btnView.onclick = function(){ showTab('juice'); banner.remove(); };
-  var btnClose = document.createElement('button');
-  btnClose.className = 'nb-close';
-  btnClose.textContent = '\u2715';
-  btnClose.onclick = function(){ banner.remove(); };
-  var titleText = LANG==='ar' ? '\u062e\u0628\u0631 \u0639\u0627\u0644\u064a \u0627\u0644\u062a\u0623\u062b\u064a\u0631' : 'High Impact News';
-  banner.innerHTML = '<span class="nb-icon">\u26a0\ufe0f</span>'
-    + '<div class="nb-body"><div class="nb-title">'+titleText+'</div>'
-    + '<div class="nb-text">'+ev.title+' \u2014 '+ev.country+' in '+mins+' min</div></div>';
-  banner.appendChild(btnView);
-  banner.appendChild(btnClose);
-  document.body.appendChild(banner);
-  setTimeout(function(){ if(banner.parentElement) banner.remove(); }, 30000);
-}
-
-function startNotifCheck(){
-  if(notifCheckInterval){ clearInterval(notifCheckInterval); notifCheckInterval = null; }
-  fetchCalendarEvents();
-  notifCheckInterval = setInterval(function(){
-    checkUpcomingEvents();
-    if(new Date().getMinutes() % 30 === 0) fetchCalendarEvents();
-  }, 60000);
-}
-
-
 
 function disableNotifs(){
   notifEnabled = false;
@@ -4330,24 +4292,6 @@ function logOutcomeInput(v){logOutcomeFilter=v;renderLog();}
 function clearLogSearch(){logSearchQuery='';logOutcomeFilter='all';renderLog();}
 
 
-function doCSVExport(){
-  if(!trades||!trades.length){toast('No trades to export');return;}
-  const headers=['Date','Symbol','Direction','R Result','Rating','Rule Break','Notes','Session','Funded','Screenshot'];
-  const rows=trades.map(t=>[
-    t.date||'',t.sym||'',t.dir||'',t.r||'',t.rating||'',
-    t.ruleBreak||'','"'+(t.notes||'').replace(/"/g,'""')+'"',
-    t.session||'',t.funded?'Yes':'No',t.screenshot||''
-  ].join(','));
-  const csv=[headers.join(','),...rows].join('\n');
-  const blob=new Blob([csv],{type:'text/csv'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='trades-'+new Date().toISOString().slice(0,10)+'.csv';
-  document.body.appendChild(a);a.click();
-  document.body.removeChild(a);URL.revokeObjectURL(url);
-  toast('✓ '+trades.length+' trades exported');
-}
-
 // ═══════════════════════════════════════════════════════════════
 // IMPORT & SYNC MODULE
 // ═══════════════════════════════════════════════════════════════
@@ -4456,7 +4400,6 @@ function renderJuice(){
   document.head.appendChild(jo);
 }
 
-function renderCharts(){renderJuice();}
 
 function openTVScreenshot(url){
   const decoded=url?decodeURIComponent(url):'';
@@ -4493,10 +4436,8 @@ function activateTemplate(id){
 }
 
 function toggleTemplate(id){if(activeTemplates.includes(id)){if(activeTemplates.length===1){toast('At least one template must be active');return;}activeTemplates=activeTemplates.filter(t=>t!==id);}else{activeTemplates.push(id);}localStorage.setItem('utf_active_templates',JSON.stringify(activeTemplates));renderForm();renderTemplates();}
-function switchTemplate(id){toggleTemplate(id);}
 
 function getActiveTemplateDefs(){return activeTemplates.filter(id=>id!=='ict').map(id=>customTemplates.find(t=>t.id===id)).filter(Boolean);}
-function getActiveTemplateDef(){return getActiveTemplateDefs()[0]||null;}
 
 function renderCustomFieldsForTemplate(tmpl){
   if(!tmpl||!tmpl.fields?.length)return'';
@@ -4514,7 +4455,6 @@ function renderCustomFieldsForTemplate(tmpl){
   const rows=[];for(let i=0;i<fields.length;i+=2){if(i+1<fields.length&&tmpl.fields[i].type!=='textarea'&&tmpl.fields[i].type!=='multiselect'){rows.push(`<div class="g2">${fields[i]}${fields[i+1]}</div>`);i++;}else{rows.push(`<div style="margin-bottom:10px">${fields[i]}</div>`);}}
   return`<div class="card" style="margin-bottom:8px"><div class="ch" style="background:linear-gradient(135deg,#534AB7,#7B3055)"><span>${tmpl.icon||'🎯'} ${tmpl.name} — custom fields</span><span class="ch-sub">${tmpl.strategy||''}</span></div><div class="cb">${rows.join('')}</div></div>`;
 }
-function renderCustomFields(){return getActiveTemplateDefs().map(t=>renderCustomFieldsForTemplate(t)).join('');}
 
 function setRating(fId,val){const inp=document.getElementById('cf-'+fId);if(inp)inp.value=val;[1,2,3,4,5].forEach(n=>{const btn=document.getElementById(`cfr-${fId}-${n}`);if(btn)btn.style.background=n<=val?'#FFF3CC':'#fff';});}
 
