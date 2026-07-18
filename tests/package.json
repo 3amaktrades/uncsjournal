@@ -1,0 +1,12 @@
+{
+  "name": "uncsjournal-tests",
+  "private": true,
+  "type": "module",
+  "description": "jsdom regression tests for app.html and index.html. Not part of the deployed site — install and run from within this folder.",
+  "scripts": {
+    "test": "node run-all.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}

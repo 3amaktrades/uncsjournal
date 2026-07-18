@@ -8,3 +8,7 @@ course pdfs/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Test dependencies — installed via `npm install` inside tests/
+tests/node_modules/
+tests/package-lock.json
