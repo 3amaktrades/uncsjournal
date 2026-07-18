@@ -935,7 +935,7 @@ const AR = {
   'Psychology':'علم النفس','Always logged':'يُسجل دائماً',
   // Form labels
   'Symbol':'الرمز','Date *':'التاريخ *','Time':'الوقت','Direction':'الاتجاه',
-  'Stop (R)':'الوقف (R)','R Result *':'نتيجة R *','Max RR':'أقصى RR',
+  'Stop (R)':'الوقف (R)','R Result *':'نتيجة R *','Max RR':'أقصى RR','Max Heat (R)':'أقصى ضغط (R)',
   'Rating':'التقييم','News':'الأخبار','Screenshot URL':'رابط اللقطة',
   'Notes':'ملاحظات','Flags':'تصنيفات','Funded':'ممول','Challenge':'تحدي',
   'Val. TF':'TF التحقق','SMT Divergence — correlated asset divergence':'تباعد SMT',
@@ -1655,7 +1655,7 @@ async function postLBDB(){
 
 function tradeToDb(t){
   // Core columns that must exist
-  const row={sym:t.sym||null,trade_date:t.date||null,trade_time:t.time||null,stop:parseFloat(t.stop)||null,r_result:parseFloat(t.r)||null,max_rr:parseFloat(t.maxRR)||null,rating:t.rating||null,direction:t.dir||null,news:t.news||null,screenshot:t.screenshot||null,notes:t.notes||null,thoughts:t.thoughts||null,funded:!!t.funded,challenge:!!t.challenge,entry_dol:t.entryDOL||[],exit_dol:t.exitDOL||[],ltf:t.ltf||[],htf:t.htf||[],met_plan:!!t.metPlan,order_flow:t.of||[],pre_state:t.preState||null,rule_break:t.ruleBreak||'None',rule_break_why:t.why||null,followed_plan:!!t.followedPlan,post_notes:t.postNotes||null,outcome:t.outcome||null,ai_analysis:t.aiAnalysis||null};
+  const row={sym:t.sym||null,trade_date:t.date||null,trade_time:t.time||null,stop:parseFloat(t.stop)||null,r_result:parseFloat(t.r)||null,max_rr:parseFloat(t.maxRR)||null,mae:parseFloat(t.mae)||null,rating:t.rating||null,direction:t.dir||null,news:t.news||null,screenshot:t.screenshot||null,notes:t.notes||null,thoughts:t.thoughts||null,funded:!!t.funded,challenge:!!t.challenge,entry_dol:t.entryDOL||[],exit_dol:t.exitDOL||[],ltf:t.ltf||[],htf:t.htf||[],met_plan:!!t.metPlan,order_flow:t.of||[],pre_state:t.preState||null,rule_break:t.ruleBreak||'None',rule_break_why:t.why||null,followed_plan:!!t.followedPlan,post_notes:t.postNotes||null,outcome:t.outcome||null,ai_analysis:t.aiAnalysis||null};
   // Optional newer columns (added via ALTER TABLE)
   if(t.liqSwept!==undefined) row.liq_swept=t.liqSwept||null;
   if(t.vshape!==undefined) row.vshape=t.vshape||null;
@@ -1668,7 +1668,7 @@ function tradeToDb(t){
   if(t.voiceNote!==undefined) row.voice_note=t.voiceNote||null;
   return row;
 }
-function dbToTrade(d){return{id:'db_'+d.id,dbId:d.id,sym:d.sym||'',date:d.trade_date||'',time:d.trade_time||'',stop:d.stop?.toString()||'',r:d.r_result?.toString()||'',maxRR:d.max_rr?.toString()||'',liqSwept:d.liq_swept||'',vshape:d.vshape||'',smt:d.smt_type||'',smtVs:d.smt_vs||'',rating:d.rating||'',dir:d.direction||'',news:d.news||'',valTF:d.val_tf||'',screenshot:d.screenshot||'',notes:d.notes||'',thoughts:d.thoughts||'',funded:d.funded||false,challenge:d.challenge||false,entryDOL:d.entry_dol||[],exitDOL:d.exit_dol||[],ltf:d.ltf||[],htf:d.htf||[],metPlan:d.met_plan||false,of:d.order_flow||[],preState:d.pre_state||'',ruleBreak:d.rule_break||'None',why:d.rule_break_why||'',followedPlan:d.followed_plan||false,postNotes:d.post_notes||'',outcome:d.outcome||'',aiAnalysis:d.ai_analysis||null,customFields:d.custom_fields||null,voiceNote:d.voice_note||null};}
+function dbToTrade(d){return{id:'db_'+d.id,dbId:d.id,sym:d.sym||'',date:d.trade_date||'',time:d.trade_time||'',stop:d.stop?.toString()||'',r:d.r_result?.toString()||'',maxRR:d.max_rr?.toString()||'',mae:d.mae?.toString()||'',liqSwept:d.liq_swept||'',vshape:d.vshape||'',smt:d.smt_type||'',smtVs:d.smt_vs||'',rating:d.rating||'',dir:d.direction||'',news:d.news||'',valTF:d.val_tf||'',screenshot:d.screenshot||'',notes:d.notes||'',thoughts:d.thoughts||'',funded:d.funded||false,challenge:d.challenge||false,entryDOL:d.entry_dol||[],exitDOL:d.exit_dol||[],ltf:d.ltf||[],htf:d.htf||[],metPlan:d.met_plan||false,of:d.order_flow||[],preState:d.pre_state||'',ruleBreak:d.rule_break||'None',why:d.rule_break_why||'',followedPlan:d.followed_plan||false,postNotes:d.post_notes||'',outcome:d.outcome||'',aiAnalysis:d.ai_analysis||null,customFields:d.custom_fields||null,voiceNote:d.voice_note||null};}
 
 // ── CHIPS ─
 function makeCS(id,opts,color,ph){
@@ -1807,7 +1807,7 @@ function resetForm(){
   stopVoiceRecording('new');delete voiceRec['new'];
   document.querySelectorAll('.cs-dd').forEach(d=>d.style.display='none');
   document.querySelectorAll('.cs-box').forEach(b=>b.classList.remove('open'));
-  ['sym','date','time','stop','r','maxRR','liqSwept','vshape','smt','smtVs','rating','dir','news','valTF','screenshot','notes','thoughts','preState','ruleBreak','why','postNotes'].forEach(id=>{
+  ['sym','date','time','stop','r','maxRR','mae','liqSwept','vshape','smt','smtVs','rating','dir','news','valTF','screenshot','notes','thoughts','preState','ruleBreak','why','postNotes'].forEach(id=>{
     const el=$('f-'+id);if(el)el.value=id==='ruleBreak'?'None':'';
   });
   // Reset ICT style fields if present
@@ -1832,7 +1832,7 @@ function buildTrade(){
       id:Date.now(),
       accountId:v('f-account')||null,
       sym:v('f-sym'),date:v('f-date'),time:v('f-time'),
-      stop:v('f-stop'),r:v('f-r'),maxRR:v('f-maxRR'),
+      stop:v('f-stop'),r:v('f-r'),maxRR:v('f-maxRR'),mae:v('f-mae'),
       liqSwept:v('f-liqSwept'),vshape:v('f-vshape'),
       smt:v('f-smt'),smtVs:v('f-smtVs'),
       rating:v('f-rating'),dir:v('f-dir'),news:v('f-news'),
@@ -1914,7 +1914,7 @@ async function saveEditedTrade(tid){
   const v=id=>document.getElementById(id)?.value||'';
   const updates={
     date:v('ed-date'),time:v('ed-time'),sym:v('ed-sym'),
-    dir:v('ed-dir'),r:v('ed-r'),stop:v('ed-stop'),maxRR:v('ed-maxRR'),
+    dir:v('ed-dir'),r:v('ed-r'),stop:v('ed-stop'),maxRR:v('ed-maxRR'),mae:v('ed-mae'),
     rating:v('ed-rating'),news:v('ed-news'),screenshot:v('ed-screenshot'),
     notes:v('ed-notes'),thoughts:v('ed-thoughts'),
     preState:v('ed-preState'),ruleBreak:v('ed-ruleBreak'),
@@ -2870,10 +2870,11 @@ function renderForm(){try{
         <div class="fl"><label for="f-time">${t('Time')}</label><input type="time" id="f-time"/></div>
         <div class="fl"><label for="f-dir">${t('Direction')}</label><select id="f-dir" onchange="uDir()"><option value="">—</option><option>Bullish</option><option>Bearish</option></select></div>
       </div>
-      <div class="g3">
+      <div class="g4">
         <div class="fl"><label for="f-stop">${t('Stop (R)')}</label><input type="number" step=".01" placeholder="0.50" id="f-stop"/></div>
         <div class="fl"><label for="f-r">${t('R Result *')}</label><input type="number" step=".01" placeholder="2.5 or -1" id="f-r" oninput="uR()"/></div>
-        <div class="fl"><label for="f-maxRR">${t('Max RR')}</label><input type="number" step=".01" placeholder="e.g. 5" id="f-maxRR"/></div>
+        <div class="fl"><label for="f-maxRR">${t('Max RR')}</label><input type="number" step=".01" placeholder="best it reached, e.g. 5" id="f-maxRR"/></div>
+        <div class="fl"><label for="f-mae">${t('Max Heat (R)')}</label><input type="number" step=".01" placeholder="worst it went, e.g. 0.8" id="f-mae"/></div>
       </div>
       <div class="g4">
         <div class="fl"><label for="f-rating">${t('Rating')}</label><select id="f-rating"><option value="">—</option>${ratOpts}</select></div>
@@ -3176,6 +3177,7 @@ function buildEditRow(t,tid){
     +'<div class="fl"><label for="ed-r">R Result</label><input id="ed-r" type="number" step="0.1" value="'+esc(t.r)+'" style="width:100%"/></div>'
     +'<div class="fl"><label for="ed-stop">Stop (pts)</label><input id="ed-stop" type="number" step="0.25" value="'+esc(t.stop)+'" style="width:100%"/></div>'
     +'<div class="fl"><label for="ed-maxRR">Max RR</label><input id="ed-maxRR" type="number" step="0.1" value="'+esc(t.maxRR)+'" style="width:100%"/></div>'
+    +'<div class="fl"><label for="ed-mae">Max Heat (R)</label><input id="ed-mae" type="number" step="0.1" value="'+esc(t.mae)+'" style="width:100%"/></div>'
     +'<div class="fl"><label>Rating</label>'+sel('ed-rating',t.rating||'',[''].concat(R))+'</div>'
     +'<div class="fl"><label>News</label>'+sel('ed-news',t.news||'',[''].concat(NW))+'</div>'
     +'<div class="fl"><label>Rule Break</label>'+sel('ed-ruleBreak',t.ruleBreak||'None',RB)+'</div>'
@@ -3572,6 +3574,16 @@ function renderAnalytics(){
   const byMo=MONTHS.map(mo=>{const mt=t.filter(x=>x.date&&MONTHS[new Date(x.date+'T12:00:00').getMonth()]===mo);return{mo:mo.slice(0,3),r:mt.reduce((a,x)=>a+(parseFloat(x.r)||0),0),n:mt.length};}).filter(m=>m.n>0);
   const bk={};t.forEach(x=>{if(x.ruleBreak&&x.ruleBreak!=='None')bk[x.ruleBreak]=(bk[x.ruleBreak]||0)+1;});
 
+  // Excursion: capture efficiency (how much of the best move you kept, MFE=Max RR)
+  // and average heat taken (MAE=Max Heat). Only computed over trades that logged them.
+  const withMfe=t.filter(x=>parseFloat(x.maxRR)>0);
+  const avgMfe=withMfe.length?withMfe.reduce((a,x)=>a+(parseFloat(x.maxRR)||0),0)/withMfe.length:null;
+  const capEff=withMfe.length?withMfe.reduce((a,x)=>{const m=parseFloat(x.maxRR)||0;return a+(m>0?Math.max(0,Math.min(1,(parseFloat(x.r)||0)/m)):0);},0)/withMfe.length:null;
+  const withMae=t.filter(x=>parseFloat(x.mae)>0);
+  const avgMae=withMae.length?withMae.reduce((a,x)=>a+(parseFloat(x.mae)||0),0)/withMae.length:null;
+  const winsMae=wins.filter(x=>parseFloat(x.mae)>0);
+  const avgWinMae=winsMae.length?winsMae.reduce((a,x)=>a+(parseFloat(x.mae)||0),0)/winsMae.length:null;
+
   // ── Advanced analytics (beta) ──
   const rArr=t.map(x=>parseFloat(x.r)||0);
   const sqn=calcSQN(rArr);
@@ -3726,6 +3738,14 @@ function renderAnalytics(){
       <div class="sc"><div class="sl">R secured</div><div class="sv" style="color:${rSec>=0?'#1A5C3A':'#8B2020'}">${rSec>=0?'+':''}${f2(rSec)}R</div><div class="ss">AvgW +${f2(aW)}R · AvgL ${f2(aL)}R</div></div>
       <div class="sc"><div class="sl">Win rate</div><div class="sv" style="color:${wrDisp>=.5?'#1A5C3A':'#8B2020'}">${pct(wrDisp)}%</div><div class="ss">EV ${f2(ev)}R · PF ${sl>0?f2(pf)+'x':(sw>0?'—':'0.00x')}</div></div>
       <div class="sc"><div class="sl">Max DD</div><div class="sv" style="color:#8B2020">${f2(mdd)}R</div><div class="ss">From peak</div></div>
+    </div>
+    <div class="card" style="margin-bottom:12px"><div class="ch" style="background:#2C5F8A"><span>${LANG==='ar'?'تنفيذ الصفقة':'Trade Execution'}</span>${infoIcon(LANG==='ar'?'يقيس كم من أفضل حركة للصفقة احتفظت بها (أقصى RR)، وكم من الضغط تحملته قبل نجاحها (أقصى ضغط). كفاءة منخفضة تعني أنك تخرج من الرابحات مبكراً؛ ضغط مرتفع على الرابحات قد يعني أن وقفك قريب جداً.':'Measures how much of each trade\'s best move you kept (Max RR), and how much heat you sat through before it worked (Max Heat). Low capture means you exit winners early; high heat on winners can mean your stop is too tight. Log Max RR and Max Heat on your trades to power this.')}</div>
+      ${(withMfe.length||withMae.length)?`<div class="sg" style="margin:0;padding:14px">
+        <div class="sc"><div class="sl">${LANG==='ar'?'كفاءة الالتقاط':'Capture efficiency'}</div><div class="sv" style="color:${capEff==null?'#888':capEff>=.6?'#1A5C3A':capEff>=.4?'#B8860B':'#8B2020'}">${capEff==null?'—':pct(capEff)+'%'}</div><div class="ss">${LANG==='ar'?'من أفضل حركة':'of the best move kept'}</div></div>
+        <div class="sc"><div class="sl">${LANG==='ar'?'متوسط أقصى RR':'Avg Max RR'}</div><div class="sv">${avgMfe==null?'—':f2(avgMfe)+'R'}</div><div class="ss">${withMfe.length} ${LANG==='ar'?'صفقة':'trades'}</div></div>
+        <div class="sc"><div class="sl">${LANG==='ar'?'متوسط الضغط':'Avg heat'}</div><div class="sv" style="color:#8B2020">${avgMae==null?'—':f2(avgMae)+'R'}</div><div class="ss">${LANG==='ar'?'ضد الصفقة':'against you'}</div></div>
+        <div class="sc"><div class="sl">${LANG==='ar'?'ضغط الرابحات':'Heat on winners'}</div><div class="sv" style="color:#B8860B">${avgWinMae==null?'—':f2(avgWinMae)+'R'}</div><div class="ss">${LANG==='ar'?'قبل نجاحها':'before they worked'}</div></div>
+      </div>`:`<div style="padding:18px;text-align:center;color:#aaa;font-size:12px">${LANG==='ar'?'أضف "أقصى RR" و "أقصى ضغط" لصفقاتك لتفعيل هذا التحليل.':'Log "Max RR" and "Max Heat" on your trades to unlock this analysis.'}</div>`}
     </div>
     <div class="g2">
       <div class="card"><div class="ch" style="background:#A07828"><span>By day</span>${infoIcon(LANG==='ar'?'أداؤك مجمعاً حسب يوم الأسبوع، لمعرفة إن كان يوم معين يميل لأن يكون أقوى أو أضعف بالنسبة لك.':'Your performance grouped by day of the week, to see if a particular day tends to be stronger or weaker for you.')}</div><div style="overflow-x:auto"><table><thead><tr><th>Day</th><th>R</th><th>Trades</th><th>Win%</th></tr></thead><tbody>${byDay.map(d=>`<tr><td style="font-weight:bold">${d.day}</td><td style="font-weight:bold;color:${d.r>=0?'#1A5C3A':'#8B2020'}">${d.r>=0?'+':''}${f2(d.r)}</td><td>${d.n}</td><td>${pct(d.wr)}%</td></tr>`).join('')}</tbody></table></div></div>
