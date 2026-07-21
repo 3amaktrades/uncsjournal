@@ -175,10 +175,9 @@ nav.scrolled{box-shadow:0 4px 24px rgba(0,0,0,.4)}
 .how-section .sec-eyebrow::before{background:#C9A84C}
 .how-section .sec-h2{color:#fff}
 .how-section .sec-body{color:rgba(255,255,255,.4)}
-.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden}
-.step{padding:36px 32px;border-right:1px solid rgba(255,255,255,.07);transition:background .25s;position:relative}
-.step:last-child{border-right:none}
-.step:hover{background:rgba(255,255,255,.03)}
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.step{padding:26px 24px;border:1px solid var(--gold-line);border-radius:14px;background:var(--card);transition:transform .25s,border-color .25s;position:relative}
+.step:hover{transform:translateY(-3px);border-color:var(--gold)}
 .step-n{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:rgba(255,255,255,.1);letter-spacing:1px;margin-bottom:20px}
 .step-icon-wrap{width:48px;height:48px;border:1px solid rgba(201,168,76,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;background:rgba(201,168,76,.05)}
 .step-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;letter-spacing:-.2px}
@@ -307,9 +306,6 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
   .ftab{padding:10px 12px;justify-content:center}
   .ftab-desc{display:none!important}
   .steps-row{grid-template-columns:1fr}
-  .step{border-right:none;border-bottom:1px solid rgba(255,255,255,.07)}
-  .step:last-child{border-bottom:none}
-  .step-arrow{display:none}
   .stats-inner{grid-template-columns:1fr 1fr;padding:0 16px}
   .stat-box{border-right:none;border-bottom:1px solid var(--border)}
   .stat-box:nth-child(odd){border-right:1px solid var(--border)}
@@ -469,7 +465,8 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
     <div class="nav-links">
       <a href="#features" class="t" data-ar="المميزات" data-en="Features">المميزات</a>
       <a href="#how" class="t" data-ar="كيف يعمل" data-en="How it works">كيف يعمل</a>
-      <a href="#calculator" class="t" data-ar="الحاسبة" data-en="Calculator">الحاسبة</a>
+      <a href="/pricing" class="t" data-ar="الأسعار" data-en="Pricing">الأسعار</a>
+      <a href="/faq" class="t" data-ar="الأسئلة" data-en="FAQ">الأسئلة</a>
     </div>
     <div class="nav-r">
       <button class="lang-btn" onclick="toggleLang()" id="lang-btn">EN</button>
@@ -752,28 +749,44 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
 <div class="how-section" id="how">
   <div class="how-inner">
     <span class="sec-eyebrow t reveal" data-ar="كيف يعمل" data-en="How it works">كيف يعمل</span>
-    <h2 class="sec-h2 t reveal reveal-delay-1" data-ar="ثلاث خطوات للتحسّن <em>الحقيقي</em>" data-en="Three steps to <em>real</em> improvement">ثلاث خطوات للتحسّن <em>الحقيقي</em></h2>
-    <p class="sec-body t reveal reveal-delay-2" data-ar="الفرق بين المحترف والمبتدئ: المحترف يتعلم من كل صفقة." data-en="The difference between professionals and amateurs: professionals learn from every trade.">الفرق بين المحترف والمبتدئ: المحترف يتعلم من كل صفقة.</p>
+    <h2 class="sec-h2 t reveal reveal-delay-1" data-ar="كل ما تحتاجه، <em>خطوة بخطوة</em>" data-en="Everything you need, <em>step by step</em>">كل ما تحتاجه، <em>خطوة بخطوة</em></h2>
+    <p class="sec-body t reveal reveal-delay-2" data-ar="من تسجيل الصفقة إلى تحليلها والتعلّم منها — كل ما يقدّمه Unc's Journal في تدفّق واحد بسيط." data-en="From logging a trade to analyzing it and learning from it — everything Unc's Journal gives you, in one simple flow.">من تسجيل الصفقة إلى تحليلها والتعلّم منها — كل ما يقدّمه Unc's Journal في تدفّق واحد بسيط.</p>
     <div class="steps-row reveal reveal-delay-3">
       <div class="step">
         <div class="step-n">STEP 01</div>
         <div class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></div>
         <div class="step-title t" data-ar="سجّل الصفقة" data-en="Log the trade">سجّل الصفقة</div>
-        <div class="step-desc t" data-ar="أدخل التفاصيل الكاملة قبل وبعد الصفقة. نماذج مرنة تناسب أي استراتيجية." data-en="Enter full details before and after. Flexible forms that fit any strategy.">أدخل التفاصيل الكاملة قبل وبعد الصفقة. نماذج مرنة تناسب أي استراتيجية.</div>
-        <div class="step-arrow">→</div>
+        <div class="step-desc t" data-ar="أدخل تفاصيل الصفقة — الإعداد، المدخلات، الأهداف، السيكولوجيا، ولقطة الشاشة. استخدم نماذج جاهزة أو ابنِ نموذجك الخاص، أو سجّل ملاحظة صوتية سريعة." data-en="Enter the details — setup, entries, targets, psychology, and a screenshot. Use ready templates or build your own, or drop a quick voice note.">أدخل تفاصيل الصفقة — الإعداد، المدخلات، الأهداف، السيكولوجيا، ولقطة الشاشة. استخدم نماذج جاهزة أو ابنِ نموذجك الخاص، أو سجّل ملاحظة صوتية سريعة.</div>
       </div>
       <div class="step">
         <div class="step-n">STEP 02</div>
         <div class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
-        <div class="step-title t" data-ar="احصل على تحليل AI" data-en="Get AI analysis">احصل على تحليل AI</div>
-        <div class="step-desc t" data-ar="بضغطة واحدة، يقيّم AI صفقتك بموضوعية ويعطيك تقريراً مفصلاً فورياً." data-en="One tap — AI evaluates your trade objectively and delivers instant detailed feedback.">بضغطة واحدة، يقيّم AI صفقتك بموضوعية ويعطيك تقريراً مفصلاً فورياً.</div>
-        <div class="step-arrow">→</div>
+        <div class="step-title t" data-ar="احصل على تحليل AI فوري" data-en="Get instant AI analysis">احصل على تحليل AI فوري</div>
+        <div class="step-desc t" data-ar="بضغطة واحدة، يقيّم الذكاء الاصطناعي صفقتك بموضوعية: نقاط القوة، الأخطاء، وما يجب تحسينه — فوراً بعد التسجيل." data-en="One tap has the AI evaluate your trade objectively: strengths, mistakes, and what to improve — instantly after you log it.">بضغطة واحدة، يقيّم الذكاء الاصطناعي صفقتك بموضوعية: نقاط القوة، الأخطاء، وما يجب تحسينه — فوراً بعد التسجيل.</div>
       </div>
       <div class="step">
         <div class="step-n">STEP 03</div>
         <div class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V11M12 20V5M18 20v-6"/></svg></div>
-        <div class="step-title t" data-ar="تطوّر باستمرار" data-en="Improve continuously">تطوّر باستمرار</div>
-        <div class="step-desc t" data-ar="تتبّع أنماطك، اكتشف نقاط ضعفك، وحسّن استراتيجيتك بناءً على بيانات حقيقية." data-en="Track patterns, discover weaknesses, and improve your strategy based on real data.">تتبّع أنماطك، اكتشف نقاط ضعفك، وحسّن استراتيجيتك بناءً على بيانات حقيقية.</div>
+        <div class="step-title t" data-ar="تتبّع تحليلاتك" data-en="Track your analytics">تتبّع تحليلاتك</div>
+        <div class="step-desc t" data-ar="نسبة الفوز، عامل الربح، منحنى الأرباح، السلاسل، والتحليل اليومي — بالإضافة إلى إحصائيات متقدمة مثل SQN وتحليل التراجع ومحاكاة مونت كارلو." data-en="Win rate, profit factor, equity curve, streaks, and daily breakdown — plus advanced stats like SQN, drawdown analysis, and Monte Carlo simulation.">نسبة الفوز، عامل الربح، منحنى الأرباح، السلاسل، والتحليل اليومي — بالإضافة إلى إحصائيات متقدمة مثل SQN وتحليل التراجع ومحاكاة مونت كارلو.</div>
+      </div>
+      <div class="step">
+        <div class="step-n">STEP 04</div>
+        <div class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-4 4z"/><path d="M8 10h8M8 13h5"/></svg></div>
+        <div class="step-title t" data-ar="تحدّث مع مدربك الذكي" data-en="Chat with your AI Coach">تحدّث مع مدربك الذكي</div>
+        <div class="step-desc t" data-ar="اسأل مدربك الشخصي عن أنماطك، نسبة فوزك، وأين تكسر قواعدك — يعرف كامل سجل صفقاتك ويجيب بالعربية والإنجليزية." data-en="Ask your personal coach about your patterns, win rate, and where you break rules — it knows your full history and answers in Arabic or English.">اسأل مدربك الشخصي عن أنماطك، نسبة فوزك، وأين تكسر قواعدك — يعرف كامل سجل صفقاتك ويجيب بالعربية والإنجليزية.</div>
+      </div>
+      <div class="step">
+        <div class="step-n">STEP 05</div>
+        <div class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 19h14"/></svg></div>
+        <div class="step-title t" data-ar="استورد أو زامن صفقاتك" data-en="Import or sync your trades">استورد أو زامن صفقاتك</div>
+        <div class="step-desc t" data-ar="أحضر صفقاتك السابقة عبر ملف CSV من أي منصة، أو زامن مباشرة مع وسيطك لتوفير التسجيل اليدوي." data-en="Bring in past trades via CSV from any platform, or sync directly with your broker to skip manual entry.">أحضر صفقاتك السابقة عبر ملف CSV من أي منصة، أو زامن مباشرة مع وسيطك لتوفير التسجيل اليدوي.</div>
+      </div>
+      <div class="step">
+        <div class="step-n">STEP 06</div>
+        <div class="step-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div>
+        <div class="step-title t" data-ar="تطوّر وشارك وكرّر" data-en="Improve, share & repeat">تطوّر وشارك وكرّر</div>
+        <div class="step-desc t" data-ar="اكتشف نقاط ضعفك، ضاعف ما ينجح، وحوّل أفضل صفقاتك إلى بطاقات جاهزة للمشاركة — كل صفقة تجعلك متداولاً أفضل." data-en="Spot your weaknesses, double down on what works, and turn your best trades into share-ready cards — every trade makes you a sharper trader.">اكتشف نقاط ضعفك، ضاعف ما ينجح، وحوّل أفضل صفقاتك إلى بطاقات جاهزة للمشاركة — كل صفقة تجعلك متداولاً أفضل.</div>
       </div>
     </div>
   </div>
@@ -842,7 +855,8 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
     <div class="foot-links">
       <a href="/app" class="t" data-ar="التطبيق" data-en="App">التطبيق</a>
       <a href="#features" class="t" data-ar="المميزات" data-en="Features">المميزات</a>
-      <a href="#calculator" class="t" data-ar="الحاسبة" data-en="Calculator">الحاسبة</a>
+      <a href="/pricing" class="t" data-ar="الأسعار" data-en="Pricing">الأسعار</a>
+      <a href="/faq" class="t" data-ar="الأسئلة" data-en="FAQ">الأسئلة</a>
       <a href="/privacy" class="t" data-ar="الخصوصية" data-en="Privacy">الخصوصية</a>
       <a href="/terms" class="t" data-ar="الشروط" data-en="Terms">الشروط</a>
     </div>

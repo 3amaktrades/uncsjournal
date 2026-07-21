@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>الأسعار — Unc's Journal</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2315130D'/><line x1='16' y1='4' x2='16' y2='9' stroke='%23E0B84E' stroke-width='2.5' stroke-linecap='round'/><rect x='11' y='9' width='10' height='14' rx='1.5' fill='none' stroke='%23E0B84E' stroke-width='2.5'/><line x1='16' y1='23' x2='16' y2='28' stroke='%23E0B84E' stroke-width='2.5' stroke-linecap='round'/></svg>"/>
+<meta name="description" content="خطط أسعار Unc's Journal — ابدأ مجاناً، أو ارتقِ إلى Pro و Elite لمزايا الذكاء الاصطناعي والتحليلات المتقدمة."/>
+<link rel="canonical" href="https://uncsjournal.com/pricing"/>
+<meta property="og:title" content="Pricing — Unc's Journal"/>
+<meta property="og:description" content="Start free, or upgrade to Pro and Elite for unlimited AI and advanced analytics."/>
+<meta property="og:url" content="https://uncsjournal.com/pricing"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#15130D;--bg2:#1E1B12;--card:#211D13;--card2:#292319;--border:#3A3120;--border2:#4A3F28;
+  --gold-line:rgba(224,184,78,.24);--text:#F9F3E4;--text2:#D4C9AD;--text3:#9E937A;
+  --gold:#E0B84E;--gold2:#F2CE68;--r:10px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.6;overflow-x:hidden}
+a{text-decoration:none}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(21,19,13,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--gold-line);height:60px;display:flex;align-items:center;padding:0 48px}
+.nav-inner{width:100%;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--text);letter-spacing:-.3px}
+.logo em{font-style:normal;color:var(--gold)}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-size:13px;color:var(--text3);font-weight:500;transition:color .2s}
+.nav-links a:hover,.nav-links a.on{color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.lang-btn{padding:6px 13px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text3);background:transparent;cursor:pointer;font-family:inherit;transition:all .2s}
+.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn-ghost{padding:7px 16px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:600;color:var(--text);transition:all .2s}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-solid{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;color:#12100A;background:var(--gold);transition:all .2s}
+.btn-solid:hover{background:var(--gold2);transform:translateY(-1px)}
+
+/* HEADER */
+.ph{max-width:760px;margin:0 auto;padding:72px 24px 8px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.eyebrow::before,.eyebrow::after{content:'';width:20px;height:1px;background:var(--gold)}
+.ph h1{font-family:'Cormorant Garamond',serif;font-size:52px;line-height:1.1;letter-spacing:-1.5px;color:var(--text);margin-bottom:14px;font-weight:700}
+.ph h1 em{font-style:italic;color:var(--gold)}
+.ph p{font-size:16px;color:var(--text2);max-width:520px;margin:0 auto 28px}
+
+/* BILLING TOGGLE */
+.billing{display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:30px;padding:4px;margin-bottom:8px}
+.bopt{padding:8px 18px;border-radius:30px;font-size:13px;font-weight:700;color:var(--text3);background:transparent;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+.bopt.on{background:var(--gold);color:#12100A}
+.save-tag{font-size:11px;color:var(--gold);font-weight:700;margin-inline-start:8px}
+
+/* PRICING GRID */
+.pgrid{max-width:1100px;margin:32px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.tier{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;position:relative;transition:transform .25s,border-color .25s}
+.tier:hover{transform:translateY(-4px)}
+.tier.pop{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 24px 60px rgba(224,184,78,.1)}
+.pop-tag{position:absolute;top:-11px;inset-inline-start:50%;transform:translateX(50%);background:var(--gold);color:#12100A;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:4px 14px;border-radius:20px;white-space:nowrap}
+[dir=ltr] .pop-tag{transform:translateX(-50%)}
+.tier-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text);letter-spacing:.3px;margin-bottom:5px}
+.tier-desc{font-size:12px;color:var(--text3);margin-bottom:20px;min-height:2.6em}
+.tier-price{display:flex;align-items:flex-end;gap:5px;margin-bottom:4px}
+.tier-amt{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:var(--text);line-height:1}
+.tier-per{font-size:13px;color:var(--text3);margin-bottom:6px}
+.tier-billed{font-size:11px;color:var(--text3);min-height:1.3em;margin-bottom:20px}
+.tier-cta{display:block;text-align:center;padding:12px;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;transition:all .2s;margin-bottom:22px}
+.cta-free{background:var(--card2);color:var(--text);border:1px solid var(--border2)}
+.cta-free:hover{border-color:var(--gold);color:var(--gold)}
+.cta-paid{background:var(--gold);color:#12100A}
+.cta-paid:hover{background:var(--gold2);transform:translateY(-1px)}
+.feats{display:flex;flex-direction:column;gap:11px;margin-top:auto}
+.feat{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text2);line-height:1.4}
+.feat svg{width:16px;height:16px;color:var(--gold);flex-shrink:0;margin-top:2px}
+.feat.muted{color:var(--text3)}
+.feat.muted svg{color:var(--text3)}
+.feat-head{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+
+/* FOOT NOTE + CTA */
+.pnote{max-width:760px;margin:44px auto 0;padding:0 24px;text-align:center}
+.pnote p{font-size:13px;color:var(--text3)}
+.pnote a{color:var(--gold)}
+.faq-cta{max-width:720px;margin:64px auto 0;padding:28px 24px;text-align:center;border-top:1px solid var(--border)}
+.faq-cta h3{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--text);margin-bottom:8px}
+.faq-cta p{font-size:14px;color:var(--text2);margin-bottom:18px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:36px 48px;margin-top:64px}
+.foot-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.foot-logo{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--text)}
+.foot-logo em{font-style:normal;color:var(--gold)}
+.foot-links{display:flex;gap:20px;flex-wrap:wrap}
+.foot-links a{font-size:12px;color:var(--text3);font-weight:500;transition:color .2s}
+.foot-links a:hover{color:var(--text)}
+.foot-copy{font-size:12px;color:var(--text3)}
+
+@media(max-width:900px){
+  nav{padding:0 16px}.nav-links{display:none}
+  .pgrid{grid-template-columns:1fr;max-width:440px}
+  .tier.pop{order:-1}
+  .ph h1{font-size:40px}
+}
+@media(max-width:600px){.ph{padding-top:48px}.ph h1{font-size:32px}footer{padding:28px 16px}.foot-inner{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <svg width="16" height="24" viewBox="0 0 16 24" fill="none"><line x1="8" y1="0" x2="8" y2="5" stroke="#E0B84E" stroke-width="1.8" stroke-linecap="round"/><rect x="2.5" y="5.5" width="11" height="13" rx="0.5" stroke="#E0B84E" stroke-width="1.5"/><line x1="8" y1="18.5" x2="8" y2="24" stroke="#E0B84E" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Unc's<em>Journal</em>
+    </a>
+    <div class="nav-links">
+      <a href="/#features" class="t" data-ar="المميزات" data-en="Features">المميزات</a>
+      <a href="/#how" class="t" data-ar="كيف يعمل" data-en="How it works">كيف يعمل</a>
+      <a href="/pricing" class="on t" data-ar="الأسعار" data-en="Pricing">الأسعار</a>
+      <a href="/faq" class="t" data-ar="الأسئلة" data-en="FAQ">الأسئلة</a>
+    </div>
+    <div class="nav-r">
+      <button class="lang-btn" onclick="toggleLang()" id="lang-btn">EN</button>
+      <a href="/app?signin=1" class="btn-ghost t" data-ar="دخول" data-en="Sign in">دخول</a>
+      <a href="/app" class="btn-solid t" data-ar="ابدأ مجاناً" data-en="Get started">ابدأ مجاناً</a>
+    </div>
+  </div>
+</nav>
+
+<div class="ph">
+  <div class="eyebrow t" data-ar="الأسعار" data-en="Pricing">الأسعار</div>
+  <h1 class="t" data-ar="خطط تنمو <em>معك</em>" data-en="Plans that grow <em>with you</em>">خطط تنمو <em>معك</em></h1>
+  <p class="t" data-ar="ابدأ مجاناً بالكامل. ارتقِ عندما تكون جاهزاً لمزايا الذكاء الاصطناعي غير المحدودة والتحليلات المتقدمة." data-en="Start completely free. Upgrade when you're ready for unlimited AI and advanced analytics.">ابدأ مجاناً بالكامل. ارتقِ عندما تكون جاهزاً لمزايا الذكاء الاصطناعي غير المحدودة والتحليلات المتقدمة.</p>
+  <div class="billing">
+    <button class="bopt on" id="bmonthly" onclick="setBilling('m')"><span class="t" data-ar="شهري" data-en="Monthly">شهري</span></button>
+    <button class="bopt" id="byearly" onclick="setBilling('y')"><span class="t" data-ar="سنوي" data-en="Yearly">سنوي</span></button>
+    <span class="save-tag t" data-ar="وفّر 20%" data-en="Save 20%">وفّر 20%</span>
+  </div>
+</div>
+
+<div class="pgrid">
+
+  <!-- FREE -->
+  <div class="tier">
+    <div class="tier-name">Free</div>
+    <div class="tier-desc t" data-ar="كل ما تحتاجه لتبدأ التسجيل والتعلّم." data-en="Everything you need to start logging and learning.">كل ما تحتاجه لتبدأ التسجيل والتعلّم.</div>
+    <div class="tier-price"><span class="tier-amt">$0</span><span class="tier-per t" data-ar="/ دائماً" data-en="/ forever">/ forever</span></div>
+    <div class="tier-billed t" data-ar="مجاني للأبد" data-en="Free forever">مجاني للأبد</div>
+    <a href="/app" class="tier-cta cta-free t" data-ar="ابدأ الآن" data-en="Get started">ابدأ الآن</a>
+    <div class="feats">
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="تسجيل صفقات غير محدود" data-en="Unlimited trade logging">Unlimited trade logging</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="تحليلات أساسية (نسبة الفوز، عامل الربح، منحنى الأرباح)" data-en="Core analytics (win rate, profit factor, equity curve)">Core analytics (win rate, profit factor, equity curve)</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="حساب تداول واحد" data-en="1 trading account">1 trading account</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="5 تحليلات AI شهرياً" data-en="5 AI trade analyses / month">5 AI trade analyses / month</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="حاسبة المخاطر وتصدير CSV" data-en="Risk calculator & CSV export">Risk calculator & CSV export</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="عربي وإنجليزي" data-en="Arabic & English">Arabic & English</span></div>
+    </div>
+  </div>
+
+  <!-- PRO -->
+  <div class="tier pop">
+    <div class="pop-tag t" data-ar="الأكثر شعبية" data-en="Most Popular">Most Popular</div>
+    <div class="tier-name">Pro</div>
+    <div class="tier-desc t" data-ar="للمتداول الجاد الذي يريد الذكاء الاصطناعي الكامل." data-en="For the serious trader who wants the full AI toolkit.">للمتداول الجاد الذي يريد الذكاء الاصطناعي الكامل.</div>
+    <div class="tier-price"><span class="tier-amt" id="pro-amt">$15</span><span class="tier-per t" data-ar="/ شهرياً" data-en="/ month">/ month</span></div>
+    <div class="tier-billed" id="pro-billed"></div>
+    <a href="/app" class="tier-cta cta-paid t" data-ar="ابدأ Pro" data-en="Get Pro">ابدأ Pro</a>
+    <div class="feats">
+      <div class="feat-head t" data-ar="كل مزايا Free، بالإضافة إلى:" data-en="Everything in Free, plus:">Everything in Free, plus:</div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="تحليل AI غير محدود لكل صفقة" data-en="Unlimited AI trade analysis">Unlimited AI trade analysis</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="محادثة مع مدرب الذكاء الاصطناعي" data-en="AI Coach chat">AI Coach chat</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="تحليلات متقدمة (SQN، التراجع، مونت كارلو)" data-en="Advanced analytics (SQN, drawdown, Monte Carlo)">Advanced analytics (SQN, drawdown, Monte Carlo)</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="نماذج تسجيل مخصصة" data-en="Custom journal templates">Custom journal templates</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="ملاحظات صوتية وحتى 5 حسابات" data-en="Voice notes & up to 5 accounts">Voice notes & up to 5 accounts</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="تقرير تدريب AI شهري" data-en="Monthly AI coaching report">Monthly AI coaching report</span></div>
+    </div>
+  </div>
+
+  <!-- ELITE -->
+  <div class="tier">
+    <div class="tier-name">Elite</div>
+    <div class="tier-desc t" data-ar="للمتداول المحترف والمتفرّغ بلا حدود." data-en="For full-time professionals who want no limits.">للمتداول المحترف والمتفرّغ بلا حدود.</div>
+    <div class="tier-price"><span class="tier-amt" id="elite-amt">$29</span><span class="tier-per t" data-ar="/ شهرياً" data-en="/ month">/ month</span></div>
+    <div class="tier-billed" id="elite-billed"></div>
+    <a href="/app" class="tier-cta cta-paid t" data-ar="ابدأ Elite" data-en="Get Elite">ابدأ Elite</a>
+    <div class="feats">
+      <div class="feat-head t" data-ar="كل مزايا Pro، بالإضافة إلى:" data-en="Everything in Pro, plus:">Everything in Pro, plus:</div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="حسابات تداول غير محدودة" data-en="Unlimited trading accounts">Unlimited trading accounts</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="ربط الوسيط (Tradovate، MT4/5)" data-en="Broker sync (Tradovate, MT4/5)">Broker sync (Tradovate, MT4/5)</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="وضع المرشد والمجتمع" data-en="Mentor & community mode">Mentor & community mode</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="دعم ذو أولوية" data-en="Priority support">Priority support</span></div>
+      <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg><span class="t" data-ar="وصول مبكر للمزايا الجديدة" data-en="Early access to new features">Early access to new features</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="pnote">
+  <p class="t" data-ar="جميع الخطط تشمل التسجيل غير المحدود وتصدير بياناتك في أي وقت. ألغِ متى شئت." data-en="All plans include unlimited logging and exporting your data anytime. Cancel whenever you want.">جميع الخطط تشمل التسجيل غير المحدود وتصدير بياناتك في أي وقت. ألغِ متى شئت.</p>
+</div>
+
+<div class="faq-cta">
+  <h3 class="t" data-ar="لديك سؤال؟" data-en="Have a question?">لديك سؤال؟</h3>
+  <p class="t" data-ar="تصفّح الأسئلة الشائعة أو تحدّث مع مساعد الذكاء الاصطناعي." data-en="Browse the FAQ or chat with our AI assistant.">تصفّح الأسئلة الشائعة أو تحدّث مع مساعد الذكاء الاصطناعي.</p>
+  <a href="/faq" class="btn-solid t" data-ar="الأسئلة الشائعة" data-en="Read the FAQ">الأسئلة الشائعة</a>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <a href="/" class="foot-logo">
+      <svg width="14" height="20" viewBox="0 0 16 24" fill="none"><line x1="8" y1="0" x2="8" y2="5" stroke="#E0B84E" stroke-width="1.8" stroke-linecap="round"/><rect x="2.5" y="5.5" width="11" height="13" rx="0.5" stroke="#E0B84E" stroke-width="1.5"/><line x1="8" y1="18.5" x2="8" y2="24" stroke="#E0B84E" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Unc's<em>Journal</em>
+    </a>
+    <div class="foot-links">
+      <a href="/app" class="t" data-ar="التطبيق" data-en="App">التطبيق</a>
+      <a href="/#features" class="t" data-ar="المميزات" data-en="Features">المميزات</a>
+      <a href="/pricing" class="t" data-ar="الأسعار" data-en="Pricing">الأسعار</a>
+      <a href="/faq" class="t" data-ar="الأسئلة" data-en="FAQ">الأسئلة</a>
+      <a href="/privacy" class="t" data-ar="الخصوصية" data-en="Privacy">الخصوصية</a>
+      <a href="/terms" class="t" data-ar="الشروط" data-en="Terms">الشروط</a>
+    </div>
+    <div class="foot-copy">© 2026 Unc's Journal</div>
+  </div>
+</footer>
+
+<script>
+(function(){const h=location.hash;if(h&&h.includes('access_token')){location.href='/app'+h;}})();
+var LANG=localStorage.getItem('utf_lang')||'ar';
+function toggleLang(){LANG=LANG==='ar'?'en':'ar';localStorage.setItem('utf_lang',LANG);applyLang();}
+function applyLang(){
+  const a=LANG==='ar';
+  document.documentElement.lang=a?'ar':'en';
+  document.documentElement.dir=a?'rtl':'ltr';
+  document.getElementById('lang-btn').textContent=a?'EN':'عربي';
+  document.querySelectorAll('.t').forEach(el=>{const v=a?el.getAttribute('data-ar'):el.getAttribute('data-en');if(v)el.innerHTML=v;});
+}
+// Monthly / yearly billing (yearly ~20% off, billed annually)
+var PRICES={pro:{m:15,y:12},elite:{m:29,y:23}};
+function setBilling(mode){
+  document.getElementById('bmonthly').classList.toggle('on',mode==='m');
+  document.getElementById('byearly').classList.toggle('on',mode==='y');
+  const a=LANG==='ar';
+  ['pro','elite'].forEach(t=>{
+    document.getElementById(t+'-amt').textContent='$'+PRICES[t][mode];
+    const b=document.getElementById(t+'-billed');
+    if(mode==='y'){const yr=PRICES[t].y*12;b.textContent=a?('يُدفع $'+yr+' سنوياً'):('billed $'+yr+'/year');}
+    else{b.textContent=a?'يُدفع شهرياً':'billed monthly';}
+  });
+}
+applyLang();
+setBilling('m');
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>الأسئلة الشائعة — Unc's Journal</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2315130D'/><line x1='16' y1='4' x2='16' y2='9' stroke='%23E0B84E' stroke-width='2.5' stroke-linecap='round'/><rect x='11' y='9' width='10' height='14' rx='1.5' fill='none' stroke='%23E0B84E' stroke-width='2.5'/><line x1='16' y1='23' x2='16' y2='28' stroke='%23E0B84E' stroke-width='2.5' stroke-linecap='round'/></svg>"/>
+<meta name="description" content="الأسئلة الشائعة حول Unc's Journal — كيف يعمل، الأسعار، الأمان، الأسواق المدعومة، والمزيد."/>
+<link rel="canonical" href="https://uncsjournal.com/faq"/>
+<meta property="og:title" content="FAQ — Unc's Journal"/>
+<meta property="og:description" content="Answers about how Unc's Journal works, pricing, security, supported markets, and more."/>
+<meta property="og:url" content="https://uncsjournal.com/faq"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#15130D;--bg2:#1E1B12;--card:#211D13;--card2:#292319;--border:#3A3120;--border2:#4A3F28;
+  --gold-line:rgba(224,184,78,.24);--text:#F9F3E4;--text2:#D4C9AD;--text3:#9E937A;
+  --gold:#E0B84E;--gold2:#F2CE68;--r:10px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.6;overflow-x:hidden}
+a{text-decoration:none}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(21,19,13,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--gold-line);height:60px;display:flex;align-items:center;padding:0 48px}
+.nav-inner{width:100%;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--text);letter-spacing:-.3px}
+.logo em{font-style:normal;color:var(--gold)}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-size:13px;color:var(--text3);font-weight:500;transition:color .2s}
+.nav-links a:hover,.nav-links a.on{color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.lang-btn{padding:6px 13px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text3);background:transparent;cursor:pointer;font-family:inherit;transition:all .2s}
+.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn-ghost{padding:7px 16px;border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:600;color:var(--text);transition:all .2s}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-solid{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;color:#12100A;background:var(--gold);transition:all .2s}
+.btn-solid:hover{background:var(--gold2);transform:translateY(-1px)}
+
+.ph{max-width:720px;margin:0 auto;padding:72px 24px 32px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.eyebrow::before,.eyebrow::after{content:'';width:20px;height:1px;background:var(--gold)}
+.ph h1{font-family:'Cormorant Garamond',serif;font-size:52px;line-height:1.1;letter-spacing:-1.5px;color:var(--text);margin-bottom:14px;font-weight:700}
+.ph h1 em{font-style:italic;color:var(--gold)}
+.ph p{font-size:16px;color:var(--text2);max-width:480px;margin:0 auto}
+
+.faqs{max-width:760px;margin:8px auto 0;padding:0 24px}
+.fitem{border:1px solid var(--border);border-radius:12px;margin-bottom:12px;background:var(--card);overflow:hidden;transition:border-color .2s}
+.fitem[open]{border-color:var(--gold-line)}
+.fq{list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:15px;font-weight:600;color:var(--text)}
+.fq::-webkit-details-marker{display:none}
+.fq-ic{width:20px;height:20px;flex-shrink:0;color:var(--gold);transition:transform .25s}
+.fitem[open] .fq-ic{transform:rotate(45deg)}
+.fa{padding:0 20px 18px;font-size:14px;color:var(--text2);line-height:1.7}
+.fa a{color:var(--gold)}
+
+.faq-cta{max-width:720px;margin:52px auto 0;padding:28px 24px;text-align:center;border-top:1px solid var(--border)}
+.faq-cta h3{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--text);margin-bottom:8px}
+.faq-cta p{font-size:14px;color:var(--text2);margin-bottom:18px}
+
+footer{border-top:1px solid var(--border);padding:36px 48px;margin-top:56px}
+.foot-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.foot-logo{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--text)}
+.foot-logo em{font-style:normal;color:var(--gold)}
+.foot-links{display:flex;gap:20px;flex-wrap:wrap}
+.foot-links a{font-size:12px;color:var(--text3);font-weight:500;transition:color .2s}
+.foot-links a:hover{color:var(--text)}
+.foot-copy{font-size:12px;color:var(--text3)}
+
+@media(max-width:900px){nav{padding:0 16px}.nav-links{display:none}.ph h1{font-size:40px}}
+@media(max-width:600px){.ph{padding-top:48px}.ph h1{font-size:32px}footer{padding:28px 16px}.foot-inner{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <svg width="16" height="24" viewBox="0 0 16 24" fill="none"><line x1="8" y1="0" x2="8" y2="5" stroke="#E0B84E" stroke-width="1.8" stroke-linecap="round"/><rect x="2.5" y="5.5" width="11" height="13" rx="0.5" stroke="#E0B84E" stroke-width="1.5"/><line x1="8" y1="18.5" x2="8" y2="24" stroke="#E0B84E" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Unc's<em>Journal</em>
+    </a>
+    <div class="nav-links">
+      <a href="/#features" class="t" data-ar="المميزات" data-en="Features">المميزات</a>
+      <a href="/#how" class="t" data-ar="كيف يعمل" data-en="How it works">كيف يعمل</a>
+      <a href="/pricing" class="t" data-ar="الأسعار" data-en="Pricing">الأسعار</a>
+      <a href="/faq" class="on t" data-ar="الأسئلة" data-en="FAQ">الأسئلة</a>
+    </div>
+    <div class="nav-r">
+      <button class="lang-btn" onclick="toggleLang()" id="lang-btn">EN</button>
+      <a href="/app?signin=1" class="btn-ghost t" data-ar="دخول" data-en="Sign in">دخول</a>
+      <a href="/app" class="btn-solid t" data-ar="ابدأ مجاناً" data-en="Get started">ابدأ مجاناً</a>
+    </div>
+  </div>
+</nav>
+
+<div class="ph">
+  <div class="eyebrow t" data-ar="الأسئلة الشائعة" data-en="FAQ">الأسئلة الشائعة</div>
+  <h1 class="t" data-ar="أسئلة <em>شائعة</em>" data-en="Common <em>questions</em>">أسئلة <em>شائعة</em></h1>
+  <p class="t" data-ar="كل ما تريد معرفته عن Unc's Journal. لم تجد إجابتك؟ اسأل مساعد الذكاء الاصطناعي في التطبيق." data-en="Everything you want to know about Unc's Journal. Can't find your answer? Ask the in-app AI assistant.">كل ما تريد معرفته عن Unc's Journal. لم تجد إجابتك؟ اسأل مساعد الذكاء الاصطناعي في التطبيق.</p>
+</div>
+
+<div class="faqs" id="faqs"></div>
+
+<div class="faq-cta">
+  <h3 class="t" data-ar="جاهز للبدء؟" data-en="Ready to start?">جاهز للبدء؟</h3>
+  <p class="t" data-ar="أنشئ حسابك المجاني وابدأ تسجيل صفقاتك اليوم." data-en="Create your free account and start logging trades today.">أنشئ حسابك المجاني وابدأ تسجيل صفقاتك اليوم.</p>
+  <a href="/app" class="btn-solid t" data-ar="ابدأ مجاناً" data-en="Get started free">ابدأ مجاناً</a>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <a href="/" class="foot-logo">
+      <svg width="14" height="20" viewBox="0 0 16 24" fill="none"><line x1="8" y1="0" x2="8" y2="5" stroke="#E0B84E" stroke-width="1.8" stroke-linecap="round"/><rect x="2.5" y="5.5" width="11" height="13" rx="0.5" stroke="#E0B84E" stroke-width="1.5"/><line x1="8" y1="18.5" x2="8" y2="24" stroke="#E0B84E" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Unc's<em>Journal</em>
+    </a>
+    <div class="foot-links">
+      <a href="/app" class="t" data-ar="التطبيق" data-en="App">التطبيق</a>
+      <a href="/#features" class="t" data-ar="المميزات" data-en="Features">المميزات</a>
+      <a href="/pricing" class="t" data-ar="الأسعار" data-en="Pricing">الأسعار</a>
+      <a href="/faq" class="t" data-ar="الأسئلة" data-en="FAQ">الأسئلة</a>
+      <a href="/privacy" class="t" data-ar="الخصوصية" data-en="Privacy">الخصوصية</a>
+      <a href="/terms" class="t" data-ar="الشروط" data-en="Terms">الشروط</a>
+    </div>
+    <div class="foot-copy">© 2026 Unc's Journal</div>
+  </div>
+</footer>
+
+<script>
+(function(){const h=location.hash;if(h&&h.includes('access_token')){location.href='/app'+h;}})();
+var LANG=localStorage.getItem('utf_lang')||'ar';
+var FAQ=[
+  {q_ar:"ما هو Unc's Journal؟",q_en:"What is Unc's Journal?",
+   a_ar:"يومية تداول ذكية تساعدك على تسجيل كل صفقة، وتتبّع أدائك، والحصول على تحليل وتدريب بالذكاء الاصطناعي. هو أداة للتعلّم والتحسّن — وليست وسيطاً ولا يقدّم إشارات تداول.",
+   a_en:"A smart trading journal that helps you log every trade, track your performance, and get AI-powered analysis and coaching. It's a tool to learn and improve — it is not a broker and does not give trading signals."},
+  {q_ar:"هل هو مجاني فعلاً؟",q_en:"Is it really free?",
+   a_ar:"نعم. الخطة المجانية تشمل تسجيل صفقات غير محدود، التحليلات الأساسية، حاسبة المخاطر، وتصدير بياناتك — للأبد. خطط Pro و Elite تضيف الذكاء الاصطناعي غير المحدود والتحليلات المتقدمة عندما تكون جاهزاً.",
+   a_en:"Yes. The Free plan includes unlimited trade logging, core analytics, the risk calculator, and data export — forever. Pro and Elite add unlimited AI and advanced analytics when you're ready."},
+  {q_ar:"كيف يعمل تحليل الذكاء الاصطناعي؟",q_en:"How does the AI analysis work?",
+   a_ar:"بعد تسجيل صفقة، بضغطة واحدة يقيّمها الذكاء الاصطناعي بموضوعية: نقاط القوة، الأخطاء، وما يجب تحسينه. كما يمكنك محادثة المدرب الذكي الذي يعرف كامل سجل صفقاتك ويجيب عن أنماطك ونسبة فوزك وأين تكسر قواعدك.",
+   a_en:"After you log a trade, one tap has the AI evaluate it objectively: strengths, mistakes, and what to improve. You can also chat with the AI Coach, which knows your full trade history and answers questions about your patterns, win rate, and where you break your rules."},
+  {q_ar:"أي أسواق يدعم؟",q_en:"Which markets does it support?",
+   a_ar:"العقود الآجلة، الفوركس، العملات الرقمية، الأسهم، السلع، والمؤشرات. النظام قائم على مضاعف المخاطرة (R) لذا يعمل مع أي أداة تتداولها.",
+   a_en:"Futures, forex, crypto, stocks, commodities, and indices. The system is R-multiple (risk-based), so it works with any instrument you trade."},
+  {q_ar:"هل يمكنني استيراد صفقاتي؟",q_en:"Can I import my trades?",
+   a_ar:"نعم. يمكنك الاستيراد عبر ملف CSV مع تعيين الأعمدة لمنصات مثل Tradovate و NinjaTrader و MT4/5 و IBKR، أو المزامنة المباشرة مع Tradovate. المزامنة المباشرة مع وسطاء إضافيين متاحة في خطة Elite.",
+   a_en:"Yes. You can import via CSV with column mapping for platforms like Tradovate, NinjaTrader, MT4/5, and IBKR, or sync directly with Tradovate. Direct broker sync for more platforms is part of the Elite plan."},
+  {q_ar:"هل ينفّذ الصفقات نيابة عني؟",q_en:"Does it place trades for me?",
+   a_ar:"لا. Unc's Journal ليس وسيطاً ولا ينفّذ أي صفقات. تنفّذ صفقاتك لدى وسيطك، ثم تسجّلها وتحلّلها هنا لتتحسّن.",
+   a_en:"No. Unc's Journal is not a broker and never executes trades. You place trades with your own broker, then log and analyze them here to improve."},
+  {q_ar:"هل بياناتي آمنة ومن يملكها؟",q_en:"Is my data secure and who owns it?",
+   a_ar:"بياناتك ملكك. مخزّنة بشكل آمن ومرتبطة بحسابك فقط، ويمكنك تصديرها كاملة إلى CSV في أي وقت. لا نبيع بياناتك ولا نستخدمها للإعلانات.",
+   a_en:"Your data is yours. It's stored securely and tied only to your account, and you can export all of it to CSV anytime. We never sell your data or use it for ads."},
+  {q_ar:"هل يعمل على الجوال؟",q_en:"Does it work on mobile?",
+   a_ar:"نعم. يعمل بالكامل في متصفح الجوال والكمبيوتر — بلا تطبيق للتحميل. سجّل صفقاتك من أي مكان، حتى بملاحظة صوتية سريعة بعد الصفقة.",
+   a_en:"Yes. It runs fully in the browser on mobile and desktop — no app to download. Log trades from anywhere, even with a quick voice note right after the trade."},
+  {q_ar:"هل يدعم اللغة العربية؟",q_en:"Does it support Arabic?",
+   a_ar:"نعم، بالكامل. الواجهة والمدرب الذكي يعملان بالعربية والإنجليزية، مع دعم كامل للكتابة من اليمين لليسار.",
+   a_en:"Yes, fully. The interface and the AI Coach both work in Arabic and English, with complete right-to-left support."},
+  {q_ar:"ما الفرق بين Free و Pro و Elite؟",q_en:"What's the difference between Free, Pro, and Elite?",
+   a_ar:"Free للتسجيل والتحليلات الأساسية. Pro يضيف الذكاء الاصطناعي غير المحدود والتحليلات المتقدمة والنماذج المخصصة. Elite يضيف الحسابات غير المحدودة، ربط الوسطاء، وضع المرشد، والدعم ذو الأولوية. راجع صفحة <a href='/pricing'>الأسعار</a> للتفاصيل.",
+   a_en:"Free is for logging and core analytics. Pro adds unlimited AI, advanced analytics, and custom templates. Elite adds unlimited accounts, broker sync, mentor mode, and priority support. See the <a href='/pricing'>Pricing</a> page for details."},
+  {q_ar:"هل يمكنني الإلغاء في أي وقت؟",q_en:"Can I cancel anytime?",
+   a_ar:"نعم. لا عقود ولا التزام. ألغِ خطتك المدفوعة متى شئت وتبقى بياناتك معك على الخطة المجانية.",
+   a_en:"Yes. No contracts, no commitment. Cancel a paid plan whenever you like and your data stays with you on the Free plan."}
+];
+var CHEV='<svg class="fq-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+function renderFaqs(){
+  const a=LANG==='ar';
+  document.getElementById('faqs').innerHTML=FAQ.map(f=>
+    '<details class="fitem"><summary class="fq"><span>'+(a?f.q_ar:f.q_en)+'</span>'+CHEV+'</summary><div class="fa">'+(a?f.a_ar:f.a_en)+'</div></details>'
+  ).join('');
+}
+function toggleLang(){LANG=LANG==='ar'?'en':'ar';localStorage.setItem('utf_lang',LANG);applyLang();}
+function applyLang(){
+  const a=LANG==='ar';
+  document.documentElement.lang=a?'ar':'en';
+  document.documentElement.dir=a?'rtl':'ltr';
+  document.getElementById('lang-btn').textContent=a?'EN':'عربي';
+  document.querySelectorAll('.t').forEach(el=>{const v=a?el.getAttribute('data-ar'):el.getAttribute('data-en');if(v)el.innerHTML=v;});
+  renderFaqs();
+}
+applyLang();
+</script>
+</body>
+</html>
