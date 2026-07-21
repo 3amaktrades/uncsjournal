@@ -373,6 +373,68 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
   .feat-row-title{font-size:24px}
   .feat-row-desc{max-width:none}
 }
+
+/* ── HERO: layered intelligence panels ── */
+.hp-main{background:var(--card);border:1px solid var(--gold-line);border-radius:16px;padding:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);position:relative;z-index:1}
+.hp-main-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:15px}
+.hp-title{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--text);letter-spacing:.3px}
+.hp-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.hp-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(74,222,128,.1);color:#4ADE80;font-size:9px;font-weight:700;letter-spacing:.4px;padding:4px 9px;border-radius:20px;white-space:nowrap}
+.hp-dot{width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0}
+.hp-rows{display:flex;flex-direction:column;gap:1px;background:var(--gold-line);border-radius:10px;overflow:hidden;margin-bottom:13px}
+.hp-row{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:var(--card2);font-size:12px}
+.hp-k{color:var(--text2)}
+.hp-v{font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.hp-v.pos{color:#4ADE80}
+.hp-v.gold{color:var(--gold)}
+.hp-score{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:10px;margin-bottom:11px}
+.hp-score-l{font-size:12px;font-weight:700;color:var(--text)}
+.hp-score-s{font-size:10px;color:var(--text3);margin-top:2px}
+.hp-insight{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);background:rgba(201,168,76,.07);border:1px solid var(--gold-line);border-radius:8px;padding:9px 11px}
+.hp-insight-ic{color:var(--gold);flex-shrink:0}
+.hp-ring{width:46px;height:46px;border-radius:50%;background:conic-gradient(var(--gold) calc(var(--pct)*1%),rgba(255,255,255,.08) 0);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.hp-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--card2)}
+.hp-ring span{position:relative;font-size:12px;font-weight:800;color:var(--text);font-family:'Syne',sans-serif}
+.hp-ring.lg{width:74px;height:74px}
+.hp-ring.lg::before{background:var(--card)}
+.hp-ring.lg span{font-size:17px;color:var(--gold)}
+.hp-gauge{position:absolute;top:-24px;inset-inline-start:-30px;z-index:3;background:var(--card);border:1px solid var(--gold-line);border-radius:14px;padding:13px 18px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;gap:7px}
+.hp-gauge-l{font-size:8px;font-weight:800;letter-spacing:.6px;color:var(--text3)}
+.hp-gauge-s{font-size:10px;color:var(--text2)}
+.hp-status{position:absolute;bottom:-22px;inset-inline-end:-24px;z-index:3;width:186px;background:var(--card);border:1px solid var(--gold-line);border-radius:14px;padding:12px 14px;box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.hp-status-top{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+.hp-status-l{font-size:8px;font-weight:800;letter-spacing:.6px;color:var(--text3)}
+.hp-status-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.hp-status-sym{font-size:12px;font-weight:700;color:var(--text)}
+.hp-spark{height:26px;border-radius:6px;background:linear-gradient(180deg,rgba(201,168,76,.2),transparent);border-bottom:2px solid var(--gold);margin-bottom:7px}
+.hp-status-s{font-size:9px;color:var(--text3)}
+
+/* ── HERO trust badges (2-up) ── */
+.hero-badges{display:flex;gap:12px;flex-wrap:wrap}
+.hbadge{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.04);border:1px solid var(--gold-line);border-radius:12px;padding:10px 14px;backdrop-filter:blur(10px)}
+.hbadge-ic{font-size:16px;flex-shrink:0}
+.hbadge-t{font-size:12px;font-weight:700;color:var(--text);line-height:1.25}
+.hbadge-s{font-size:10px;color:var(--text3)}
+
+/* ── VALUE STRIP (4-up feature bar) ── */
+.vstrip{max-width:1200px;margin:-34px auto 0;padding:0 48px;position:relative;z-index:5}
+.vstrip-inner{background:var(--card);border:1px solid var(--gold-line);border-radius:16px;padding:22px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;box-shadow:0 24px 64px rgba(0,0,0,.45)}
+.vitem{display:flex;align-items:flex-start;gap:12px;padding:2px 18px;border-inline-end:1px solid var(--gold-line)}
+.vitem:last-child{border-inline-end:none}
+.vic{font-size:20px;flex-shrink:0;line-height:1.2}
+.vt{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;letter-spacing:-.1px}
+.vs{font-size:11px;color:var(--text3);line-height:1.45}
+@media(max-width:900px){
+  .hp-gauge,.hp-status{display:none}
+  .vstrip{margin-top:28px;padding:0 16px}
+  .vstrip-inner{grid-template-columns:1fr 1fr;gap:20px 8px}
+  .vitem:nth-child(2n){border-inline-end:none}
+}
+@media(max-width:480px){
+  .vstrip-inner{grid-template-columns:1fr;padding:18px}
+  .vitem{border-inline-end:none;border-bottom:1px solid var(--gold-line);padding:0 0 14px}
+  .vitem:last-child{border-bottom:none;padding-bottom:0}
+}
 </style>
 </head>
 <body>
@@ -429,73 +491,75 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
         <a href="/app" class="btn-hero btn-hero-dark t" data-ar="ابدأ مجاناً — بدون بطاقة" data-en="Get started free — no card">ابدأ مجاناً — بدون بطاقة</a>
         <a href="#features" class="btn-hero btn-hero-outline t" data-ar="اكتشف المميزات" data-en="Explore features">اكتشف المميزات</a>
       </div>
-      <div class="hero-proof reveal reveal-delay-4">
-        <div class="proof-item">
-          <div class="proof-n">100%</div>
-          <div class="proof-l t" data-ar="مجاني للتسجيل" data-en="Free to log">مجاني للتسجيل</div>
+      <div class="hero-badges reveal reveal-delay-4">
+        <div class="hbadge">
+          <span class="hbadge-ic">🔒</span>
+          <div><div class="hbadge-t t" data-ar="بياناتك ملكك" data-en="Your data, yours">بياناتك ملكك</div><div class="hbadge-s t" data-ar="تصدير في أي وقت" data-en="Export anytime">تصدير في أي وقت</div></div>
         </div>
-        <div class="proof-div"></div>
-        <div class="proof-item">
-          <div class="proof-n">AI</div>
-          <div class="proof-l t" data-ar="لكل صفقة" data-en="Per trade">لكل صفقة</div>
-        </div>
-        <div class="proof-div"></div>
-        <div class="proof-item">
-          <div class="proof-n">∞</div>
-          <div class="proof-l t" data-ar="صفقات" data-en="Trades">صفقات</div>
+        <div class="hbadge">
+          <span class="hbadge-ic">⚡</span>
+          <div><div class="hbadge-t t" data-ar="تحليل AI لكل صفقة" data-en="AI on every trade">تحليل AI لكل صفقة</div><div class="hbadge-s t" data-ar="مجاني للبدء" data-en="Free to start">مجاني للبدء</div></div>
         </div>
       </div>
     </div>
 
     <div class="hero-visual reveal reveal-delay-2">
       <div class="cursor-glow" id="cursor-glow"></div>
-      <div class="app-shell reveal-pop">
-        <div class="app-chrome">
-          <div class="chrome-dots">
-            <span style="background:#FF5F57"></span>
-            <span style="background:#FFBD2E"></span>
-            <span style="background:#28CA41"></span>
+
+      <!-- Main performance-intelligence panel -->
+      <div class="hp-main reveal-pop">
+        <div class="hp-main-head">
+          <div>
+            <div class="hp-title">UNC ALPHA</div>
+            <div class="hp-sub t" data-ar="ذكاء الأداء" data-en="Performance Intelligence">Performance Intelligence</div>
           </div>
-          <span class="chrome-title">UNC'S JOURNAL</span>
-          <span style="width:34px"></span>
+          <span class="hp-pill"><span class="hp-dot"></span><span class="t" data-ar="تم التحليل" data-en="ANALYZED">ANALYZED</span></span>
         </div>
-        <div class="app-mock">
-          <div class="mock-side">
-            <div class="mock-nav on"><span>📊</span><span class="t" data-ar="لوحة التحكم" data-en="Dashboard">Dashboard</span></div>
-            <div class="mock-nav"><span>📝</span><span class="t" data-ar="تسجيل صفقة" data-en="Log trade">Log trade</span></div>
-            <div class="mock-nav"><span>📋</span><span class="t" data-ar="سجل الصفقات" data-en="Trade log">Trade log</span></div>
-            <div class="mock-nav"><span>📈</span><span class="t" data-ar="التحليلات" data-en="Analytics">Analytics</span></div>
-            <div class="mock-nav"><span>🏆</span><span class="t" data-ar="المتصدرون" data-en="Leaderboard">Leaderboard</span></div>
-            <div class="mock-addbtn"><span>+</span> <span class="t" data-ar="إضافة صفقة سريعة" data-en="Quick Add Trade">Quick Add Trade</span></div>
-          </div>
-          <div class="mock-main" id="mock-dashboard">
-            <div class="mock-greet t" data-ar="مساء الخير أيها المتداول! 👋" data-en="Good afternoon, Trader! 👋">Good afternoon, Trader! 👋</div>
-            <div class="mock-tf">
-              <span>Week</span><span>Month</span><span class="on">Year</span><span>All</span>
-            </div>
-            <div class="kpi-grid">
-              <div class="kpi-box"><div class="kpi-lbl t" data-ar="إجمالي R" data-en="Total R">Total R</div><div class="kpi-val" style="color:#1A7A3F">+21.5R</div></div>
-              <div class="kpi-box"><div class="kpi-lbl t" data-ar="نسبة الفوز" data-en="Win Rate">Win Rate</div><div class="kpi-val">70%</div></div>
-              <div class="kpi-box"><div class="kpi-lbl t" data-ar="معامل الربح" data-en="Profit Factor">Profit Factor</div><div class="kpi-val">3.49</div></div>
-            </div>
-            <div class="trade-rows">
-              <div class="trow"><div class="trow-info"><div class="sym">NQ</div><div class="dt">Jun 24</div></div><div class="rtag pos">+3.2R</div></div>
-              <div class="trow"><div class="trow-info"><div class="sym">ES</div><div class="dt">Jun 22</div></div><div class="rtag pos">+2.0R</div></div>
-              <div class="trow"><div class="trow-info"><div class="sym">GC</div><div class="dt">Jun 16</div></div><div class="rtag neg">-0.5R</div></div>
-            </div>
+        <div class="hp-rows">
+          <div class="hp-row"><span class="hp-k t" data-ar="نسبة الفوز" data-en="Win Rate">Win Rate</span><span class="hp-v pos">70%</span></div>
+          <div class="hp-row"><span class="hp-k t" data-ar="عامل الربح" data-en="Profit Factor">Profit Factor</span><span class="hp-v">3.49</span></div>
+          <div class="hp-row"><span class="hp-k t" data-ar="أفضل جلسة" data-en="Best Session">Best Session</span><span class="hp-v gold">New York</span></div>
+          <div class="hp-row"><span class="hp-k t" data-ar="أفضل إعداد" data-en="Best Setup">Best Setup</span><span class="hp-v gold">A+ Breakout</span></div>
+          <div class="hp-row"><span class="hp-k t" data-ar="متوسط R للصفقة" data-en="Avg R / Trade">Avg R / Trade</span><span class="hp-v pos">+0.65R</span></div>
+          <div class="hp-row"><span class="hp-k t" data-ar="الالتزام بالقواعد" data-en="Rule Discipline">Rule Discipline</span><span class="hp-v gold t" data-ar="قوي" data-en="Strong">Strong</span></div>
+        </div>
+        <div class="hp-score">
+          <div class="hp-ring lg" style="--pct:82"><span>82</span></div>
+          <div>
+            <div class="hp-score-l t" data-ar="نقاط Unc" data-en="Unc's Score">Unc's Score</div>
+            <div class="hp-score-s t" data-ar="أداء ممتاز هذا الشهر" data-en="Excellent form this month">Excellent form this month</div>
           </div>
         </div>
+        <div class="hp-insight"><span class="hp-insight-ic">⚡</span><span class="t" data-ar="نسبة فوزك ترتفع 12% في إعدادات A+" data-en="Your win rate climbs 12% on A+ setups">Your win rate climbs 12% on A+ setups</span></div>
       </div>
-      <div class="float-badge">
-        <div class="badge-pulse"></div>
-        <div>
-          <div class="badge-text t" data-ar="AI يعمل" data-en="AI active">AI يعمل</div>
-          <div class="badge-sub t" data-ar="يحلل صفقتك الأخيرة" data-en="Analyzing last trade">يحلل صفقتك الأخيرة</div>
-        </div>
+
+      <!-- Floating gauge card -->
+      <div class="hp-gauge reveal-pop">
+        <div class="hp-gauge-l t" data-ar="تحليل الذكاء الاصطناعي" data-en="AI ANALYSIS">AI ANALYSIS</div>
+        <div class="hp-ring lg" style="--pct:70"><span>70%</span></div>
+        <div class="hp-gauge-s t" data-ar="نسبة الفوز" data-en="Win rate">Win rate</div>
+      </div>
+
+      <!-- Floating latest-trade status card -->
+      <div class="hp-status reveal-pop">
+        <div class="hp-status-top"><span class="hp-dot"></span><span class="hp-status-l t" data-ar="آخر صفقة" data-en="LATEST TRADE">LATEST TRADE</span></div>
+        <div class="hp-status-row"><span class="hp-status-sym">NQ · Long</span><span class="hp-v pos">+3.2R</span></div>
+        <div class="hp-spark"></div>
+        <div class="hp-status-s t" data-ar="تم تحليلها بالذكاء الاصطناعي" data-en="AI analyzed">AI analyzed</div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- VALUE STRIP (4-up) -->
+<div class="vstrip reveal">
+  <div class="vstrip-inner">
+    <div class="vitem"><div class="vic">📋</div><div><div class="vt t" data-ar="تسجيل متكامل" data-en="Complete Journaling">Complete Journaling</div><div class="vs t" data-ar="كل صفقة، موثّقة بالكامل" data-en="Every trade, fully logged">Every trade, fully logged</div></div></div>
+    <div class="vitem"><div class="vic">🤖</div><div><div class="vt t" data-ar="تدريب بالذكاء الاصطناعي" data-en="AI-Powered Coaching">AI-Powered Coaching</div><div class="vs t" data-ar="تقييم صادق لكل صفقة" data-en="Honest feedback, every trade">Honest feedback, every trade</div></div></div>
+    <div class="vitem"><div class="vic">📈</div><div><div class="vt t" data-ar="تتبّع. حلّل. تطوّر." data-en="Track. Analyze. Improve.">Track. Analyze. Improve.</div><div class="vs t" data-ar="كل شيء في مكان واحد" data-en="Everything in one place">Everything in one place</div></div></div>
+    <div class="vitem"><div class="vic">🎯</div><div><div class="vt t" data-ar="مبنيّ على الانضباط" data-en="Built for Discipline">Built for Discipline</div><div class="vs t" data-ar="انضباط اليوم، تفوّق الغد" data-en="Discipline today, edge tomorrow">Discipline today, edge tomorrow</div></div></div>
+  </div>
+</div>
 
 <!-- STRIP -->
 <div class="strip">
