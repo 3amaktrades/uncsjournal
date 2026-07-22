@@ -1,0 +1,7 @@
+.git
+.gitignore
+.gitattributes
+.wrangler
+node_modules
+tests
+wrangler.jsonc
