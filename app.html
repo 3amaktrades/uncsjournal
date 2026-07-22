@@ -46,8 +46,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);transition:backgrou
 .auth-btn{width:100%;padding:13px;background:#0F1923;color:#C9A84C;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
 .auth-btn:hover:not(:disabled){background:#1a2f40}
 .auth-btn:disabled{opacity:.6;cursor:not-allowed}
-.auth-err{background:#FCE8E8;border-radius:8px;padding:10px 13px;font-size:12px;color:#8B2020;margin-bottom:14px;display:none}
-.auth-ok{background:#DCF5E7;border-radius:8px;padding:10px 13px;font-size:12px;color:#1A5C3A;margin-bottom:14px;display:none;font-weight:bold}
+.auth-err{background:var(--err-bg);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--err-txt);margin-bottom:14px;display:none}
+.auth-ok{background:var(--ok-bg);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--ok-txt);margin-bottom:14px;display:none;font-weight:bold}
 .auth-link{text-align:center;margin-top:12px;font-size:12px;color:var(--text3)}
 .auth-link a{color:var(--text);font-weight:bold;cursor:pointer}
 .auth-footer{text-align:center;padding:14px;border-top:1px solid #eee;font-size:11px;color:var(--text4)}
@@ -62,9 +62,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);transition:backgrou
 .hdr-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .bdg{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:bold}
 .bdg-gold{background:#C9A84C22;border:1px solid #C9A84C55;color:#C9A84C}
-.bdg-free{background:#DCF5E722;border:1px solid #1A5C3A55;color:#52B788;font-size:10px}
+.bdg-free{background:var(--ok-bg)22;border:1px solid #1A5C3A55;color:#52B788;font-size:10px}
 .bdg-ai{background:#534AB722;border:1px solid #534AB755;color:#7B6FD4}
-.bdg-ai.low{background:#FCE8E822;border-color:#8B202055;color:#E05252}
+.bdg-ai.low{background:var(--err-bg)22;border-color:var(--err-txt)55;color:#E05252}
 .bdg-out{background:none;border:1px solid #ffffff22;color:#ffffff66;cursor:pointer}
 .bdg-out:hover{border-color:#ffffff55;color:#fff}
 .tabs{display:none}
@@ -101,8 +101,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);transition:backgrou
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .cal-dow{text-align:center;font-size:10px;font-weight:bold;color:var(--text4);padding:4px;text-transform:uppercase}
 .cal-day{border-radius:7px;padding:5px;min-height:68px;font-size:10px;border:1px solid transparent;transition:all .15s;background:var(--card2)}
-.cal-day.has-trades.green{background:#DCF5E740;border-color:#1A5C3A33}
-.cal-day.has-trades.red{background:#FCE8E840;border-color:#8B202033}
+.cal-day.has-trades.green{background:var(--ok-bg)40;border-color:var(--ok-txt)33}
+.cal-day.has-trades.red{background:var(--err-bg)40;border-color:var(--err-txt)33}
 .cal-day.today{border-color:#C9A84C!important;background:#C9A84C0d}
 .cal-day.empty{background:transparent;cursor:default;border:none}
 .cal-dn{font-weight:bold;color:var(--text2);font-size:11px;margin-bottom:2px}
@@ -151,8 +151,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);transition:backgrou
 .cs-opt:hover,.cs-opt.s{background:#f5f4f1}
 .cs-dot{width:11px;height:11px;border-radius:50%;border:1.5px solid;flex-shrink:0}
 .tog{padding:5px 12px;border-radius:7px;font-size:11px;font-weight:bold;cursor:pointer;border:1px solid}
-.tog.y{background:#DCF5E7;color:#1A5C3A;border-color:#1A5C3A44}
-.tog.n{background:#FCE8E8;color:#8B2020;border-color:#8B202044}
+.tog.y{background:var(--ok-bg);color:var(--ok-txt);border-color:var(--ok-txt)44}
+.tog.n{background:var(--err-bg);color:var(--err-txt);border-color:var(--err-txt)44}
 .save-btn{width:100%;padding:11px;background:#0F1923;color:#C9A84C;border:none;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;margin-top:8px}
 .save-btn:hover{background:#1a2f40}
 .save-btn:disabled{opacity:.5;cursor:not-allowed}
@@ -161,13 +161,13 @@ th{padding:7px 9px;text-align:left;font-size:10px;font-weight:bold;color:var(--t
 td{padding:7px 9px;border-bottom:1px solid #f0eeea;color:#222;vertical-align:middle}
 tr:hover td{background:#fafaf8}
 .ib{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:bold}
-.win{background:#DCF5E7;color:#1A5C3A}.loss{background:#FCE8E8;color:#8B2020}.be{background:#FFF8DC;color:#B8860B}
-.bull{background:#DCF5E7;color:#1A5C3A}.bear{background:#FCE8E8;color:#8B2020}
-.ap{background:#1A5C3A;color:#DCF5E7}.ar{background:#DCF5E7;color:#1A5C3A}.am{background:#EAF7EE;color:#1A5C3A}
-.bp{background:#FFF0D6;color:#B8600A}.br{background:#FFF0D6;color:#C45E00}.bm{background:#FCE8E8;color:#8B2020}
+.win{background:var(--ok-bg);color:var(--ok-txt)}.loss{background:var(--err-bg);color:var(--err-txt)}.be{background:var(--warn-bg);color:var(--warn-txt)}
+.bull{background:var(--ok-bg);color:var(--ok-txt)}.bear{background:var(--err-bg);color:var(--err-txt)}
+.ap{background:#1A5C3A;color:#DCF5E7}.ar{background:var(--ok-bg);color:var(--ok-txt)}.am{background:#EAF7EE;color:var(--ok-txt)}
+.bp{background:#FFF0D6;color:#B8600A}.br{background:#FFF0D6;color:#C45E00}.bm{background:var(--err-bg);color:var(--err-txt)}
 .rbf{background:#F7E0ED;color:#7B3055}
 .del-btn{background:none;border:none;cursor:pointer;color:#ccc;padding:2px 5px;border-radius:4px;font-size:12px}
-.del-btn:hover{color:#8B2020;background:#FCE8E8}
+.del-btn:hover{color:var(--err-txt);background:var(--err-bg)}
 .ai-btn{background:#0F1923;color:#C9A84C;border:1px solid #C9A84C44;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:bold;cursor:pointer;white-space:nowrap}
 .ai-btn:hover{background:#1a2f40}
 .ai-btn.done{background:#EEEDFE;color:#534AB7;border-color:#534AB744}
@@ -454,8 +454,8 @@ body.dark .modal-hdr{background:var(--card2);border-color:var(--border)}
 body.dark .fl input,.dark .fl select,.dark .fl textarea{background:var(--card2)}
 body.dark .ai-msg{color:var(--text2)}
 body.dark .bdg{background:var(--card2);color:var(--text)}
-body.dark .tog.y{background:#122A1A;color:#5FBE84;border-color:#1A5C3A66}
-body.dark .tog.n{background:#2A1414;color:#E08585;border-color:#8B202066}
+body.dark .tog.y{background:#122A1A;color:#5FBE84;border-color:var(--ok-txt)66}
+body.dark .tog.n{background:#2A1414;color:#E08585;border-color:var(--err-txt)66}
 body.dark .ws-table th,body.dark #tab-weekly th{background:var(--card2);color:var(--text3)}
 .fx-res-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
 .fx-res-val{font-weight:bold;color:var(--text)}
@@ -849,6 +849,8 @@ function toggleTheme(){
   darkMode = !darkMode;
   localStorage.setItem('utf_dark', darkMode ? '1' : '0');
   applyTheme();
+  // Re-render the active tab so canvas charts pick up theme-aware colors
+  try{ if(typeof currentTab!=='undefined' && currentTab && typeof showTab==='function') showTab(currentTab); }catch(e){}
 }
 function openScreenshotURL(inputId){
   const el=document.getElementById(inputId);
@@ -1740,12 +1742,12 @@ function tTog(id){
 }
 
 // ── STYLE HELPERS ───
-const uDir=()=>{const s=$('f-dir');if(!s)return;s.style.cssText=s.value==='Bullish'?'background:#DCF5E7;color:#1A5C3A':s.value==='Bearish'?'background:#FCE8E8;color:#8B2020':'';}
-const uR=()=>{const s=$('f-r');if(!s)return;const o=getOutcome(s.value);s.style.cssText=o==='Win'?'background:#DCF5E7;color:#1A5C3A':o==='Loss'?'background:#FCE8E8;color:#8B2020':o==='Breakeven'?'background:#FFF8DC;color:#B8860B':'';}
-const uNews=()=>{const s=$('f-news');if(!s)return;s.style.cssText=s.value==='No news day'?'background:#E6F1FB;color:#0C447C':s.value==='News done'?'background:#DCF5E7;color:#1A5C3A':s.value?'background:#FAEEDA;color:#633806':'';}
-const uV=()=>{const s=$('f-vshape');if(!s)return;s.style.cssText=s.value==='V-shape'?'background:#DCF5E7;color:#1A5C3A':s.value==='not V'?'background:#FCE8E8;color:#8B2020':'';}
+const uDir=()=>{const s=$('f-dir');if(!s)return;s.style.cssText=s.value==='Bullish'?'background:var(--ok-bg);color:var(--ok-txt)':s.value==='Bearish'?'background:var(--err-bg);color:var(--err-txt)':'';}
+const uR=()=>{const s=$('f-r');if(!s)return;const o=getOutcome(s.value);s.style.cssText=o==='Win'?'background:var(--ok-bg);color:var(--ok-txt)':o==='Loss'?'background:var(--err-bg);color:var(--err-txt)':o==='Breakeven'?'background:var(--warn-bg);color:var(--warn-txt)':'';}
+const uNews=()=>{const s=$('f-news');if(!s)return;s.style.cssText=s.value==='No news day'?'background:#E6F1FB;color:#0C447C':s.value==='News done'?'background:var(--ok-bg);color:var(--ok-txt)':s.value?'background:#FAEEDA;color:#633806':'';}
+const uV=()=>{const s=$('f-vshape');if(!s)return;s.style.cssText=s.value==='V-shape'?'background:var(--ok-bg);color:var(--ok-txt)':s.value==='not V'?'background:var(--err-bg);color:var(--err-txt)':'';}
 const uLiq=()=>{const s=$('f-liqSwept');if(!s)return;s.style.cssText=s.value==='swept'?'background:#D6F0F5;color:#0A5F6E':s.value==='not swept'?'background:#F1EFE8;color:#5F5E5A':'';}
-const uSMT=()=>{const s=$('f-smt');if(!s)return;s.style.cssText=s.value==='Bullish SMT'?'background:#DCF5E7;color:#1A5C3A;font-weight:bold':s.value==='Bearish SMT'?'background:#FCE8E8;color:#8B2020;font-weight:bold':'';}
+const uSMT=()=>{const s=$('f-smt');if(!s)return;s.style.cssText=s.value==='Bullish SMT'?'background:var(--ok-bg);color:var(--ok-txt);font-weight:bold':s.value==='Bearish SMT'?'background:var(--err-bg);color:var(--err-txt);font-weight:bold':'';}
 function uRB(){const v=$('f-ruleBreak')?.value||'None';const s=$('rb-sec');if(s)s.style.display=v&&v!=='None'?'block':'none';}
 
 // ── RESET FORM 
@@ -1911,7 +1913,7 @@ async function saveTrade(){
   }catch(e){
     console.error('saveTrade:',e);
     const msg=e?.message||e?.details||JSON.stringify(e)||'Unknown error';
-    openMo('Save failed \u26a0\ufe0f',`<div style="padding:16px"><div style="background:#FCE8E8;border-radius:8px;padding:12px;font-size:12px;color:#8B2020;margin-bottom:12px;word-break:break-all">${msg}</div><button onclick="closeMo()" style="width:100%;padding:10px;background:#0F1923;color:#C9A84C;border:none;border-radius:8px;font-weight:bold;cursor:pointer">OK</button></div>`);
+    openMo('Save failed \u26a0\ufe0f',`<div style="padding:16px"><div style="background:var(--err-bg);border-radius:8px;padding:12px;font-size:12px;color:var(--err-txt);margin-bottom:12px;word-break:break-all">${msg}</div><button onclick="closeMo()" style="width:100%;padding:10px;background:#0F1923;color:#C9A84C;border:none;border-radius:8px;font-weight:bold;cursor:pointer">OK</button></div>`);
     const btn=document.getElementById('save-trade-btn');
     if(btn){btn.disabled=false;btn.textContent='Save trade';}
   }
@@ -2249,7 +2251,7 @@ async function analyseAI(tid){
     openMo(`AI Analysis — ${trade.date}`,aiHTML(a));
   }catch(e){
     const msg=e?.message||'Unknown error';
-    $('mo-b').innerHTML='<div style="text-align:center;padding:20px;color:#8B2020;font-size:13px">'+msg+'</div>';
+    $('mo-b').innerHTML='<div style="text-align:center;padding:20px;color:var(--err-txt);font-size:13px">'+msg+'</div>';
   }
 }
 
@@ -2319,7 +2321,7 @@ function initAnalyticsCharts(){
 
   monthlyChart=new Chart(ctx2,{
     type:'bar',
-    data:{labels:moLabels,datasets:[{data:moData,backgroundColor:moData.map(v=>v>=0?'#DCF5E7':'#FCE8E8'),borderColor:moData.map(v=>v>=0?'#1A5C3A':'#8B2020'),borderWidth:2,borderRadius:4}]},
+    data:{labels:moLabels,datasets:[{data:moData,backgroundColor:moData.map(v=>v>=0?(isDark?'#4ADE8033':'#DCF5E7'):(isDark?'#F8717133':'#FCE8E8')),borderColor:moData.map(v=>v>=0?(isDark?'#4ADE80':'#1A5C3A'):(isDark?'#F87171':'#8B2020')),borderWidth:2,borderRadius:4}]},
     options:{...chartDefaults,plugins:{...chartDefaults.plugins,tooltip:{callbacks:{label:ctx=>(ctx.raw>0?'+':'')+ctx.raw+'R'}}}}
   });
 
@@ -2329,7 +2331,7 @@ function initAnalyticsCharts(){
     const beCount=sorted.filter(x=>parseFloat(x.r)===0).length;
     outcomeChart=new Chart(ctx3,{
       type:'doughnut',
-      data:{labels:['Wins','Losses','Breakevens'],datasets:[{data:[wCount,lCount,beCount],backgroundColor:['#1A5C3A','#8B2020','#B8860B'],borderColor:isDark?'#1a2332':'#fff',borderWidth:2}]},
+      data:{labels:['Wins','Losses','Breakevens'],datasets:[{data:[wCount,lCount,beCount],backgroundColor:isDark?['#34C77B','#E06666','#D9A93E']:['#1A5C3A','#8B2020','#B8860B'],borderColor:isDark?'#211D13':'#fff',borderWidth:2}]},
       options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ctx.label+': '+ctx.raw+' ('+(tot?Math.round(ctx.raw/tot*100):0)+'%)';}}}}}
     });
   }
@@ -2341,7 +2343,7 @@ function initAnalyticsCharts(){
     const ddData=sorted.map(x=>{ddCum+=parseFloat(x.r)||0;ddPeak=Math.max(ddPeak,ddCum);return Math.round((ddCum-ddPeak)*100)/100;});
     ddChart=new Chart(ddCtx,{
       type:'line',
-      data:{labels:eqLabels,datasets:[{data:ddData,borderColor:'#8B2020',backgroundColor:'#8B202022',fill:true,tension:0.2,pointRadius:0,borderWidth:2}]},
+      data:{labels:eqLabels,datasets:[{data:ddData,borderColor:isDark?'#F87171':'#8B2020',backgroundColor:isDark?'#F8717120':'#8B202022',fill:true,tension:0.2,pointRadius:0,borderWidth:2}]},
       options:{...chartDefaults,plugins:{...chartDefaults.plugins,tooltip:{callbacks:{label:ctx=>ctx.raw+'R'}}}}
     });
   }
@@ -2352,7 +2354,7 @@ function initAnalyticsCharts(){
     const hist=buildHistogramBins(rArr,0.5);
     histogramChart=new Chart(histCtx,{
       type:'bar',
-      data:{labels:hist.labels,datasets:[{data:hist.data,backgroundColor:hist.labels.map(l=>l.startsWith('-')?'#FCE8E8':'#DCF5E7'),borderColor:hist.labels.map(l=>l.startsWith('-')?'#8B2020':'#1A5C3A'),borderWidth:1,borderRadius:2}]},
+      data:{labels:hist.labels,datasets:[{data:hist.data,backgroundColor:hist.labels.map(l=>l.startsWith('-')?(isDark?'#F8717133':'#FCE8E8'):(isDark?'#4ADE8033':'#DCF5E7')),borderColor:hist.labels.map(l=>l.startsWith('-')?(isDark?'#F87171':'#8B2020'):(isDark?'#4ADE80':'#1A5C3A')),borderWidth:1,borderRadius:2}]},
       options:{...chartDefaults,plugins:{...chartDefaults.plugins,tooltip:{callbacks:{label:ctx=>ctx.raw+' trade'+(ctx.raw===1?'':'s')}}}}
     });
   }
@@ -2385,7 +2387,7 @@ function runChallengeSimulation(){
       return{rl,stat,trail};
     });
     lastChallengeResults={target,maxLoss,rows};
-    resultsEl.innerHTML=`<div style="overflow-x:auto"><table><thead><tr><th>${LANG==='ar'?'المخاطرة/صفقة':'Risk/Trade'}</th><th>${LANG==='ar'?'ثابت':'Static Pass'}</th><th>${LANG==='ar'?'متحرك':'Trailing Pass'}</th><th>${LANG==='ar'?'وسيط الصفقات':'Median Trades'}</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="font-weight:bold">${r.rl}%</td><td style="font-weight:bold;color:${r.stat.passRate>=0.7?'#1A5C3A':r.stat.passRate>=0.4?'#B8860B':'#8B2020'}">${(r.stat.passRate*100).toFixed(1)}%</td><td style="color:${r.trail.passRate>=0.7?'#1A5C3A':r.trail.passRate>=0.4?'#B8860B':'#8B2020'}">${(r.trail.passRate*100).toFixed(1)}%</td><td>${r.stat.medianTrades||'—'}</td></tr>`).join('')}</tbody></table></div>
+    resultsEl.innerHTML=`<div style="overflow-x:auto"><table><thead><tr><th>${LANG==='ar'?'المخاطرة/صفقة':'Risk/Trade'}</th><th>${LANG==='ar'?'ثابت':'Static Pass'}</th><th>${LANG==='ar'?'متحرك':'Trailing Pass'}</th><th>${LANG==='ar'?'وسيط الصفقات':'Median Trades'}</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="font-weight:bold">${r.rl}%</td><td style="font-weight:bold;color:${r.stat.passRate>=0.7?'var(--ok-txt)':r.stat.passRate>=0.4?'var(--warn-txt)':'var(--err-txt)'}">${(r.stat.passRate*100).toFixed(1)}%</td><td style="color:${r.trail.passRate>=0.7?'var(--ok-txt)':r.trail.passRate>=0.4?'var(--warn-txt)':'var(--err-txt)'}">${(r.trail.passRate*100).toFixed(1)}%</td><td>${r.stat.medianTrades||'—'}</td></tr>`).join('')}</tbody></table></div>
     <div style="padding:10px 14px;font-size:11px;color:var(--text3);border-top:1px solid var(--border)">${LANG==='ar'?'محاكاة تعيد أخذ العينات من صفقاتك الفعلية 2000 مرة لكل مستوى مخاطرة. النتائج التاريخية لا تضمن الأداء المستقبلي.':'Simulation resamples your actual trades 2000 times per risk level. Historical results do not guarantee future performance.'}</div>`;
   },30);
 }
@@ -2433,12 +2435,12 @@ function calcRisk(){
   const maxC=Math.floor(dR/dpc),aR=maxC*dpc,aP=(aR/acct)*100;
   const wiRows=[1,2,3,4,5].map(n=>{
     const risk=n*dpc,p=(risk/acct)*100,isMax=n===maxC;
-    return `<div class="rc-wi ${isMax?'hi':'no'}"><span style="font-weight:bold;color:#0F1923">${n} contract${n>1?'s':''}${isMax?' ← recommended':''}</span><span style="display:flex;gap:10px"><span style="font-weight:bold;color:${p<=rPct*100?'#1A5C3A':'#8B2020'}">$${f0(risk)}</span><span style="color:#888;font-size:11px">${p.toFixed(2)}%</span></span></div>`;
+    return `<div class="rc-wi ${isMax?'hi':'no'}"><span style="font-weight:bold;color:#0F1923">${n} contract${n>1?'s':''}${isMax?' ← recommended':''}</span><span style="display:flex;gap:10px"><span style="font-weight:bold;color:${p<=rPct*100?'var(--ok-txt)':'var(--err-txt)'}">$${f0(risk)}</span><span style="color:#888;font-size:11px">${p.toFixed(2)}%</span></span></div>`;
   }).join('');
   out.innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
       <div class="rc-main"><div class="rcl">Max contracts</div><div class="rcv">${maxC}</div><div class="rcs">${sym}</div></div>
-      <div class="rc-sec"><div class="rcl">Dollar risk</div><div class="rcv" style="color:${aP<=rPct*100+.01?'#1A5C3A':'#8B2020'}">$${f0(aR)}</div><div class="rcs">${aP.toFixed(2)}% of account</div></div>
+      <div class="rc-sec"><div class="rcl">Dollar risk</div><div class="rcv" style="color:${aP<=rPct*100+.01?'var(--ok-txt)':'var(--err-txt)'}">$${f0(aR)}</div><div class="rcs">${aP.toFixed(2)}% of account</div></div>
       <div class="rc-sec"><div class="rcl">Stop distance</div><div class="rcv">${f2(sd)} pts</div><div class="rcs">${st} ticks · $${f2(dpc)}/contract</div></div>
       <div class="rc-sec"><div class="rcl">Risk budget</div><div class="rcv">$${f0(dR)}</div><div class="rcs">${(rPct*100).toFixed(1)}% of $${f0(acct)}</div></div>
     </div>
@@ -2662,7 +2664,7 @@ function renderDashboard(){
     const td=tradesByDay[dStr];
     const isToday=dStr===todayStr;
     const cls=td?(td.r>0?'has-trades green':td.r<0?'has-trades red':'has-trades'):'';
-    calCells+='<div class="cal-day '+cls+(isToday?' today':'')+'" style="cursor:pointer" onclick="dashDayClick(\''+dStr+'\')"><div class="cal-dn">'+d+'</div>'+(td?'<div class="cal-dr" style="color:'+(td.r>0?'#1A5C3A':td.r<0?'#8B2020':'#555')+'">'+(td.r>0?'+':'')+td.r.toFixed(1)+'R</div><div class="cal-dc">'+td.count+' '+(td.count===1?t('trade'):t('trades'))+'</div>':'')+'</div>';
+    calCells+='<div class="cal-day '+cls+(isToday?' today':'')+'" style="cursor:pointer" onclick="dashDayClick(\''+dStr+'\')"><div class="cal-dn">'+d+'</div>'+(td?'<div class="cal-dr" style="color:'+(td.r>0?'var(--ok-txt)':td.r<0?'var(--err-txt)':'#555')+'">'+(td.r>0?'+':'')+td.r.toFixed(1)+'R</div><div class="cal-dc">'+td.count+' '+(td.count===1?t('trade'):t('trades'))+'</div>':'')+'</div>';
   }
   const weekMap={};
   _t.forEach(t2=>{
@@ -2677,7 +2679,7 @@ function renderDashboard(){
   const recentWeeks=Object.entries(weekMap).sort((a,b)=>new Date(b[0])-new Date(a[0])).slice(0,6);
   const weekRows=recentWeeks.map(([wk,d])=>{
     const wr2=d.count?Math.round(d.wins/d.count*100):0;
-    return '<div class="weekly-row" data-wk="'+wk+'" style="cursor:pointer"><span style="color:#888">'+t('Wk')+' '+new Date(wk).toLocaleDateString('en',{month:'short',day:'numeric'})+'</span><span style="color:'+(d.r>0?'#1A5C3A':d.r<0?'#8B2020':'#555')+';font-weight:bold">'+(d.r>0?'+':'')+d.r.toFixed(1)+'R</span><span style="color:#888">'+d.count+'t · '+wr2+'%</span></div>';
+    return '<div class="weekly-row" data-wk="'+wk+'" style="cursor:pointer"><span style="color:#888">'+t('Wk')+' '+new Date(wk).toLocaleDateString('en',{month:'short',day:'numeric'})+'</span><span style="color:'+(d.r>0?'var(--ok-txt)':d.r<0?'var(--err-txt)':'#555')+';font-weight:bold">'+(d.r>0?'+':'')+d.r.toFixed(1)+'R</span><span style="color:#888">'+d.count+'t · '+wr2+'%</span></div>';
   }).join('')||'<div style="color:#aaa;font-size:12px;padding:8px 0">No trades yet</div>';
 
   const tfBtn=(key,label)=>'<button onclick="'+(key==='custom'?'toggleCustomDashRange()':`setDashTimeframe('${key}')`)+'" style="padding:7px 14px;border-radius:20px;border:1px solid '+(dashTimeframe===key?'#C9A84C':'var(--border)')+';background:'+(dashTimeframe===key?'#C9A84C22':'var(--card)')+';color:'+(dashTimeframe===key?'#C9A84C':'var(--text)')+';font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">'+label+'</button>';
@@ -2701,12 +2703,12 @@ function renderDashboard(){
   db2.innerHTML='<div class="dash-greeting">'+greet+', '+name+'!</div>'
     +tfPicker
     +'<div class="dash-stats">'
-    +'<div class="stat-card"><div class="stat-label">'+t('Total R')+'</div><div class="stat-val" style="color:'+(allR>0?'#1A5C3A':allR<0?'#8B2020':'#0F1923')+'">'+(allR>0?'+':'')+allR.toFixed(1)+'R</div><div class="stat-sub">'+_t.length+' '+t('trades total')+'</div></div>'
+    +'<div class="stat-card"><div class="stat-label">'+t('Total R')+'</div><div class="stat-val" style="color:'+(allR>0?'var(--ok-txt)':allR<0?'var(--err-txt)':'#0F1923')+'">'+(allR>0?'+':'')+allR.toFixed(1)+'R</div><div class="stat-sub">'+_t.length+' '+t('trades total')+'</div></div>'
     +'<div class="stat-card"><div class="stat-label">'+t('Win Rate')+'</div><div class="stat-val">'+wr+'%</div><div class="stat-sub">'+wins+' '+t('wins')+' / '+losses+' '+t('losses')+'</div></div>'
     +'<div class="stat-card"><div class="stat-label">'+t('Profit Factor')+'</div><div class="stat-val">'+pf+'</div><div class="stat-sub">'+t('Gross wins / gross losses')+'</div></div>'
     +'<div class="stat-card"><div class="stat-label">'+t('Win Streak')+'</div><div class="stat-val">'+streak+'</div><div class="stat-sub">'+t('Current consecutive wins')+'</div></div>'
-    +'<div class="stat-card"><div class="stat-label">Avg R / Trade</div><div class="stat-val" style="color:'+(avgR>0?'#1A5C3A':avgR<0?'#8B2020':'#0F1923')+'">'+(avgR>0?'+':'')+avgR.toFixed(2)+'R</div><div class="stat-sub">Per completed trade</div></div>'
-    +'<div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" style="color:'+(monthR>0?'#1A5C3A':monthR<0?'#8B2020':'#0F1923')+'">'+(monthR>0?'+':'')+monthR.toFixed(1)+'R</div><div class="stat-sub">'+monthTrades+' trades</div></div>'
+    +'<div class="stat-card"><div class="stat-label">Avg R / Trade</div><div class="stat-val" style="color:'+(avgR>0?'var(--ok-txt)':avgR<0?'var(--err-txt)':'#0F1923')+'">'+(avgR>0?'+':'')+avgR.toFixed(2)+'R</div><div class="stat-sub">Per completed trade</div></div>'
+    +'<div class="stat-card"><div class="stat-label">This Month</div><div class="stat-val" style="color:'+(monthR>0?'var(--ok-txt)':monthR<0?'var(--err-txt)':'#0F1923')+'">'+(monthR>0?'+':'')+monthR.toFixed(1)+'R</div><div class="stat-sub">'+monthTrades+' trades</div></div>'
     +'<div class="stat-card"><div class="stat-label">Best Day</div><div class="stat-val" style="font-size:16px">'+bestDay+'</div><div class="stat-sub">Most profitable day</div></div>'
     +'</div>'
     +'<div class="dash-main">'
@@ -2732,7 +2734,7 @@ function renderDashboard(){
   if(dashOutcomeCtx&&typeof Chart!=='undefined'){
     dashOutcomeChart=new Chart(dashOutcomeCtx,{
       type:'doughnut',
-      data:{labels:['Wins','Losses','Breakevens'],datasets:[{data:[wins,losses,bes],backgroundColor:['#1A5C3A','#8B2020','#B8860B'],borderColor:document.body.classList.contains('dark')?'#1a2332':'#fff',borderWidth:2}]},
+      data:{labels:['Wins','Losses','Breakevens'],datasets:[{data:[wins,losses,bes],backgroundColor:document.body.classList.contains('dark')?['#34C77B','#E06666','#D9A93E']:['#1A5C3A','#8B2020','#B8860B'],borderColor:document.body.classList.contains('dark')?'#211D13':'#fff',borderWidth:2}]},
       options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const tot=ctx.dataset.data.reduce((a,b)=>a+b,0);return ctx.label+': '+ctx.raw+' ('+(tot?Math.round(ctx.raw/tot*100):0)+'%)';}}}}}
     });
   }
@@ -2960,7 +2962,7 @@ function renderForm(){try{
     localStorage.setItem('utf_active_templates',JSON.stringify(activeTemplates));
     renderForm();
   });
-}catch(e){console.error('renderForm error:',e);$('tab-new').innerHTML='<div style="padding:20px;color:#8B2020;font-size:13px">Form error: '+e.message+'<br><br>Check browser console (F12) for details.</div>';}
+}catch(e){console.error('renderForm error:',e);$('tab-new').innerHTML='<div style="padding:20px;color:var(--err-txt);font-size:13px">Form error: '+e.message+'<br><br>Check browser console (F12) for details.</div>';}
 }
 
 
@@ -3011,10 +3013,10 @@ function calcLotSize(){
   const pipValue=lotSize*p.pipVal;
   updateForexResult(`
     <div class="fx-res-row"><span>Lot Size</span><span class="fx-res-val">${lotSize.toFixed(2)}</span></div>
-    <div class="fx-res-row"><span>Dollar Risk</span><span class="fx-res-val" style="color:#8B2020">$${riskAmt.toFixed(2)}</span></div>
+    <div class="fx-res-row"><span>Dollar Risk</span><span class="fx-res-val" style="color:var(--err-txt)">$${riskAmt.toFixed(2)}</span></div>
     <div class="fx-res-row"><span>Pip Value / lot</span><span class="fx-res-val">$${p.pipVal.toFixed(2)}</span></div>
     <div class="fx-res-row"><span>Total Pip Value</span><span class="fx-res-val">$${pipValue.toFixed(2)}</span></div>
-    <div style="margin-top:8px;padding:8px;background:#DCF5E7;border-radius:6px;font-size:12px;color:#1A5C3A">
+    <div style="margin-top:8px;padding:8px;background:var(--ok-bg);border-radius:6px;font-size:12px;color:var(--ok-txt)">
       ✓ Risk ${risk}% = $${riskAmt.toFixed(2)} on ${lotSize.toFixed(2)} lots with ${sl} pip SL
     </div>`);
 }
@@ -3032,7 +3034,7 @@ function calcMargin(){
     <div class="fx-res-row"><span>Required Margin</span><span class="fx-res-val" style="color:#C9A84C">$${margin.toFixed(2)}</span></div>
     <div class="fx-res-row"><span>Position Size</span><span class="fx-res-val">${(lots*p.contract).toLocaleString()} units</span></div>
     <div class="fx-res-row"><span>Leverage Used</span><span class="fx-res-val">1:${lev}</span></div>
-    ${freeMargin>0?'<div style="margin-top:8px;padding:8px;background:#DCF5E7;border-radius:6px;font-size:12px;color:#1A5C3A">✓ Free margin after trade: $'+freeMargin.toFixed(2)+'</div>':''}`);
+    ${freeMargin>0?'<div style="margin-top:8px;padding:8px;background:var(--ok-bg);border-radius:6px;font-size:12px;color:var(--ok-txt)">✓ Free margin after trade: $'+freeMargin.toFixed(2)+'</div>':''}`);
 }
 
 function calcPnL(){
@@ -3046,7 +3048,7 @@ function calcPnL(){
   const diff=dir==='long'?exit-entry:entry-exit;
   const pips=diff/p.pipSize;
   const pnl=pips*p.pipVal*lots;
-  const col=pnl>=0?'#1A5C3A':'#8B2020';
+  const col=pnl>=0?'var(--ok-txt)':'var(--err-txt)';
   updateForexResult(`
     <div class="fx-res-row"><span>Pips</span><span class="fx-res-val" style="color:${col}">${pips>0?'+':''}${pips.toFixed(1)}</span></div>
     <div class="fx-res-row"><span>P&L</span><span class="fx-res-val" style="color:${col};font-size:18px;font-weight:bold">${pnl>=0?'+':''}$${pnl.toFixed(2)}</span></div>
@@ -3063,7 +3065,7 @@ function calcSwap(){
   const p=FOREX_PAIRS[pair];
   if(!lots||!p){updateForexResult('Fill in all fields');return;}
   const swap=rate*lots*nights*p.pipVal;
-  const col=swap>=0?'#1A5C3A':'#8B2020';
+  const col=swap>=0?'var(--ok-txt)':'var(--err-txt)';
   updateForexResult(`
     <div class="fx-res-row"><span>Swap per Night</span><span class="fx-res-val" style="color:${col}">${(rate*lots*p.pipVal)>=0?'+':''}$${(rate*lots*p.pipVal).toFixed(4)}</span></div>
     <div class="fx-res-row"><span>Total (${nights} nights)</span><span class="fx-res-val" style="color:${col};font-size:18px;font-weight:bold">${swap>=0?'+':''}$${swap.toFixed(4)}</span></div>
@@ -3321,7 +3323,7 @@ function renderLog(){
       <td style="font-weight:bold;white-space:nowrap">${t.date||'—'}${t.pendingSync?` <span title="Syncing to server…" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#C9A84C;margin-left:2px"></span>`:''}</td>
       <td style="font-weight:bold">${esc(t.sym)||'—'}</td>
       <td>${t.dir?`<span class="ib ${t.dir==='Bullish'?'bull':'bear'}">${t.dir}</span>`:'—'}</td>
-      <td style="font-weight:bold;color:${parseFloat(t.r)>0?'#1A5C3A':parseFloat(t.r)<0?'#8B2020':'#B8860B'}">${t.r?(parseFloat(t.r)>0?'+':'')+t.r+'R':'—'}</td>
+      <td style="font-weight:bold;color:${parseFloat(t.r)>0?'var(--ok-txt)':parseFloat(t.r)<0?'var(--err-txt)':'var(--warn-txt)'}">${t.r?(parseFloat(t.r)>0?'+':'')+t.r+'R':'—'}</td>
       <td>${t.outcome?`<span class="ib ${outCls(t.outcome)}">${t.outcome}</span>`:'—'}</td>
       <td>${t.rating?`<span class="ib ${ratCls(t.rating)}">${t.rating}</span>`:'—'}</td>
       <td>${t.smt?`<span class="ib ${t.smt==='Bullish SMT'?'bull':'bear'}" style="font-size:9px;white-space:nowrap">${t.smt==='Bullish SMT'?'↑ Bull':'↓ Bear'} SMT${t.smtVs?' vs '+t.smtVs:''}</span>`:'<span style="color:#aaa;font-size:10px">—</span>'}</td>
@@ -3363,7 +3365,7 @@ function renderWeekly(){
     if(g==='A+'||g==='A') return'#1A7A3F';
     if(g==='B+'||g==='B') return'#185FA5';
     if(g==='C+'||g==='C') return'#B8912A';
-    return'#8B2020';
+    return'var(--err-txt)';
   }
   var sumHTML='';
   if(saved){
@@ -3374,8 +3376,8 @@ function renderWeekly(){
         '<div style="font-size:14px;font-weight:700">'+saved.headline+'</div></div>'+
       '<div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px">'+saved.narrative+'</div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'+
-        '<div style="background:#DCF5E7;border-radius:8px;padding:10px"><div style="font-size:11px;font-weight:700;color:#1A5C3A;margin-bottom:6px">✓ Strengths</div>'+
-          (saved.strengths||[]).map(function(s){return'<div style="font-size:12px;color:#1A5C3A;margin-bottom:3px">• '+s+'</div>';}).join('')+'</div>'+
+        '<div style="background:var(--ok-bg);border-radius:8px;padding:10px"><div style="font-size:11px;font-weight:700;color:var(--ok-txt);margin-bottom:6px">✓ Strengths</div>'+
+          (saved.strengths||[]).map(function(s){return'<div style="font-size:12px;color:var(--ok-txt);margin-bottom:3px">• '+s+'</div>';}).join('')+'</div>'+
         '<div style="background:#FFF0D6;border-radius:8px;padding:10px"><div style="font-size:11px;font-weight:700;color:#B8600A;margin-bottom:6px">△ Work on</div>'+
           (saved.improvements||[]).map(function(s){return'<div style="font-size:12px;color:#B8600A;margin-bottom:3px">• '+s+'</div>';}).join('')+'</div></div>'+
       (saved.psychology?'<div style="background:#F7E0ED;border-radius:8px;padding:10px;margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:#8B2A5A;margin-bottom:4px">Psychology</div><div style="font-size:12px;color:#5C1A3A;line-height:1.5">'+saved.psychology+'</div></div>':'')+
@@ -3395,7 +3397,7 @@ function renderWeekly(){
   var tradeRows=mt.length?[...mt].sort(function(a,b){return new Date(a.date)-new Date(b.date);}).map(function(t){
     return'<tr><td style="font-weight:600">'+esc(t.date)+'</td><td>'+esc(t.sym||'—')+'</td><td>'+
       (t.dir?'<span class="ib '+(t.dir==='Bullish'?'bull':'bear')+'">'+(t.dir==='Bullish'?'Long':'Short')+'</span>':'—')+'</td>'+
-      '<td style="color:'+(parseFloat(t.r)>0?'#1A5C3A':parseFloat(t.r)<0?'#8B2020':'#555')+';font-weight:700">'+(parseFloat(t.r)>0?'+':'')+(t.r||'—')+'R</td>'+
+      '<td style="color:'+(parseFloat(t.r)>0?'var(--ok-txt)':parseFloat(t.r)<0?'var(--err-txt)':'#555')+';font-weight:700">'+(parseFloat(t.r)>0?'+':'')+(t.r||'—')+'R</td>'+
       '<td>'+(t.rating||'—')+'</td></tr>';
   }).join(''):'<tr><td colspan="5" style="text-align:center;color:#aaa;padding:12px">No trades</td></tr>';
   $('tab-weekly').innerHTML='<div class="ws-wrap">'+
@@ -3405,11 +3407,11 @@ function renderWeekly(){
         '<div class="ws-nav-sub">'+mt.length+' trade'+(mt.length!==1?'s':'')+' · '+(totalR>0?'+':'')+totalR.toFixed(1)+'R · '+wr+'% win</div></div>'+
       '<button class="ws-nav-btn" onclick="changeMonth(isRTL?-1:1)" '+(monthOffset>=0?'disabled':'')+'>'+(isRTL?'‹':'›')+'</button></div>'+
     '<div class="ws-stats">'+
-      '<div class="ws-stat"><div class="ws-stat-v" style="color:'+(totalR>0?'#1A5C3A':totalR<0?'#8B2020':'#C9A84C')+'">'+(totalR>0?'+':'')+totalR.toFixed(1)+'R</div><div class="ws-stat-l">Total R</div></div>'+
+      '<div class="ws-stat"><div class="ws-stat-v" style="color:'+(totalR>0?'var(--ok-txt)':totalR<0?'var(--err-txt)':'#C9A84C')+'">'+(totalR>0?'+':'')+totalR.toFixed(1)+'R</div><div class="ws-stat-l">Total R</div></div>'+
       '<div class="ws-stat"><div class="ws-stat-v">'+wr+'%</div><div class="ws-stat-l">Win rate</div></div>'+
       '<div class="ws-stat"><div class="ws-stat-v">'+mt.length+'</div><div class="ws-stat-l">Trades</div></div>'+
       '<div class="ws-stat"><div class="ws-stat-v">'+(avgR>0?'+':'')+avgR.toFixed(2)+'R</div><div class="ws-stat-l">Avg R</div></div>'+
-      '<div class="ws-stat"><div class="ws-stat-v" style="color:'+(breaks.length>0?'#8B2020':'#1A5C3A')+'">'+breaks.length+'</div><div class="ws-stat-l">Rule breaks</div></div></div>'+
+      '<div class="ws-stat"><div class="ws-stat-v" style="color:'+(breaks.length>0?'var(--err-txt)':'var(--ok-txt)')+'">'+breaks.length+'</div><div class="ws-stat-l">Rule breaks</div></div></div>'+
     '<div style="margin:12px 0">'+sumHTML+'</div>'+
     '<div style="overflow-x:auto"><table class="ws-table"><thead><tr><th>Date</th><th>Symbol</th><th>Dir</th><th>R</th><th>Rating</th></tr></thead><tbody>'+tradeRows+'</tbody></table></div></div>';
 }
@@ -3437,7 +3439,7 @@ function calcConsistency(trades){
 
   const total = Math.round(wrScore+pfScore+rbScore+fpScore+ddScore);
   const grade = total>=85?'A+':total>=75?'A':total>=65?'B+':total>=55?'B':total>=45?'C':'D';
-  const color = total>=75?'#1A5C3A':total>=55?'#C9A84C':'#8B2020';
+  const color = total>=75?'var(--ok-txt)':total>=55?'#C9A84C':'var(--err-txt)';
   return{
     score:total, grade, color,
     breakdown:[
@@ -3549,7 +3551,7 @@ function getActiveConfluenceFields(){
   return out;
 }
 function renderGroupStatsTable(stats,keyHeader){
-  const rows=stats.map(g=>`<tr><td style="font-weight:bold">${g.key}</td><td>${g.n}</td><td style="font-weight:bold;color:${g.netR>=0?'#1A5C3A':'#8B2020'}">${g.netR>=0?'+':''}${f2(g.netR)}</td><td style="color:${g.avgR>=0?'#1A5C3A':'#8B2020'}">${g.avgR>=0?'+':''}${f2(g.avgR)}</td><td>${pct(g.wr)}%</td><td>${g.pf>=99?'∞':f2(g.pf)}x</td></tr>`).join('');
+  const rows=stats.map(g=>`<tr><td style="font-weight:bold">${g.key}</td><td>${g.n}</td><td style="font-weight:bold;color:${g.netR>=0?'var(--ok-txt)':'var(--err-txt)'}">${g.netR>=0?'+':''}${f2(g.netR)}</td><td style="color:${g.avgR>=0?'var(--ok-txt)':'var(--err-txt)'}">${g.avgR>=0?'+':''}${f2(g.avgR)}</td><td>${pct(g.wr)}%</td><td>${g.pf>=99?'∞':f2(g.pf)}x</td></tr>`).join('');
   return `<div style="overflow-x:auto"><table><thead><tr><th>${keyHeader}</th><th>${LANG==='ar'?'صفقات':'Trades'}</th><th>${LANG==='ar'?'صافي R':'Net R'}</th><th>${LANG==='ar'?'متوسط R':'Avg R'}</th><th>${LANG==='ar'?'الفوز':'Win%'}</th><th>PF</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function summarizeTrades(list){
@@ -3665,8 +3667,9 @@ function renderAnalytics(){
   });
   const moLabels=Object.keys(moMap).sort();
   const moData=moLabels.map(k=>Math.round(moMap[k]*10)/10);
-  const moColors=moData.map(v=>v>=0?'#1A5C3A':'#8B2020');
-  const moBg=moData.map(v=>v>=0?'#DCF5E7':'#FCE8E8');
+  const _dk=document.body.classList.contains('dark');
+  const moColors=moData.map(v=>v>=0?(_dk?'#4ADE80':'#1A5C3A'):(_dk?'#F87171':'#8B2020'));
+  const moBg=moData.map(v=>v>=0?(_dk?'#4ADE8033':'#DCF5E7'):(_dk?'#F8717133':'#FCE8E8'));
 
   const cs=calcConsistency(t);
   const isDark=document.body.classList.contains('dark');
@@ -3690,15 +3693,15 @@ function renderAnalytics(){
       <div class="ch"><span>${LANG==='ar'?'السلاسل':'Streaks'}</span>${infoIcon(LANG==='ar'?'أطول سلسلة صفقات رابحة ومتتالية خاسرة سجلتها. يساعدك على فهم كيف تتصرف بعد الفوز أو الخسارة المتكررة.':'Your longest streaks of consecutive wins and losses. Useful for understanding how you tend to behave after a run of either.')}</div>
       <div style="padding:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center">
         <div>
-          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#1A5C3A">${maxWinStreak}</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ok-txt)">${maxWinStreak}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px">${LANG==='ar'?'أطول سلسلة فوز':'Max Win Streak'}</div>
         </div>
         <div>
-          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#8B2020">${maxLossStreak}</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--err-txt)">${maxLossStreak}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px">${LANG==='ar'?'أطول سلسلة خسارة':'Max Loss Streak'}</div>
         </div>
         <div>
-          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:${curWinStreak>0?'#1A5C3A':curLossStreak>0?'#8B2020':'var(--text)'}">${curWinStreak>0?'+'+curWinStreak:curLossStreak>0?'-'+curLossStreak:'—'}</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:${curWinStreak>0?'var(--ok-txt)':curLossStreak>0?'var(--err-txt)':'var(--text)'}">${curWinStreak>0?'+'+curWinStreak:curLossStreak>0?'-'+curLossStreak:'—'}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px">${LANG==='ar'?'السلسلة الحالية':'Current Streak'}</div>
         </div>
         <div>
@@ -3764,21 +3767,21 @@ function renderAnalytics(){
     </div>`:''}
     <div class="sg">
       <div class="sc"><div class="sl">Total trades</div><div class="sv">${t.length}</div><div class="ss">${wins.length}W · ${bes.length}BE · ${losses.length}L</div></div>
-      <div class="sc"><div class="sl">R secured</div><div class="sv" style="color:${rSec>=0?'#1A5C3A':'#8B2020'}">${rSec>=0?'+':''}${f2(rSec)}R</div><div class="ss">AvgW +${f2(aW)}R · AvgL ${f2(aL)}R</div></div>
-      <div class="sc"><div class="sl">Win rate</div><div class="sv" style="color:${wrDisp>=.5?'#1A5C3A':'#8B2020'}">${pct(wrDisp)}%</div><div class="ss">EV ${f2(ev)}R · PF ${sl>0?f2(pf)+'x':(sw>0?'—':'0.00x')}</div></div>
-      <div class="sc"><div class="sl">Max DD</div><div class="sv" style="color:#8B2020">${f2(mdd)}R</div><div class="ss">From peak</div></div>
+      <div class="sc"><div class="sl">R secured</div><div class="sv" style="color:${rSec>=0?'var(--ok-txt)':'var(--err-txt)'}">${rSec>=0?'+':''}${f2(rSec)}R</div><div class="ss">AvgW +${f2(aW)}R · AvgL ${f2(aL)}R</div></div>
+      <div class="sc"><div class="sl">Win rate</div><div class="sv" style="color:${wrDisp>=.5?'var(--ok-txt)':'var(--err-txt)'}">${pct(wrDisp)}%</div><div class="ss">EV ${f2(ev)}R · PF ${sl>0?f2(pf)+'x':(sw>0?'—':'0.00x')}</div></div>
+      <div class="sc"><div class="sl">Max DD</div><div class="sv" style="color:var(--err-txt)">${f2(mdd)}R</div><div class="ss">From peak</div></div>
     </div>
     <div class="card" style="margin-bottom:12px"><div class="ch" style="background:#2C5F8A"><span>${LANG==='ar'?'تنفيذ الصفقة':'Trade Execution'}</span>${infoIcon(LANG==='ar'?'يقيس كم من أفضل حركة للصفقة احتفظت بها (أقصى RR)، وكم من الضغط تحملته قبل نجاحها (أقصى ضغط). كفاءة منخفضة تعني أنك تخرج من الرابحات مبكراً؛ ضغط مرتفع على الرابحات قد يعني أن وقفك قريب جداً.':'Measures how much of each trade\'s best move you kept (Max RR), and how much heat you sat through before it worked (Max Heat). Low capture means you exit winners early; high heat on winners can mean your stop is too tight. Log Max RR and Max Heat on your trades to power this.')}</div>
       ${(withMfe.length||withMae.length)?`<div class="sg" style="margin:0;padding:14px">
-        <div class="sc"><div class="sl">${LANG==='ar'?'كفاءة الالتقاط':'Capture efficiency'}</div><div class="sv" style="color:${capEff==null?'#888':capEff>=.6?'#1A5C3A':capEff>=.4?'#B8860B':'#8B2020'}">${capEff==null?'—':pct(capEff)+'%'}</div><div class="ss">${LANG==='ar'?'من أفضل حركة':'of the best move kept'}</div></div>
+        <div class="sc"><div class="sl">${LANG==='ar'?'كفاءة الالتقاط':'Capture efficiency'}</div><div class="sv" style="color:${capEff==null?'#888':capEff>=.6?'var(--ok-txt)':capEff>=.4?'var(--warn-txt)':'var(--err-txt)'}">${capEff==null?'—':pct(capEff)+'%'}</div><div class="ss">${LANG==='ar'?'من أفضل حركة':'of the best move kept'}</div></div>
         <div class="sc"><div class="sl">${LANG==='ar'?'متوسط أقصى RR':'Avg Max RR'}</div><div class="sv">${avgMfe==null?'—':f2(avgMfe)+'R'}</div><div class="ss">${withMfe.length} ${LANG==='ar'?'صفقة':'trades'}</div></div>
-        <div class="sc"><div class="sl">${LANG==='ar'?'متوسط الضغط':'Avg heat'}</div><div class="sv" style="color:#8B2020">${avgMae==null?'—':f2(avgMae)+'R'}</div><div class="ss">${LANG==='ar'?'ضد الصفقة':'against you'}</div></div>
-        <div class="sc"><div class="sl">${LANG==='ar'?'ضغط الرابحات':'Heat on winners'}</div><div class="sv" style="color:#B8860B">${avgWinMae==null?'—':f2(avgWinMae)+'R'}</div><div class="ss">${LANG==='ar'?'قبل نجاحها':'before they worked'}</div></div>
+        <div class="sc"><div class="sl">${LANG==='ar'?'متوسط الضغط':'Avg heat'}</div><div class="sv" style="color:var(--err-txt)">${avgMae==null?'—':f2(avgMae)+'R'}</div><div class="ss">${LANG==='ar'?'ضد الصفقة':'against you'}</div></div>
+        <div class="sc"><div class="sl">${LANG==='ar'?'ضغط الرابحات':'Heat on winners'}</div><div class="sv" style="color:var(--warn-txt)">${avgWinMae==null?'—':f2(avgWinMae)+'R'}</div><div class="ss">${LANG==='ar'?'قبل نجاحها':'before they worked'}</div></div>
       </div>`:`<div style="padding:18px;text-align:center;color:#aaa;font-size:12px">${LANG==='ar'?'أضف "أقصى RR" و "أقصى ضغط" لصفقاتك لتفعيل هذا التحليل.':'Log "Max RR" and "Max Heat" on your trades to unlock this analysis.'}</div>`}
     </div>
     <div class="g2">
-      <div class="card"><div class="ch" style="background:#A07828"><span>By day</span>${infoIcon(LANG==='ar'?'أداؤك مجمعاً حسب يوم الأسبوع، لمعرفة إن كان يوم معين يميل لأن يكون أقوى أو أضعف بالنسبة لك.':'Your performance grouped by day of the week, to see if a particular day tends to be stronger or weaker for you.')}</div><div style="overflow-x:auto"><table><thead><tr><th>Day</th><th>R</th><th>Trades</th><th>Win%</th></tr></thead><tbody>${byDay.map(d=>`<tr><td style="font-weight:bold">${d.day}</td><td style="font-weight:bold;color:${d.r>=0?'#1A5C3A':'#8B2020'}">${d.r>=0?'+':''}${f2(d.r)}</td><td>${d.n}</td><td>${pct(d.wr)}%</td></tr>`).join('')}</tbody></table></div></div>
-      <div class="card"><div class="ch" style="background:#534AB7"><span>By month</span>${infoIcon(LANG==='ar'?'صافي R وعدد الصفقات لكل شهر تقويمي، لتتبع اتجاه أدائك على مدى فترة أطول.':'Your net R and trade count for each calendar month, to track how your performance trends over a longer stretch of time.')}</div><div style="overflow-x:auto"><table><thead><tr><th>Month</th><th>R</th><th>Trades</th></tr></thead><tbody>${byMo.map(m=>`<tr><td style="font-weight:bold">${m.mo}</td><td style="font-weight:bold;color:${m.r>=0?'#1A5C3A':'#8B2020'}">${m.r>=0?'+':''}${f2(m.r)}</td><td>${m.n}</td></tr>`).join('')}</tbody></table></div></div>
+      <div class="card"><div class="ch" style="background:#A07828"><span>By day</span>${infoIcon(LANG==='ar'?'أداؤك مجمعاً حسب يوم الأسبوع، لمعرفة إن كان يوم معين يميل لأن يكون أقوى أو أضعف بالنسبة لك.':'Your performance grouped by day of the week, to see if a particular day tends to be stronger or weaker for you.')}</div><div style="overflow-x:auto"><table><thead><tr><th>Day</th><th>R</th><th>Trades</th><th>Win%</th></tr></thead><tbody>${byDay.map(d=>`<tr><td style="font-weight:bold">${d.day}</td><td style="font-weight:bold;color:${d.r>=0?'var(--ok-txt)':'var(--err-txt)'}">${d.r>=0?'+':''}${f2(d.r)}</td><td>${d.n}</td><td>${pct(d.wr)}%</td></tr>`).join('')}</tbody></table></div></div>
+      <div class="card"><div class="ch" style="background:#534AB7"><span>By month</span>${infoIcon(LANG==='ar'?'صافي R وعدد الصفقات لكل شهر تقويمي، لتتبع اتجاه أدائك على مدى فترة أطول.':'Your net R and trade count for each calendar month, to track how your performance trends over a longer stretch of time.')}</div><div style="overflow-x:auto"><table><thead><tr><th>Month</th><th>R</th><th>Trades</th></tr></thead><tbody>${byMo.map(m=>`<tr><td style="font-weight:bold">${m.mo}</td><td style="font-weight:bold;color:${m.r>=0?'var(--ok-txt)':'var(--err-txt)'}">${m.r>=0?'+':''}${f2(m.r)}</td><td>${m.n}</td></tr>`).join('')}</tbody></table></div></div>
     </div>
     ${Object.keys(bk).length?`<div class="card"><div class="ch" style="background:#7B3055"><span>Rule breaks</span>${infoIcon(LANG==='ar'?'أكثر القواعد التي كسرتها تكراراً وفي أي نسبة من صفقاتك. القاعدة المتكررة كثيراً تستحق أن تُعاد صياغتها أو تُراجع في خطتك.':'Which trading rules you broke most often and on what share of your trades. A rule that keeps getting broken is worth rewriting or revisiting in your plan.')}</div><div style="overflow-x:auto"><table><thead><tr><th>Rule broken</th><th>Times</th><th>% of trades</th></tr></thead><tbody>${Object.entries(bk).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td><span class="ib rbf">${k}</span></td><td style="font-weight:bold">${v}</td><td>${pct(v/t.length)}%</td></tr>`).join('')}</tbody></table></div></div>`:'' }
 
@@ -3791,8 +3794,8 @@ function renderAnalytics(){
 
     <div class="sg" style="margin-bottom:12px">
       <div class="sc"><div class="sl">${LANG==='ar'?'نسبة العائد':'Payoff Ratio'}${infoIcon(LANG==='ar'?'كم مرة يساوي متوسط ربحك مقارنة بمتوسط خسارتك. فوق 1.5 يعني أن أرباحك أكبر بوضوح من خسائرك.':'How many R your average win is worth compared to your average loss. Above 1.5 means your wins are meaningfully bigger than your losses.')}</div><div class="sv">${f2(payoffRatio)}:1</div><div class="ss">${LANG==='ar'?'متوسط الفوز ÷ متوسط الخسارة':'Avg winner ÷ avg loser'}</div></div>
-      <div class="sc"><div class="sl">SQN${infoIcon(LANG==='ar'?'رقم جودة النظام — يقيس مدى ثبات ميزتك الإحصائية وليس حجمها فقط. فوق 2.0 جيد، فوق 3.0 ممتاز، والقيمة السالبة تعني عدم وجود ميزة حقيقية.':'System Quality Number — measures how consistent your edge is, not just how big it is. Above 2.0 is good, above 3.0 is excellent, negative means no real statistical edge.')}</div><div class="sv" style="color:${sqn>=2?'#1A5C3A':sqn>=0?'#0F1923':'#8B2020'}">${f2(sqn)}</div><div class="ss">${LANG==='ar'?'جودة النظام':'System Quality Number'}</div></div>
-      <div class="sc"><div class="sl">${LANG==='ar'?'عامل الاسترداد':'Recovery Factor'}${infoIcon(LANG==='ar'?'صافي أرباحك مقسوماً على أسوأ تراجع مررت به. كلما ارتفع الرقم، كلما كسبت أكثر مقابل الألم الذي مررت به.':'Net profit divided by your worst drawdown. Higher means you make more relative to the pain you went through to get there.')}</div><div class="sv" style="color:${recoveryFactor>=0?'#1A5C3A':'#8B2020'}">${f2(recoveryFactor)}</div><div class="ss">${LANG==='ar'?'صافي R ÷ أقصى تراجع':'Net R ÷ max drawdown'}</div></div>
+      <div class="sc"><div class="sl">SQN${infoIcon(LANG==='ar'?'رقم جودة النظام — يقيس مدى ثبات ميزتك الإحصائية وليس حجمها فقط. فوق 2.0 جيد، فوق 3.0 ممتاز، والقيمة السالبة تعني عدم وجود ميزة حقيقية.':'System Quality Number — measures how consistent your edge is, not just how big it is. Above 2.0 is good, above 3.0 is excellent, negative means no real statistical edge.')}</div><div class="sv" style="color:${sqn>=2?'var(--ok-txt)':sqn>=0?'#0F1923':'var(--err-txt)'}">${f2(sqn)}</div><div class="ss">${LANG==='ar'?'جودة النظام':'System Quality Number'}</div></div>
+      <div class="sc"><div class="sl">${LANG==='ar'?'عامل الاسترداد':'Recovery Factor'}${infoIcon(LANG==='ar'?'صافي أرباحك مقسوماً على أسوأ تراجع مررت به. كلما ارتفع الرقم، كلما كسبت أكثر مقابل الألم الذي مررت به.':'Net profit divided by your worst drawdown. Higher means you make more relative to the pain you went through to get there.')}</div><div class="sv" style="color:${recoveryFactor>=0?'var(--ok-txt)':'var(--err-txt)'}">${f2(recoveryFactor)}</div><div class="ss">${LANG==='ar'?'صافي R ÷ أقصى تراجع':'Net R ÷ max drawdown'}</div></div>
       <div class="sc"><div class="sl">${LANG==='ar'?'فترة ثقة 95%':'95% Expectancy CI'}${infoIcon(LANG==='ar'?'نطاق إحصائي لمتوسط ربحك الحقيقي لكل صفقة، مع مراعاة حجم عينتك. رقمك الحقيقي على الأرجح يقع ضمن هذا النطاق.':'A statistical range for your true average-R-per-trade, accounting for sample size. Your real number is very likely somewhere in this range.')}</div><div class="sv" style="font-size:15px">${f2(bootCI.lo)}R ${LANG==='ar'?'إلى':'to'} +${f2(bootCI.hi)}R</div><div class="ss">${LANG==='ar'?'نطاق متوقع لكل صفقة':'Bootstrapped range per trade'}</div></div>
     </div>
 
@@ -3828,13 +3831,13 @@ function renderAnalytics(){
 
     <div class="card" style="margin-bottom:12px">
       <div class="ch" style="background:#8A2C5F"><span>${LANG==='ar'?'مختبر السيناريوهات التاريخية':'Historical Scenario Laboratory'}</span>${infoIcon(LANG==='ar'?'يوضح كيف كانت ستبدو نتائجك لو اخترت فقط مجموعات معينة من الصفقات — مفيد لرصد أي الفلاتر تصنع فرقاً حقيقياً، لكنها نتائج رجعية وليست ضماناً للتكرار.':'Shows what your results would have looked like if you\'d only taken certain subsets of trades — useful for spotting which filters actually matter, but these are retrospective, not proof they\'ll repeat.')}</div>
-      <div style="overflow-x:auto"><table><thead><tr><th>${LANG==='ar'?'السيناريو':'Scenario'}</th><th>${LANG==='ar'?'صفقات':'Trades'}</th><th>${LANG==='ar'?'صافي R':'Net R'}</th><th>${LANG==='ar'?'متوسط R':'Avg R'}</th><th>${LANG==='ar'?'الفوز':'Win%'}</th></tr></thead><tbody>${scenarioLab.map(s=>`<tr><td style="font-weight:bold">${s.label}</td><td>${s.n}</td><td style="font-weight:bold;color:${s.netR>=0?'#1A5C3A':'#8B2020'}">${s.netR>=0?'+':''}${f2(s.netR)}</td><td style="color:${s.avgR>=0?'#1A5C3A':'#8B2020'}">${s.avgR>=0?'+':''}${f2(s.avgR)}</td><td>${pct(s.wr)}%</td></tr>`).join('')}</tbody></table></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>${LANG==='ar'?'السيناريو':'Scenario'}</th><th>${LANG==='ar'?'صفقات':'Trades'}</th><th>${LANG==='ar'?'صافي R':'Net R'}</th><th>${LANG==='ar'?'متوسط R':'Avg R'}</th><th>${LANG==='ar'?'الفوز':'Win%'}</th></tr></thead><tbody>${scenarioLab.map(s=>`<tr><td style="font-weight:bold">${s.label}</td><td>${s.n}</td><td style="font-weight:bold;color:${s.netR>=0?'var(--ok-txt)':'var(--err-txt)'}">${s.netR>=0?'+':''}${f2(s.netR)}</td><td style="color:${s.avgR>=0?'var(--ok-txt)':'var(--err-txt)'}">${s.avgR>=0?'+':''}${f2(s.avgR)}</td><td>${pct(s.wr)}%</td></tr>`).join('')}</tbody></table></div>
       <div style="padding:10px 14px;font-size:11px;color:var(--text3);border-top:1px solid var(--border)">${LANG==='ar'?'هذه الفلاتر رجعية وليست اختبارات مستقلة خارج العينة.':'These filters are retrospective, not independent out-of-sample tests.'}</div>
     </div>
 
     ${acctSize?`<div class="card" style="margin-bottom:12px">
       <div class="ch" style="background:#8B2020"><span>${LANG==='ar'?'إطار إدارة المخاطر':'Risk Management Framework'}</span>${infoIcon(LANG==='ar'?'يحوّل أقصى تراجع تاريخي واجهته إلى نسبة مئوية حقيقية من حسابك عند مستويات مخاطرة مختلفة، إضافة إلى سيناريو ضغط 1.75x لهامش أمان إضافي.':'Translates your historical drawdown into real account-percentage terms at different risk levels, plus a stress-tested 1.75x scenario for a margin of safety.')}</div>
-      <div style="overflow-x:auto"><table><thead><tr><th>${LANG==='ar'?'المخاطرة/صفقة':'Risk/Trade'}</th><th>${LANG==='ar'?'أقصى تراجع':'Historical DD'}</th><th>${LANG==='ar'?'تأثير الحساب':'Account Impact'}</th><th>${LANG==='ar'?'ضغط 1.75x':'Stress (1.75x)'}</th><th>${LANG==='ar'?'تأثير الضغط':'Stress Impact'}</th></tr></thead><tbody>${riskLevels.map(rl=>{const impact=Math.abs(mdd)*rl;const stress=Math.abs(mdd)*1.75;const stressImpact=stress*rl;return`<tr><td style="font-weight:bold">${rl}%</td><td>${f2(Math.abs(mdd))}R</td><td style="color:#8B2020">-${f2(impact)}%</td><td>${f2(stress)}R</td><td style="color:#8B2020">-${f2(stressImpact)}%</td></tr>`;}).join('')}</tbody></table></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>${LANG==='ar'?'المخاطرة/صفقة':'Risk/Trade'}</th><th>${LANG==='ar'?'أقصى تراجع':'Historical DD'}</th><th>${LANG==='ar'?'تأثير الحساب':'Account Impact'}</th><th>${LANG==='ar'?'ضغط 1.75x':'Stress (1.75x)'}</th><th>${LANG==='ar'?'تأثير الضغط':'Stress Impact'}</th></tr></thead><tbody>${riskLevels.map(rl=>{const impact=Math.abs(mdd)*rl;const stress=Math.abs(mdd)*1.75;const stressImpact=stress*rl;return`<tr><td style="font-weight:bold">${rl}%</td><td>${f2(Math.abs(mdd))}R</td><td style="color:var(--err-txt)">-${f2(impact)}%</td><td>${f2(stress)}R</td><td style="color:var(--err-txt)">-${f2(stressImpact)}%</td></tr>`;}).join('')}</tbody></table></div>
       <div style="padding:10px 14px;font-size:11px;color:var(--text3);border-top:1px solid var(--border)">${LANG==='ar'?'بناءً على حجم حساب':'Based on account size'} ${f0(acctSize)}. ${LANG==='ar'?'التراجع التاريخي ليس ضماناً للحد الأقصى.':'Historical drawdown is not a guaranteed ceiling.'}</div>
     </div>`:`<div class="card" style="margin-bottom:12px;padding:14px;text-align:center;font-size:12px;color:var(--text3)">${LANG==='ar'?'أضف حجم حسابك في الملف الشخصي لرؤية إطار إدارة المخاطر':'Add your account size in your profile to see the Risk Management Framework'}</div>`}
 
@@ -3902,7 +3905,7 @@ function renderLB(){
     <tbody>${[...lbData].sort((a,b)=>b.rSecured-a.rSecured).map(s=>{const t=getTier(s.rSecured);return`<tr>
       <td style="font-weight:bold">${esc(s.name)}</td>
       <td><span class="ib" style="background:${t.bg};color:${t.color}">${t.name}</span></td>
-      <td style="font-weight:bold;color:${s.rSecured>=0?'#1A5C3A':'#8B2020'}">${s.rSecured>=0?'+':''}${f2(s.rSecured)}</td>
+      <td style="font-weight:bold;color:${s.rSecured>=0?'var(--ok-txt)':'var(--err-txt)'}">${s.rSecured>=0?'+':''}${f2(s.rSecured)}</td>
       <td>${pct(s.winRate)}%</td><td>${s.trades}</td>
       <td>${s.topRuleBreak&&s.topRuleBreak!=='None'?`<span class="ib rbf">${esc(s.topRuleBreak)}</span>`:'<span style="color:#aaa">None</span>'}</td>
       <td style="color:#aaa;font-size:11px">${s.updated||'—'}</td>
@@ -3917,7 +3920,7 @@ function renderLB(){
       <div class="lb-rank">${rankEmoji(i)}</div>
       <div><div class="lb-name">${esc(s.name)}${isMe?' (you)':''}</div><span class="ib" style="background:${t.bg};color:${t.color};font-size:10px">${t.name}</span></div>
       <div class="lb-stats">
-        <div><div class="lb-sv" style="color:${lbSort==='r'?(s.rSecured>=0?'#1A5C3A':'#8B2020'):'#0F1923'}">${mainVal}</div><div class="lb-sl">${lbSort==='r'?'R Secured':lbSort==='wr'?'Win Rate':'Trades'}</div></div>
+        <div><div class="lb-sv" style="color:${lbSort==='r'?(s.rSecured>=0?'var(--ok-txt)':'var(--err-txt)'):'#0F1923'}">${mainVal}</div><div class="lb-sl">${lbSort==='r'?'R Secured':lbSort==='wr'?'Win Rate':'Trades'}</div></div>
         ${lbSort!=='trades'?`<div><div class="lb-sv">${s.trades}</div><div class="lb-sl">Trades</div></div>`:''}
         <div style="font-size:11px;color:#aaa">${s.updated||''}</div>
       </div>
@@ -4168,7 +4171,7 @@ Keep answers concise and practical. Never give specific financial advice or tell
 // ── PUSH NOTIFICATIONS 
 function buildNotifToggle(){
   var on=notifEnabled && Notification.permission==='granted';
-  if(on) return '<button onclick="disableNotifs();openSettings()" style="background:#FCE8E8;color:#8B2020;border:none;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:bold;cursor:pointer">ON ✓</button>';
+  if(on) return '<button onclick="disableNotifs();openSettings()" style="background:var(--err-bg);color:var(--err-txt);border:none;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:bold;cursor:pointer">ON ✓</button>';
   return '<button onclick="requestNotifPermission().then(function(){openSettings();})" style="background:#E0DED8;color:#888;border:none;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:bold;cursor:pointer">OFF</button>';
 }
 
@@ -4473,7 +4476,7 @@ function saveTemplates(){localStorage.setItem('utf_templates',JSON.stringify(cus
 function buildTmplActivateBtn(id,isActive){
   var ar=LANG==='ar';
   var bg=isActive?'#DCF5E7':'#C9A84C';
-  var col=isActive?'#1A5C3A':'#0F1923';
+  var col=isActive?'var(--ok-txt)':'#0F1923';
   var lbl=isActive?(ar?'✓ مفعّل':'✓ Active'):(ar?'▶ تفعيل':'▶ Activate');
   return '<button data-id="'+id+'" onclick="activateTemplate(this.dataset.id)" style="background:'+bg+';color:'+col+';border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">'+lbl+'</button>';
 }
@@ -4862,7 +4865,7 @@ async function downloadStoryCard(){
 var activeAccountId='all';
 var userAccounts=[];
 var acctDropOpen=false;
-const ACCT_COLORS=['#C9A84C','#1A7A3F','#185FA5','#8B2020','#6B3FA0','#D97706','#0E7490','#BE185D'];
+const ACCT_COLORS=['#C9A84C','#1A7A3F','#185FA5','var(--err-txt)','#6B3FA0','#D97706','#0E7490','#BE185D'];
 const ACCT_ALL={id:'all',name:'All Trades',color:'#C9A84C',type:'All',firm:''};
 
 function filterByAccount(tradeList){
