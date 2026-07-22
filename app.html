@@ -78,6 +78,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);transition:backgrou
 .sb-item:hover{background:var(--card)08;color:#ffffffcc}
 .sb-item.active{color:#C9A84C;border-left-color:#C9A84C;background:#C9A84C0d}.sb-item.drag-over{background:#C9A84C22;border-left-color:#C9A84C}
 .sb-icon{font-size:15px;min-width:22px;text-align:center;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center}
+.sb-lock{margin-inline-start:auto;color:#C9A84C;opacity:.65;flex-shrink:0;display:inline-flex;align-items:center}
 .sb-icon svg{width:18px;height:18px;display:block}
 .sb-label{font-size:12px;font-weight:500;overflow:hidden;white-space:nowrap}
 .sidebar.collapsed .sb-label{display:none}
@@ -755,7 +756,7 @@ body.dark .ws-table th,body.dark #tab-weekly th{background:var(--card2);color:va
 var customTemplates = [];
 var activeTemplates = ['ict'];
 var editingTemplate = null;
-var LANG = localStorage.getItem('utf_lang') || 'en';
+var LANG = localStorage.getItem('utf_lang') || 'ar';
 var currentSession = null;
 var darkMode = (localStorage.getItem('utf_dark') || '1') === '1';
 var notifEnabled = localStorage.getItem('utf_notif') === '1';
@@ -790,8 +791,19 @@ function applyTheme(){
   if(btn) btn.innerHTML = darkMode ? ICON_SUN : ICON_MOON;
 }
 function openSettings(){
+  const _ar=LANG==='ar', _tl=tierLabel(userTier), _isPaid=tierRank(userTier)>0;
   openMo('Settings',`
     <div style="padding:16px">
+      <div style="font-size:12px;font-weight:bold;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">${_ar?'الاشتراك':'Subscription'}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--card2);border:1px solid var(--gold-line,rgba(224,184,78,.22));border-radius:11px;margin-bottom:18px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:13px;font-weight:bold;color:var(--text);display:flex;align-items:center;gap:7px">${_ar?'باقتك الحالية':'Your plan'}<span style="background:var(--gold-bg,#241E10);color:#C9A84C;font-size:10px;font-weight:800;letter-spacing:.5px;padding:3px 9px;border-radius:20px;text-transform:uppercase">${_tl}</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">${_isPaid?(_ar?'إدارة أو إلغاء اشتراكك في أي وقت':'Manage or cancel anytime'):(_ar?'رقِّ لفتح كل المميزات':'Upgrade to unlock every feature')}</div>
+        </div>
+        ${_isPaid
+          ? `<button onclick="manageBilling()" style="background:var(--card);color:var(--text);border:1px solid var(--border);padding:9px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">${_ar?'إدارة الاشتراك':'Manage'}</button>`
+          : `<button onclick="closeMo();showUpgrade('aiChat')" style="background:#C9A84C;color:#0F1923;border:none;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer">${_ar?'ترقية':'Upgrade'}</button>`}
+      </div>
       <div style="font-size:12px;font-weight:bold;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Notifications</div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:14px">
         <div>
@@ -1174,6 +1186,96 @@ function applyLang(){
   },100);
 }
 
+/* ── Premium tiers & feature gating ──────────────────────────────
+   userTier is the source of truth on the CLIENT (UX only). Anything
+   that costs money (AI calls) is ALSO enforced in the Worker, which
+   reads the same tier from Supabase. The lock UI here plugs into any
+   processor — startUpgrade() is processor-agnostic on purpose. */
+var userTier = 'free';
+const TIER_RANK = {free:0, pro:1, elite:2};
+// Minimum tier required per gated feature
+const FEATURE_TIER = {
+  aiChat:'pro', advAnalytics:'pro', templates:'pro', voiceNotes:'pro', coachingReport:'pro',
+  brokerSync:'elite'
+};
+const FEATURE_INFO = {
+  aiChat:{ar:'محادثة المدرب الذكي',en:'AI Coach Chat'},
+  advAnalytics:{ar:'التحليلات المتقدمة',en:'Advanced Analytics'},
+  templates:{ar:'القوالب المخصصة',en:'Custom Templates'},
+  voiceNotes:{ar:'الملاحظات الصوتية',en:'Voice Notes'},
+  brokerSync:{ar:'مزامنة الوسيط',en:'Broker Sync'},
+  coachingReport:{ar:'تقرير التدريب الشهري',en:'Monthly Coaching Report'}
+};
+function tierRank(t){return TIER_RANK[t] ?? 0;}
+function hasFeature(f){const need=FEATURE_TIER[f]; return !need || tierRank(userTier) >= tierRank(need);}
+function tierLabel(t){return t==='elite'?(LANG==='ar'?'إيليت':'Elite'):t==='pro'?(LANG==='ar'?'برو':'Pro'):(LANG==='ar'?'مجاني':'Free');}
+
+// Full-tab lock panel (rendered into a tab container when the tier is too low)
+function lockPanelHTML(feature){
+  const need=FEATURE_TIER[feature]||'pro', ar=LANG==='ar';
+  const name=(FEATURE_INFO[feature]||{})[ar?'ar':'en']||feature, tl=tierLabel(need);
+  return `<div style="max-width:440px;margin:48px auto;text-align:center;padding:34px 26px;background:var(--card);border:1px solid var(--gold-line,rgba(224,184,78,.22));border-radius:16px;box-shadow:var(--shadow)">
+    <div style="width:58px;height:58px;margin:0 auto 16px;border-radius:15px;background:var(--gold-bg,#241E10);display:flex;align-items:center;justify-content:center;color:#C9A84C">
+      <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </div>
+    <div style="font-size:19px;font-weight:800;color:var(--text);margin-bottom:8px">${ar?name:name}</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:22px">${ar?'هذه الميزة ضمن باقة '+tl+'. رقِّ اشتراكك لفتحها وكل مميزات الباقة.':'This is a '+tl+' feature. Upgrade to unlock it and everything in the plan.'}</div>
+    <button onclick="showUpgrade('${feature}')" style="background:#C9A84C;color:#0F1923;border:none;padding:12px 30px;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer">${ar?'الترقية إلى '+tl:'Upgrade to '+tl}</button>
+    <div style="margin-top:14px"><a href="/pricing" style="font-size:12px;color:var(--text3);text-decoration:none">${ar?'عرض جميع الباقات':'See all plans'}</a></div>
+  </div>`;
+}
+
+// Upgrade modal (uses the app's existing openMo)
+function showUpgrade(feature){
+  const need=FEATURE_TIER[feature]||'pro', ar=LANG==='ar', tl=tierLabel(need);
+  const perks = need==='elite'
+    ? (ar?['حسابات تداول غير محدودة','مزامنة الوسيط (Tradovate و MT4/5)','كل مميزات برو','دعم بأولوية']:['Unlimited trading accounts','Broker sync (Tradovate, MT4/5)','Everything in Pro','Priority support'])
+    : (ar?['تحليل AI غير محدود','محادثة المدرب الذكي','تحليلات متقدمة (SQN، التراجع، مونت كارلو)','قوالب مخصصة','ملاحظات صوتية وحتى 5 حسابات']:['Unlimited AI analysis','AI Coach chat','Advanced analytics (SQN, drawdown, Monte Carlo)','Custom templates','Voice notes & up to 5 accounts']);
+  const price = need==='elite'?'$29':'$15';
+  const body=`<div style="padding:6px 4px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="display:inline-block;background:var(--gold-bg,#241E10);color:#C9A84C;font-size:11px;font-weight:800;letter-spacing:1px;padding:5px 12px;border-radius:20px;text-transform:uppercase">${tl}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--text);margin-top:10px">${price}<span style="font-size:14px;color:var(--text3);font-weight:600">/${ar?'شهر':'mo'}</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:20px">
+      ${perks.map(p=>`<div style="display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5FBE84" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>${p}</span></div>`).join('')}
+    </div>
+    <button onclick="startUpgrade('${need}','m')" style="width:100%;background:#C9A84C;color:#0F1923;border:none;padding:13px;border-radius:9px;font-size:15px;font-weight:800;cursor:pointer">${ar?'رقِّ الآن إلى '+tl:'Upgrade to '+tl+' now'}</button>
+    <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--text3)">${ar?'إلغاء في أي وقت · دفع آمن':'Cancel anytime · Secure checkout'}</div>
+  </div>`;
+  openMo((ar?'رقِّ إلى ':'Upgrade to ')+tl, body);
+}
+
+// Processor-agnostic checkout entry point. The billing Worker will pick the
+// right processor (Stripe / Paddle / …) per the user's country and return a
+// checkout URL. Until that endpoint is live, route to the pricing page.
+async function startUpgrade(tier,cycle){
+  try{
+    if(typeof BILLING_URL!=='undefined' && BILLING_URL){
+      const {data:{session}}=await db.auth.getSession();
+      if(!session){showAuthModal&&showAuthModal();return;}
+      const r=await fetch(BILLING_URL+'/checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({tier,cycle:cycle||'m',locale:LANG})});
+      const d=await r.json().catch(()=>({}));
+      if(d&&d.url){window.location.href=d.url;return;}
+    }
+  }catch(e){/* fall through to pricing */}
+  window.location.href='/pricing?plan='+tier;
+}
+
+// Opens the processor's customer portal (manage / cancel). Wired once billing is live.
+async function manageBilling(){
+  try{
+    if(typeof BILLING_URL!=='undefined' && BILLING_URL){
+      const {data:{session}}=await db.auth.getSession();
+      if(!session){showAuthModal&&showAuthModal();return;}
+      const r=await fetch(BILLING_URL+'/portal',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({locale:LANG})});
+      const d=await r.json().catch(()=>({}));
+      if(d&&d.url){window.location.href=d.url;return;}
+    }
+  }catch(e){/* fall through */}
+  toast(LANG==='ar'?'إدارة الاشتراك ستتوفر قريباً':'Subscription management coming soon');
+}
+
 // All other functions defined below
 
 const SB_URL='https://qfqssedstzdgwkhhlzrn.supabase.co';
@@ -1507,9 +1609,12 @@ async function loadUserData(){
       aiUsed:pd.ai_used,joinDate:pd.join_date||pd.created_at?.split('T')[0],
       broker:pd.broker,tradingStyle:pd.trading_style,experience:pd.experience,
       accountType:pd.account_type,propFirm:pd.prop_firm,
-      instruments:pd.instruments?.join(', '),timezone:pd.timezone,goals:pd.goals
+      instruments:pd.instruments?.join(', '),timezone:pd.timezone,goals:pd.goals,
+      tier:pd.tier||'free'
     };
     aiUsed=profile?.aiUsed||0;
+    userTier=profile?.tier||'free';
+    if(typeof buildSidebar==='function') buildSidebar();
     if(td) trades=td.map(r=>({
       id:r.id,dbId:r.id,date:r.trade_date,sym:r.sym||r.symbol,dir:r.direction,
       r:r.r_result,rating:r.rating,session:r.session,notes:r.notes,
@@ -1769,6 +1874,7 @@ function blobToDataURL(blob){
 }
 function fmtVoiceTime(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 async function startVoiceRecording(target){
+  if(!hasFeature('voiceNotes')){showUpgrade('voiceNotes');return;}
   const st=getVoiceState(target);
   try{
     st.stream=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -2499,7 +2605,9 @@ function buildSidebar(){
     el.className='sb-item';
     el.id='sb-'+id;
     el.draggable=true;
-    el.innerHTML='<span class="sb-icon">'+(ICONS[id]||'•')+'</span><span class="sb-label">'+(LABELS[id]||id)+'</span>';
+    const _navGate={assistant:'aiChat',templates:'templates'};
+    const _locked=_navGate[id]&&!hasFeature(_navGate[id]);
+    el.innerHTML='<span class="sb-icon">'+(ICONS[id]||'•')+'</span><span class="sb-label">'+(LABELS[id]||id)+'</span>'+(_locked?'<span class="sb-lock" title="'+(LANG==='ar'?'ميزة مدفوعة':'Premium')+'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>':'');
     let touchMoved=false,dragActive=false,holdTimer=null,touchStartX=0,touchStartY=0;
     el.addEventListener('click',function(){if(touchMoved){touchMoved=false;return;}showTab(id);});
     el.addEventListener('dragstart',function(e){sbDragSrc=id;el.style.opacity='.4';e.dataTransfer.effectAllowed='move';});
@@ -2597,6 +2705,13 @@ function showTab(name){
     const mn=document.getElementById('mnav-'+id);
     if(mn) mn.classList.toggle('active',id===name);
   });
+  // Premium gate: locked tabs render an upgrade panel instead of their content
+  const TAB_FEATURE={assistant:'aiChat',templates:'templates'};
+  if(TAB_FEATURE[name] && !hasFeature(TAB_FEATURE[name])){
+    const c=document.getElementById('tab-'+name);
+    if(c) c.innerHTML=lockPanelHTML(TAB_FEATURE[name]);
+    return;
+  }
   if(name==='juice') renderJuice();
   if(name==='dashboard') renderDashboard();
   if(name==='new' && !document.getElementById('f-date')) renderForm();
@@ -4359,7 +4474,7 @@ function buildMappedTrades(){const plt=CSV_PLATFORMS[csvPlatform];const dirMap=p
 
 function renderImport(){$('tab-import').innerHTML=`<div style="display:flex;gap:10px;margin-bottom:16px"><button id="itab-csv" onclick="switchImportTab('csv')" style="padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid #0F1923;background:#0F1923;color:#C9A84C">CSV Import</button><button id="itab-tv" onclick="switchImportTab('tv')" style="padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--text3)">Tradovate Sync</button></div><div id="import-csv-sec"><div id="import-step-indicator" style="display:flex;align-items:center;gap:8px;margin-bottom:16px"></div><div id="import-step-content"></div></div><div id="import-tv-sec" style="display:none"><div style="background:var(--warn-bg);border-radius:8px;padding:10px 13px;font-size:11px;color:var(--warn-txt);margin-bottom:14px;border:1px solid #C9A84C33">⚠️ <strong>Note:</strong> Tradovate API requires backend proxy for production CORS. Works directly for testing.</div><div class="card"><div class="ch" style="background:#0F1923"><span>Tradovate connection</span><span class="ch-sub" id="tv-label">Not connected</span></div><div class="cb"><div id="tv-status-bar" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card2);border-radius:8px;margin-bottom:14px;font-size:12px;font-weight:bold;color:var(--text3)"><span id="tv-dot" style="width:9px;height:9px;border-radius:50%;background:var(--border);flex-shrink:0"></span><span id="tv-status-txt">Not connected</span></div><div style="margin-bottom:12px"><div style="font-size:11px;font-weight:bold;color:var(--text3);text-transform:uppercase;margin-bottom:6px">Environment</div><div style="display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden;width:180px"><button id="env-live" onclick="setTVEnv('live')" style="flex:1;padding:8px;font-size:12px;font-weight:bold;border:none;cursor:pointer;background:var(--card);color:var(--text3)">🔴 Live</button><button id="env-demo" onclick="setTVEnv('demo')" style="flex:1;padding:8px;font-size:12px;font-weight:bold;border:none;cursor:pointer;background:#0F1923;color:#C9A84C">🟢 Demo</button></div></div><div id="tv-form"><div class="g2"><div class="fl"><label for="tv-user">Username</label><input id="tv-user" type="text"/></div><div class="fl"><label for="tv-pass">Password</label><input id="tv-pass" type="password"/></div></div><div class="g3"><div class="fl"><label for="tv-appname">App name</label><input id="tv-appname" value="UncsTradingFloor"/></div><div class="fl"><label for="tv-cid">CID</label><input id="tv-cid" type="number"/></div><div class="fl"><label for="tv-sec">Secret</label><input id="tv-sec" type="password"/></div></div><button onclick="connectTradovate()" style="background:#0F1923;color:#C9A84C;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">Connect to Tradovate</button></div><div id="tv-connected" style="display:none"><div id="tv-acct-info"></div><div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap"><button onclick="syncTradovate()" style="background:#1A5C3A;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">Sync latest fills</button><button onclick="disconnectTV()" style="background:var(--err-bg);color:var(--err-txt);border:1px solid #8B202033;padding:9px 16px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer">Disconnect</button><span id="tv-last-sync" style="font-size:11px;color:var(--text4);align-self:center"></span></div><div id="tv-fills"></div></div><div id="tv-err" style="display:none"></div></div></div></div>`;renderCSVStep(1);}
 
-function switchImportTab(t){$('import-csv-sec').style.display=t==='csv'?'block':'none';$('import-tv-sec').style.display=t==='tv'?'block':'none';$('itab-csv').style.cssText=t==='csv'?'padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid #0F1923;background:#0F1923;color:#C9A84C':'padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--text3)';$('itab-tv').style.cssText=t==='tv'?'padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid #0F1923;background:#0F1923;color:#C9A84C':'padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--text3)';}
+function switchImportTab(t){if(t==='tv'&&!hasFeature('brokerSync')){showUpgrade('brokerSync');return;}$('import-csv-sec').style.display=t==='csv'?'block':'none';$('import-tv-sec').style.display=t==='tv'?'block':'none';$('itab-csv').style.cssText=t==='csv'?'padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid #0F1923;background:#0F1923;color:#C9A84C':'padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--text3)';$('itab-tv').style.cssText=t==='tv'?'padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid #0F1923;background:#0F1923;color:#C9A84C':'padding:9px 20px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--text3)';}
 
 function renderCSVStep(step){csvStep=step;const steps=['Choose platform','Upload file','Map columns','Preview & import'];$('import-step-indicator').innerHTML=steps.map((s,i)=>{const num=i+1,done=num<step,active=num===step;const numStyle=done?'background:#1A5C3A;color:#fff':active?'background:#C9A84C;color:#0F1923':'background:var(--card2);color:var(--text3)';const txtStyle=done||active?'color:var(--text);font-weight:bold':'color:var(--text4)';return`${i>0?'<div style="flex:1;height:1px;background:var(--border)"></div>':''}<div style="display:flex;align-items:center;gap:6px;font-size:12px"><div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;flex-shrink:0;${numStyle}">${done?'✓':num}</div><span style="${txtStyle}">${s}</span></div>`;}).join('');if(step===1)renderCSVStep1();else if(step===2)renderCSVStep2();else if(step===3)renderCSVStep3();else if(step===4)renderCSVStep4();}
 
