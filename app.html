@@ -469,12 +469,14 @@ body.dark .ws-table th,body.dark #tab-weekly th{background:var(--card2);color:va
 .welcome-body{padding:24px 28px 8px}
 .welcome-slide{display:none}
 .welcome-slide.active{display:block}
-.welcome-icon{font-size:44px;margin-bottom:14px;display:block;text-align:center}
+.welcome-icon{font-size:44px;margin-bottom:14px;display:block;text-align:center;color:#C9A84C}
+.welcome-icon svg{width:44px;height:44px;display:inline-block;vertical-align:middle}
 .welcome-title{font-size:20px;font-weight:800;text-align:center;margin-bottom:8px;color:var(--text)}
 .welcome-desc{font-size:14px;color:var(--text2);text-align:center;line-height:1.7;margin-bottom:16px}
 .welcome-features{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
 .wf-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:9px}
-.wf-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.wf-icon{font-size:18px;flex-shrink:0;margin-top:1px;color:#C9A84C}
+.wf-icon svg{width:18px;height:18px;display:block}
 .wf-text{font-size:12px;color:var(--text2);line-height:1.5}
 .wf-text strong{color:var(--text);display:block;margin-bottom:1px;font-size:12px}
 .welcome-footer{padding:16px 28px 24px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border)}
@@ -5225,38 +5227,38 @@ document.addEventListener('DOMContentLoaded',function(){init();});
 
       <!-- SLIDE 1: Welcome -->
       <div class="welcome-slide" id="wslide-1b">
-        <span class="welcome-icon">👋</span>
+        <span class="welcome-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></span>
         <div class="welcome-title" id="w-title-1b">Welcome!</div>
         <div class="welcome-desc" id="w-desc-1b">Your smart trading journal — log trades, get AI analysis, and build your edge trade by trade.</div>
       </div>
 
       <!-- SLIDE 2: Log trades -->
       <div class="welcome-slide" id="wslide-1">
-        <span class="welcome-icon">📝</span>
+        <span class="welcome-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg></span>
         <div class="welcome-title" id="w-title-1">دوّن كل صفقة</div>
         <div class="welcome-desc" id="w-desc-1">نموذج شامل يغطي كل التفاصيل — من الرمز والاتجاه وحتى الأهداف والتحليل النفسي.</div>
         <div class="welcome-features">
-          <div class="wf-item"><span class="wf-icon">🎯</span><div class="wf-text"><strong>أهداف السيولة</strong>PDH, PDL, HOD, LOD, PWH وأكثر</div></div>
-          <div class="wf-item"><span class="wf-icon">📸</span><div class="wf-text"><strong>لقطات الشاشة</strong>أرفق صورة صفقتك مع معاينة مباشرة</div></div>
+          <div class="wf-item"><span class="wf-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><div class="wf-text"><strong>أهداف السيولة</strong>PDH, PDL, HOD, LOD, PWH وأكثر</div></div>
+          <div class="wf-item"><span class="wf-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></span><div class="wf-text"><strong>لقطات الشاشة</strong>أرفق صورة صفقتك مع معاينة مباشرة</div></div>
           <div class="wf-item"><span class="wf-icon">⚠️</span><div class="wf-text"><strong>كسر القواعد</strong>تتبع الأخطاء وقِس مستوى انضباطك</div></div>
         </div>
       </div>
 
       <!-- SLIDE 3: AI -->
       <div class="welcome-slide" id="wslide-2">
-        <span class="welcome-icon">⚡</span>
+        <span class="welcome-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></span>
         <div class="welcome-title" id="w-title-2">مدربك الذكي في كل صفقة</div>
         <div class="welcome-desc" id="w-desc-2">اضغط "تحليل AI" بعد أي صفقة وخلّ الذكاء الاصطناعي يحكيلك بالضبط وين أحسنت ووين غلطت.</div>
         <div class="welcome-features">
-          <div class="wf-item"><span class="wf-icon">🏆</span><div class="wf-text"><strong>تقييم من A+ إلى C</strong>مع تفاصيل واضحة وبدون مجاملة</div></div>
-          <div class="wf-item"><span class="wf-icon">🧠</span><div class="wf-text"><strong>كشف الأنماط النفسية</strong>يحدد الأخطاء المتكررة في تداولك</div></div>
-          <div class="wf-item"><span class="wf-icon">📅</span><div class="wf-text"><strong>تقرير أسبوعي</strong>ملخص شامل لأدائك كل أسبوع</div></div>
+          <div class="wf-item"><span class="wf-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span><div class="wf-text"><strong>تقييم من A+ إلى C</strong>مع تفاصيل واضحة وبدون مجاملة</div></div>
+          <div class="wf-item"><span class="wf-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M6 18a4 4 0 0 1-1.967-.516"/><path d="M19.967 17.484A4 4 0 0 1 18 18"/></svg></span><div class="wf-text"><strong>كشف الأنماط النفسية</strong>يحدد الأخطاء المتكررة في تداولك</div></div>
+          <div class="wf-item"><span class="wf-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></span><div class="wf-text"><strong>تقرير أسبوعي</strong>ملخص شامل لأدائك كل أسبوع</div></div>
         </div>
       </div>
 
       <!-- SLIDE 4: Ready -->
       <div class="welcome-slide" id="wslide-3">
-        <span class="welcome-icon">🚀</span>
+        <span class="welcome-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span>
         <div class="welcome-title" id="w-title-3">جاهز تبدأ؟</div>
         <div class="welcome-desc" id="w-desc-3">الخطوة الأولى: سجّل أول صفقة لك واطلب تحليل AI — وشوف الفرق.</div>
         <div class="welcome-features">
