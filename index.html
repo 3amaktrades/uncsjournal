@@ -358,16 +358,69 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
 .feat-row-bullets{display:flex;flex-direction:column;gap:8px}
 .feat-row-bullets .bullet{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)}
 .feat-row-bullets .bullet::before{content:'↗';color:var(--gold);font-weight:700;font-size:12px}
-.feat-row-visual{height:200px;border-radius:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(12,16,24,.05);transition:transform .35s ease}
-.feat-row-visual span{font-size:64px}
-.feat-row:hover .feat-row-visual{transform:scale(1.03)}
+.feat-row-visual{min-height:220px;border-radius:18px;display:flex;align-items:center;justify-content:center;padding:22px;overflow:hidden;box-shadow:0 8px 30px rgba(12,16,24,.05);transition:transform .35s ease}
+.feat-row:hover .feat-row-visual{transform:scale(1.02)}
+/* ── Feature product mockups ── */
+.mk{width:100%;max-width:326px;direction:ltr;font-family:'Plus Jakarta Sans',sans-serif}
+.mk-card{background:linear-gradient(180deg,rgba(41,35,22,.97),rgba(27,24,15,.97));border:1px solid var(--border2);border-radius:13px;padding:13px 14px;box-shadow:0 14px 36px rgba(0,0,0,.42)}
+.mk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.mk-sym{font-weight:800;font-size:13.5px;color:var(--text);letter-spacing:.2px}
+.mk-badge{font-size:9.5px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.3px;white-space:nowrap}
+.mk-badge.bull{background:#13291B;color:#63C78C}
+.mk-badge.bear{background:#2A1414;color:#E58C8C}
+.mk-badge.gold{background:var(--gold-bg);color:var(--gold)}
+.mk-big{font-family:'Syne',sans-serif;font-weight:800;font-size:27px;line-height:1}
+.mk-big.pos{color:#63C78C}.mk-big.neg{color:#E58C8C}
+.mk-lbl{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.4}
+.mk-line{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;padding:6px 0;border-top:1px solid var(--border)}
+.mk-line:first-of-type{margin-top:10px}
+.mk-line .k{color:var(--text3)}.mk-line .v{color:var(--text2);font-weight:600}
+.mk-line .v.pos{color:#63C78C}.mk-line .v.gold{color:var(--gold)}
+.mk-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
+.mk-chip{font-size:9.5px;color:var(--text3);background:rgba(224,184,78,.06);border:1px solid var(--border);border-radius:6px;padding:3px 8px}
+.mk-grade{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+.mk-grade-badge{width:44px;height:44px;border-radius:11px;background:var(--gold-bg);border:1px solid var(--gold-line);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--gold);flex-shrink:0}
+.mk-fb{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:var(--text2);padding:4px 0;line-height:1.4}
+.mk-fb svg{width:13px;height:13px;flex-shrink:0;margin-top:1px;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.mk-fb.ok svg{stroke:#63C78C}.mk-fb.no svg{stroke:#E58C8C}
+.mk-chat{display:flex;flex-direction:column;gap:7px}
+.mk-bub{font-size:11px;line-height:1.45;padding:8px 11px;border-radius:12px;max-width:84%}
+.mk-bub.me{align-self:flex-end;background:var(--gold);color:#1A1509;font-weight:600;border-bottom-right-radius:4px}
+.mk-bub.ai{align-self:flex-start;background:var(--bg2);border:1px solid var(--border);color:var(--text2);border-bottom-left-radius:4px}
+.mk-share{width:100%;max-width:230px;background:linear-gradient(150deg,#2A2210,#15130D);border:1px solid var(--gold-line);border-radius:15px;padding:18px 16px;text-align:center;box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.mk-share-top{font-size:9px;color:var(--gold);letter-spacing:2.5px;font-weight:800;margin-bottom:12px}
+.mk-share-r{font-family:'Syne',sans-serif;font-weight:800;font-size:40px;color:#63C78C;line-height:1}
+.mk-share-sym{font-size:11.5px;color:var(--text2);margin-top:6px}
+.mk-share-ft{font-size:8px;color:var(--text3);margin-top:14px;letter-spacing:1.5px}
+.mk-kpis{display:flex;gap:8px;margin-bottom:12px}
+.mk-kpi{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:8px 9px}
+.mk-kpi .n{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--text)}
+.mk-kpi .n.pos{color:#63C78C}.mk-kpi .n.gold{color:var(--gold)}
+.mk-kpi .l{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.mk-curve{width:100%;height:54px;display:block}
+.mk-voice{display:flex;align-items:center;gap:11px}
+.mk-mic{width:40px;height:40px;border-radius:50%;background:#2A1414;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mk-mic svg{width:18px;height:18px;fill:none;stroke:#E58C8C;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mk-wave{flex:1;display:flex;align-items:center;gap:2.5px;height:36px}
+.mk-wave i{flex:1;background:var(--gold);border-radius:2px;opacity:.7}
+.mk-time{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums;flex-shrink:0}
+.mk-cres{display:flex;gap:8px}
+.mk-cres .c{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 6px}
+.mk-cres .c .n{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--gold)}
+.mk-cres .c .l{font-size:8px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.3px}
+.mk-tbl{width:100%;border-collapse:collapse;font-size:10.5px}
+.mk-tbl th{text-align:left;color:var(--text3);font-weight:600;font-size:8.5px;text-transform:uppercase;letter-spacing:.4px;padding:0 6px 7px}
+.mk-tbl td{padding:5px 6px;border-top:1px solid var(--border);color:var(--text2);white-space:nowrap}
+.mk-tbl td.pos{color:#63C78C;font-weight:700}.mk-tbl td.neg{color:#E58C8C;font-weight:700}
+.mk-dl{margin-top:11px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--gold);border:1px solid var(--gold-line);border-radius:8px;padding:7px}
+.mk-dl svg{width:12px;height:12px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:768px){
   .feat-rows{padding:10px 16px 40px}
-  .feat-row,.feat-row.rev{grid-template-columns:1fr;gap:24px;direction:ltr;padding:32px 0}
-  .feat-row-visual{height:140px;order:-1}
-  .feat-row-visual span{font-size:48px}
+  .feat-row,.feat-row.rev{grid-template-columns:1fr;gap:22px;direction:ltr;padding:30px 0}
+  .feat-row-visual{min-height:0;order:-1;padding:20px}
   .feat-row-title{font-size:24px}
   .feat-row-desc{max-width:none}
+  .mk{max-width:320px}
 }
 
 /* ── HERO: layered intelligence panels ── */
@@ -641,7 +694,14 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
           <div class="bullet t" data-ar="نماذج مخصصة تبنيها بنفسك" data-en="Build your own custom templates">Build your own custom templates</div>
         </div>
       </div>
-      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(201,168,76,.16),#14110A);border:1px solid var(--gold-line)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/><path d="M9 13h6M9 17h4"/></svg></div>
+      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(201,168,76,.16),#14110A);border:1px solid var(--gold-line)"><div class="mk"><div class="mk-card">
+        <div class="mk-top"><span class="mk-sym">NQ · 15m</span><span class="mk-badge bull">BULLISH</span></div>
+        <div class="mk-big pos">+2.4R</div>
+        <div class="mk-lbl">A+ Breakout · New York session</div>
+        <div class="mk-line"><span class="k">Entry / Stop</span><span class="v">20,140 / 19,988</span></div>
+        <div class="mk-line"><span class="k">Outcome</span><span class="v pos">Win</span></div>
+        <div class="mk-chips"><span class="mk-chip">Setup</span><span class="mk-chip">Screenshot</span><span class="mk-chip">Psychology</span><span class="mk-chip">Notes</span></div>
+      </div></div></div>
     </div>
 
     <div class="feat-row reveal rev">
@@ -655,7 +715,12 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
           <div class="bullet t" data-ar="مدعوم بالذكاء الاصطناعي" data-en="Powered by Claude AI">Powered by Claude AI</div>
         </div>
       </div>
-      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(96,165,250,.15),#0C1016);border:1px solid rgba(96,165,250,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
+      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(96,165,250,.15),#0C1016);border:1px solid rgba(96,165,250,.14)"><div class="mk"><div class="mk-card">
+        <div class="mk-grade"><div class="mk-grade-badge">A</div><div><div class="mk-sym">AI Trade Analysis</div><div class="mk-lbl">Graded in 2.1s · Claude</div></div></div>
+        <div class="mk-fb ok"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Clean A+ setup — entered on confirmation</span></div>
+        <div class="mk-fb ok"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Risk sized correctly at 1%</span></div>
+        <div class="mk-fb no"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg><span>Exited 12% early — let winners run</span></div>
+      </div></div></div>
     </div>
 
     <div class="feat-row reveal">
@@ -669,7 +734,11 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
           <div class="bullet t" data-ar="إجابات فورية ومباشرة" data-en="Instant, direct answers">Instant, direct answers</div>
         </div>
       </div>
-      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(201,168,76,.14),#0C0F16);border:1px solid var(--gold-line)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-4 4z"/><path d="M8 10h8M8 13h5"/></svg></div>
+      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(201,168,76,.14),#0C0F16);border:1px solid var(--gold-line)"><div class="mk"><div class="mk-card"><div class="mk-chat">
+        <div class="mk-bub me">Where do I break my rules most?</div>
+        <div class="mk-bub ai">You over-trade after 2 losses — 8 of your last 10 revenge trades were red. On planned setups your win rate is 71%.</div>
+        <div class="mk-bub me">Best session for me?</div>
+      </div></div></div></div>
     </div>
 
     <div class="feat-row reveal rev">
@@ -683,7 +752,12 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
           <div class="bullet t" data-ar="أضف لقطة الشاشة ورسالتك" data-en="Add your screenshot and message">Add your screenshot and message</div>
         </div>
       </div>
-      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(168,130,230,.15),#120E18);border:1px solid rgba(168,130,230,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="M8 8l4-4 4 4"/><path d="M5 14v5h14v-5"/></svg></div>
+      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(168,130,230,.15),#120E18);border:1px solid rgba(168,130,230,.14)"><div class="mk-share">
+        <div class="mk-share-top">UNC'S JOURNAL</div>
+        <div class="mk-share-r">+2.4R</div>
+        <div class="mk-share-sym">NQ · Bullish · A+ Breakout</div>
+        <div class="mk-share-ft">SHARED FROM UNC'S JOURNAL</div>
+      </div></div>
     </div>
 
     <div class="feat-row reveal">
@@ -697,7 +771,10 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
           <div class="bullet t" data-ar="تحليل يومي وأسبوعي" data-en="Daily & weekly breakdown">Daily & weekly breakdown</div>
         </div>
       </div>
-      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(74,222,128,.14),#0B140D);border:1px solid rgba(74,222,128,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(74,222,128,.14),#0B140D);border:1px solid rgba(74,222,128,.14)"><div class="mk"><div class="mk-card">
+        <div class="mk-kpis"><div class="mk-kpi"><div class="n pos">70%</div><div class="l">Win Rate</div></div><div class="mk-kpi"><div class="n gold">3.49</div><div class="l">Profit Factor</div></div><div class="mk-kpi"><div class="n">+0.65R</div><div class="l">Avg / Trade</div></div></div>
+        <svg class="mk-curve" viewBox="0 0 300 54" preserveAspectRatio="none"><defs><linearGradient id="eqg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(224,184,78,.28)"/><stop offset="1" stop-color="rgba(224,184,78,0)"/></linearGradient></defs><path d="M0,46 L38,42 L76,44 L114,32 L152,34 L190,22 L228,25 L266,14 L300,8 L300,54 L0,54 Z" fill="url(#eqg)"/><path d="M0,46 L38,42 L76,44 L114,32 L152,34 L190,22 L228,25 L266,14 L300,8" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div></div></div>
     </div>
 
     <div class="feat-row reveal rev">
@@ -711,7 +788,10 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
           <div class="bullet t" data-ar="أسرع من الكتابة على الجوال" data-en="Faster than typing on mobile">Faster than typing on mobile</div>
         </div>
       </div>
-      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(248,113,113,.14),#170C0C);border:1px solid rgba(248,113,113,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v4"/></svg></div>
+      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(248,113,113,.14),#170C0C);border:1px solid rgba(248,113,113,.14)"><div class="mk"><div class="mk-card">
+        <div class="mk-voice"><div class="mk-mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v4"/></svg></div><div class="mk-wave"><i style="height:30%"></i><i style="height:55%"></i><i style="height:80%"></i><i style="height:45%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:35%"></i><i style="height:70%"></i><i style="height:100%"></i><i style="height:50%"></i><i style="height:25%"></i><i style="height:65%"></i><i style="height:85%"></i><i style="height:40%"></i><i style="height:75%"></i><i style="height:55%"></i><i style="height:30%"></i><i style="height:90%"></i><i style="height:48%"></i><i style="height:68%"></i><i style="height:38%"></i><i style="height:58%"></i></div><div class="mk-time">0:23</div></div>
+        <div class="mk-lbl" style="margin-top:12px">Note on NQ trade — “entered too early, chased the move after the sweep…”</div>
+      </div></div></div>
     </div>
 
     <div class="feat-row reveal">
@@ -725,7 +805,11 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
           <div class="bullet t" data-ar="أكثر من 15 أداة وزوج" data-en="15+ instruments & pairs">15+ instruments & pairs</div>
         </div>
       </div>
-      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(201,168,76,.16),#14110A);border:1px solid var(--gold-line)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8"/><path d="M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg></div>
+      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(201,168,76,.16),#14110A);border:1px solid var(--gold-line)"><div class="mk"><div class="mk-card">
+        <div class="mk-top"><span class="mk-sym">Risk Calculator</span><span class="mk-badge gold">NQ · FUTURES</span></div>
+        <div class="mk-cres"><div class="c"><div class="n">3</div><div class="l">Contracts</div></div><div class="c"><div class="n">$250</div><div class="l">At Risk</div></div><div class="c"><div class="n">50</div><div class="l">Ticks</div></div></div>
+        <div class="mk-line"><span class="k">Account · Risk</span><span class="v">$25,000 · 1%</span></div>
+      </div></div></div>
     </div>
 
     <div class="feat-row reveal rev">
@@ -739,7 +823,15 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
           <div class="bullet t" data-ar="بياناتك ملكك دائماً" data-en="Your data, always yours">Your data, always yours</div>
         </div>
       </div>
-      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(96,165,250,.15),#0C1016);border:1px solid rgba(96,165,250,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 19h14"/></svg></div>
+      <div class="feat-row-visual" style="background:radial-gradient(circle at 50% 42%,rgba(96,165,250,.15),#0C1016);border:1px solid rgba(96,165,250,.14)"><div class="mk"><div class="mk-card">
+        <div class="mk-top"><span class="mk-sym">Export trades</span><span class="mk-badge gold">128 TRADES</span></div>
+        <table class="mk-tbl"><thead><tr><th>Date</th><th>Sym</th><th>Dir</th><th>R</th></tr></thead><tbody>
+          <tr><td>Jul 18</td><td>NQ</td><td>Long</td><td class="pos">+2.4</td></tr>
+          <tr><td>Jul 17</td><td>ES</td><td>Short</td><td class="neg">−1.0</td></tr>
+          <tr><td>Jul 16</td><td>GC</td><td>Long</td><td class="pos">+1.8</td></tr>
+        </tbody></table>
+        <div class="mk-dl"><svg viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 19h14"/></svg><span>Export to CSV</span></div>
+      </div></div></div>
     </div>
 
   </div>
