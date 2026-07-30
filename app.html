@@ -1278,6 +1278,10 @@ async function manageBilling(){
 
 // All other functions defined below
 
+// Billing backend (Stripe). Points at the uncai-billing Worker. Enabling this
+// activates the upgrade / manage-subscription buttons; leave empty to fall back
+// to the /pricing page. Test-mode until the Worker holds live keys.
+const BILLING_URL='https://uncai-billing.omar3halabi.workers.dev';
 const SB_URL='https://qfqssedstzdgwkhhlzrn.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmcXNzZWRzdHpkZ3draGhsenJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTE0OTIsImV4cCI6MjA5NTY2NzQ5Mn0.zsEe1Eh-iGztPIC6btPIsNajpUpxBKnhqDeCibZHWww';
 const db=supabase.createClient(SB_URL,SB_KEY,{
@@ -4782,6 +4786,30 @@ function onSignedIn(user){
   loadUserData();loadAccounts();showTab(DEFAULT_TAB_ORDER[0]);warmupDB();
   const mo=document.getElementById('auth-modal-overlay');
   if(mo) mo.style.display='none';
+  checkUpgradeReturn();
+}
+
+// After a Stripe Checkout success the user returns to /app?upgraded=1. The tier is
+// written by the billing webhook (async), so poll the profile a few times until it
+// flips off 'free', then refresh the UI. Strips the query param either way.
+function checkUpgradeReturn(){
+  try{
+    const p=new URLSearchParams(location.search);
+    if(!p.get('upgraded')) return;
+    history.replaceState({},'',location.pathname);
+    toast(LANG==='ar'?'تم الدفع بنجاح — جارٍ تفعيل اشتراكك…':'Payment successful — activating your subscription…');
+    let tries=0;
+    const poll=async()=>{
+      tries++;
+      await loadUserData();
+      if(userTier && userTier!=='free'){
+        if(typeof buildSidebar==='function')buildSidebar();
+        if(typeof showTab==='function' && typeof currentTab!=='undefined')showTab(currentTab);
+        toast(LANG==='ar'?('تم تفعيل باقة '+userTier.toUpperCase()+' 🎉'):('Your '+userTier.toUpperCase()+' plan is active 🎉'));
+      }else if(tries<5){ setTimeout(poll,2000); }
+    };
+    setTimeout(poll,1500);
+  }catch(e){/* non-fatal */}
 }
 
 function onSignedOut(){
