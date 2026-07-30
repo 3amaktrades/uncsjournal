@@ -700,7 +700,7 @@ body.dark .ws-table th,body.dark #tab-weekly th{background:var(--card2);color:va
           </div>
         </div>
         <div style="display:flex;gap:6px;margin-top:6px">
-          <button onclick="handleAuthBtn()" id="hdr-auth-btn-mobile" style="flex:1;background:#ffffff0d;color:#ffffff88;border:none;border-radius:6px;padding:7px;font-size:11px;cursor:pointer;white-space:nowrap;overflow:hidden">Sign in</button>
+          <button onclick="handleAuthBtn()" id="hdr-auth-btn-mobile" style="flex:1;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;overflow:hidden">Sign in</button>
         </div>
       </div>
     </div>
@@ -1187,14 +1187,22 @@ const db=supabase.createClient(SB_URL,SB_KEY,{
 // the Worker can verify identity and enforce the usage limit server-side instead
 // of trusting whatever the client claims.
 async function callAI(payload){
-  const{data:{session}}=await db.auth.getSession();
-  if(!session) throw new Error('Please sign in to use AI features');
+  let{data:{session}}=await db.auth.getSession();
+  if(!session) throw new Error(LANG==='ar'?'الرجاء تسجيل الدخول لاستخدام ميزات الذكاء الاصطناعي':'Please sign in to use AI features');
+  // Proactively refresh a token that's expired or within 60s of expiring, so we never
+  // send a dead token to the Worker (the usual cause of a surprise 401).
+  if(!session.expires_at || session.expires_at*1000 < Date.now()+60000){
+    const rf=await db.auth.refreshSession();
+    if(rf.error||!rf.data?.session){ await doSignOut(); throw new Error(LANG==='ar'?'انتهت جلستك — الرجاء تسجيل الدخول مجدداً':'Your session expired — please sign in again'); }
+    session=rf.data.session;
+  }
   const res=await fetch('https://uncai.omar3halabi.workers.dev',{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
     body:JSON.stringify(payload)
   });
   const data=await res.json().catch(()=>({}));
+  if(res.status===401){ await doSignOut(); throw new Error(LANG==='ar'?'انتهت جلستك — الرجاء تسجيل الدخول مجدداً':'Your session expired — please sign in again'); }
   if(res.status===429) throw new Error(data?.error?.message||"You've used all your free AI analyses for now");
   if(!res.ok||data?.error) throw new Error(data?.error?.message||'AI request failed');
   if(typeof data.aiUsed==='number'){aiUsed=data.aiUsed;if(typeof updateAICounter==='function')updateAICounter();}
@@ -1481,7 +1489,11 @@ async function doReset(){
   showOk('reset-ok','✓ Reset link sent — check your email');
 }
 async function doSignOut(){
-  await db.auth.signOut();
+  // Local scope + try/catch: clears the stored session WITHOUT a server round-trip,
+  // so sign-out always works even when the token is already dead (e.g. after the
+  // Supabase project was paused). Never let a failed network call strand the user.
+  try{ await db.auth.signOut({scope:'local'}); }catch(e){ console.warn('signOut:',e?.message); }
+  try{ localStorage.removeItem('sb-'+SB_URL.split('//')[1].split('.')[0]+'-auth-token'); }catch(e){}
   trades=[];profile=null;aiUsed=0;weekSummaries={};
   $('main-app').style.display='none';
   $('auth-screen').style.display='flex';
