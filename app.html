@@ -1202,7 +1202,10 @@ async function callAI(payload){
     body:JSON.stringify(payload)
   });
   const data=await res.json().catch(()=>({}));
-  if(res.status===401){ await doSignOut(); throw new Error(LANG==='ar'?'انتهت جلستك — الرجاء تسجيل الدخول مجدداً':'Your session expired — please sign in again'); }
+  // A 401 here means the WORKER couldn't verify the token — we already proactively
+  // refreshed above, so the session is valid. Don't log the user out (that just bounces
+  // a signed-in user for a server-side problem); surface a retry message instead.
+  if(res.status===401) throw new Error(LANG==='ar'?'تعذّر على خدمة الذكاء الاصطناعي التحقق من جلستك — حاول مرة أخرى بعد قليل':'The AI service could not verify your session — please try again shortly');
   if(res.status===429) throw new Error(data?.error?.message||"You've used all your free AI analyses for now");
   if(!res.ok||data?.error) throw new Error(data?.error?.message||'AI request failed');
   if(typeof data.aiUsed==='number'){aiUsed=data.aiUsed;if(typeof updateAICounter==='function')updateAICounter();}
