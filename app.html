@@ -1250,16 +1250,23 @@ function showUpgrade(feature){
 // right processor (Stripe / Paddle / …) per the user's country and return a
 // checkout URL. Until that endpoint is live, route to the pricing page.
 async function startUpgrade(tier,cycle){
+  if(typeof BILLING_URL==='undefined' || !BILLING_URL){ window.location.href='/pricing?plan='+tier; return; }
   try{
-    if(typeof BILLING_URL!=='undefined' && BILLING_URL){
-      const {data:{session}}=await db.auth.getSession();
-      if(!session){showAuthModal&&showAuthModal();return;}
-      const r=await fetch(BILLING_URL+'/checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({tier,cycle:cycle||'m',locale:LANG})});
-      const d=await r.json().catch(()=>({}));
-      if(d&&d.url){window.location.href=d.url;return;}
+    let {data:{session}}=await db.auth.getSession();
+    if(!session){ showAuthModal&&showAuthModal(); return; }
+    // Refresh an expired/near-expired token so the Worker never gets a dead one.
+    if(!session.expires_at || session.expires_at*1000 < Date.now()+60000){
+      const rf=await db.auth.refreshSession();
+      if(rf.data?.session) session=rf.data.session;
     }
-  }catch(e){/* fall through to pricing */}
-  window.location.href='/pricing?plan='+tier;
+    toast(LANG==='ar'?'جارٍ فتح صفحة الدفع…':'Opening checkout…');
+    const r=await fetch(BILLING_URL+'/checkout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({tier,cycle:cycle||'m',locale:LANG})});
+    const d=await r.json().catch(()=>({}));
+    if(d&&d.url){ window.location.href=d.url; return; }
+    // Surface the real reason instead of silently bouncing to /pricing.
+    const msg=(d&&d.error&&d.error.message)?d.error.message:('Checkout error '+r.status);
+    toast(msg+(d?.error?.detail?(' — '+d.error.detail):''));
+  }catch(e){ toast('Checkout failed: '+(e?.message||e)); }
 }
 
 // Opens the processor's customer portal (manage / cancel). Wired once billing is live.
