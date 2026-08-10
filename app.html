@@ -2636,7 +2636,9 @@ function render(){
 // which is already allowed by the CSP connect-src — no third-party script needed.
 var econCache=null, econLoading=false;
 async function loadEconCalendar(){
-  if(econCache||econLoading) return;
+  // Keep good data; if we only got an empty result, allow a retry on the next render
+  // instead of caching the empty state for the whole session.
+  if((econCache&&econCache.length)||econLoading) return;
   econLoading=true;
   try{
     const r=await fetch('https://uncai.omar3halabi.workers.dev/calendar');
