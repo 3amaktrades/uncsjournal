@@ -716,8 +716,8 @@ body.dark .ws-table th,body.dark #tab-weekly th{background:var(--card2);color:va
       <button class="mob-nav-item" id="mnav-log" onclick="showTab('log')">
         <span class="mob-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg></span><span>Trades</span>
       </button>
-      <button class="mob-nav-item" id="mnav-juice" onclick="showTab('juice')">
-        <span class="mob-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></span><span>News</span>
+      <button class="mob-nav-item" id="mnav-analytics" onclick="showTab('analytics')">
+        <span class="mob-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg></span><span>Stats</span>
       </button>
       <button class="mob-nav-item" id="mnav-more" onclick="toggleMobileMenu()">
         <span class="mob-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M4 6h16"/><path d="M4 18h16"/></svg></span><span>More</span>
@@ -2584,7 +2584,7 @@ function calcRisk(){
 
 // ── RENDER FORM ───
 // ── NAVIGATION ──────────────────────────────────────────────
-const DEFAULT_TAB_ORDER=['dashboard','new','log','juice','calc','assistant','weekly','analytics','lb','import','templates'];
+const DEFAULT_TAB_ORDER=['dashboard','new','log','calc','assistant','weekly','analytics','lb','import','templates'];
 var tabOrder = JSON.parse(localStorage.getItem('utf_tab_order')||'null') || [...DEFAULT_TAB_ORDER];
 if(!tabOrder.includes('dashboard')) tabOrder=['dashboard',...tabOrder];
 var sbDragSrc = null;
@@ -2757,6 +2757,70 @@ function render(){
 }
 
 
+// ── Economic calendar (replaces the old Financial Juice tab) ──
+// Data comes from the uncai Worker's /calendar route (ForexFactory this-week feed),
+// which is already allowed by the CSP connect-src — no third-party script needed.
+var econCache=null, econLoading=false;
+async function loadEconCalendar(){
+  if(econCache||econLoading) return;
+  econLoading=true;
+  try{
+    const r=await fetch('https://uncai.omar3halabi.workers.dev/calendar');
+    const data=await r.json();
+    econCache=Array.isArray(data)?data:[];
+  }catch(e){ econCache=[]; }
+  econLoading=false;
+  const el=document.getElementById('dash-econ-body');
+  if(el) el.innerHTML=renderEconTableHTML();
+}
+function econImpactColor(imp){
+  const i=(imp||'').toLowerCase();
+  if(i==='high') return 'var(--err-txt)';
+  if(i==='medium') return 'var(--warn-txt)';
+  return 'var(--text4)';
+}
+function renderEconTableHTML(){
+  if(!econCache) return '<div style="padding:12px 2px;color:var(--text3);font-size:12px">'+(LANG==='ar'?'جارٍ تحميل التقويم…':'Loading calendar…')+'</div>';
+  const rows=econCache
+    .filter(function(e){const i=(e.impact||'').toLowerCase();return i==='high'||i==='medium';})
+    .sort(function(a,b){return new Date(a.date)-new Date(b.date);});
+  if(!rows.length) return '<div style="padding:12px 2px;color:var(--text3);font-size:12px">'+(LANG==='ar'?'لا أحداث عالية التأثير هذا الأسبوع':'No high-impact events this week')+'</div>';
+  const DOWa=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const DOWe=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
+  let lastDay='';
+  rows.forEach(function(e){
+    const d=new Date(e.date);
+    const dayKey=d.toDateString();
+    if(dayKey!==lastDay){
+      lastDay=dayKey;
+      const lbl=(LANG==='ar'?DOWa[d.getDay()]:DOWe[d.getDay()])+' '+d.getDate();
+      html+='<tr><td colspan="5" style="padding:10px 4px 5px;font-weight:800;color:#C9A84C;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;border-top:1px solid var(--border)">'+esc(lbl)+'</td></tr>';
+    }
+    let time='';try{time=d.toLocaleTimeString(LANG==='ar'?'ar':'en-US',{hour:'2-digit',minute:'2-digit'});}catch(_){time='';}
+    const fp=[e.forecast?('F '+e.forecast):'',e.previous?('P '+e.previous):''].filter(Boolean).join('  ·  ');
+    html+='<tr>'
+      +'<td style="padding:5px 6px;color:var(--text3);white-space:nowrap;font-variant-numeric:tabular-nums">'+esc(time)+'</td>'
+      +'<td style="padding:5px 4px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+econImpactColor(e.impact)+'"></span></td>'
+      +'<td style="padding:5px 6px;font-weight:700;color:var(--text2);white-space:nowrap">'+esc(e.country||'')+'</td>'
+      +'<td style="padding:5px 6px;color:var(--text)">'+esc(e.title||'')+'</td>'
+      +'<td style="padding:5px 6px;color:var(--text3);white-space:nowrap;text-align:'+(LANG==='ar'?'left':'right')+';font-variant-numeric:tabular-nums">'+esc(fp)+'</td>'
+      +'</tr>';
+  });
+  html+='</table></div>';
+  return html;
+}
+function econWidgetHTML(){
+  return '<div class="dash-widget" id="dash-econ" style="margin-top:14px">'
+    +'<div class="dwt" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'
+    +'<span>'+(LANG==='ar'?'التقويم الاقتصادي — هذا الأسبوع':'Economic Calendar — This Week')+'</span>'
+    +'<span style="font-size:10px;color:var(--text3);font-weight:normal;display:flex;gap:12px">'
+    +'<span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--err-txt);margin-inline-end:4px"></span>'+(LANG==='ar'?'عالي':'High')+'</span>'
+    +'<span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--warn-txt);margin-inline-end:4px"></span>'+(LANG==='ar'?'متوسط':'Medium')+'</span>'
+    +'</span></div>'
+    +'<div id="dash-econ-body">'+renderEconTableHTML()+'</div>'
+    +'</div>';
+}
 function renderDashboard(){
   if(dashOutcomeChart){dashOutcomeChart.destroy();dashOutcomeChart=null;}
   const _t=filterByTimeframe(filterByAccount(trades));
@@ -2872,8 +2936,10 @@ function renderDashboard(){
     ):'<div style="padding-top:6px;font-size:12px;color:var(--text3)">'+(LANG==='ar'?'لا توجد صفقات بعد':'No trades yet')+'</div>')
     +'</div>'
     +'<div class="dash-widget" id="ai-motivation-card"><div class="dwt">'+t('Coach Message')+'</div><div id="ai-motivation-text" class="ai-msg">'+(dashAIMsg||'<span style="color:#aaa;font-size:12px">'+t('Loading your personalized message...')+'</span>')+'</div><button onclick="loadDashAIMsg(true)" style="margin-top:10px;background:none;border:1px solid #E0DED8;border-radius:6px;padding:5px 10px;font-size:11px;color:#888;cursor:pointer">'+t('↻ Refresh')+'</button></div>'
-    +'</div></div>';
+    +'</div></div>'
+    +econWidgetHTML();
   if(!dashAIMsg)loadDashAIMsg(false);
+  loadEconCalendar();
   const dashOutcomeCtx=document.getElementById('outcome-chart-dash');
   if(dashOutcomeCtx&&typeof Chart!=='undefined'){
     dashOutcomeChart=new Chart(dashOutcomeCtx,{
