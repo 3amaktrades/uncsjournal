@@ -2634,6 +2634,9 @@ function render(){
 function renderDashboard(){
   if(dashOutcomeChart){dashOutcomeChart.destroy();dashOutcomeChart=null;}
   const _t=filterByTimeframe(filterByAccount(trades));
+  // Calendar always shows every trade (it has its own month navigation), so it must
+  // ignore the timeframe picker — only the KPI cards/charts respect the timeframe.
+  const _all=filterByAccount(trades);
   const now=new Date(),hr=now.getHours();
   const greet=hr<12?t('Good morning'):hr<17?t('Good afternoon'):t('Good evening');
   const name=profile?profile.name:t('Trader');
@@ -2663,7 +2666,7 @@ function renderDashboard(){
   const todayStr=now.toISOString().split('T')[0];
   const mnStr=String(mo+1).padStart(2,'0');
   const tradesByDay={};
-  _t.forEach(t2=>{
+  _all.forEach(t2=>{
     if(t2.date&&t2.date.startsWith(yr+'-'+mnStr)){
       if(!tradesByDay[t2.date])tradesByDay[t2.date]={r:0,count:0};
       tradesByDay[t2.date].r+=parseFloat(t2.r)||0;
