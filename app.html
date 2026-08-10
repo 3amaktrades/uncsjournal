@@ -2635,9 +2635,9 @@ function render(){
 // Data comes from the uncai Worker's /calendar route (ForexFactory this-week feed),
 // which is already allowed by the CSP connect-src — no third-party script needed.
 var econCache=null, econLoading=false;
+var econCur=(function(){try{return JSON.parse(localStorage.getItem('utf_econ_cur')||'null');}catch(e){return null;}})();
 async function loadEconCalendar(){
-  // Keep good data; if we only got an empty result, allow a retry on the next render
-  // instead of caching the empty state for the whole session.
+  // Keep good data; if we only got an empty result, allow a retry on the next render.
   if((econCache&&econCache.length)||econLoading) return;
   econLoading=true;
   try{
@@ -2646,8 +2646,8 @@ async function loadEconCalendar(){
     econCache=Array.isArray(data)?data:[];
   }catch(e){ econCache=[]; }
   econLoading=false;
-  const el=document.getElementById('dash-econ-body');
-  if(el) el.innerHTML=renderEconTableHTML();
+  const b=document.getElementById('dash-econ-body'); if(b) b.innerHTML=renderEconTableHTML();
+  const f=document.getElementById('dash-econ-filter'); if(f) f.innerHTML=econFilterChipsHTML();
 }
 function econImpactColor(imp){
   const i=(imp||'').toLowerCase();
@@ -2655,35 +2655,68 @@ function econImpactColor(imp){
   if(i==='medium') return 'var(--warn-txt)';
   return 'var(--text4)';
 }
+function econAvailableCurrencies(){
+  if(!econCache) return [];
+  const order=['USD','EUR','GBP','JPY','CAD','AUD','NZD','CHF','CNY'];
+  return [...new Set(econCache.map(function(e){return e.country;}).filter(Boolean))]
+    .sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b);});
+}
+function toggleEconCur(c){
+  const avail=econAvailableCurrencies();
+  let sel=(econCur===null)?avail.slice():econCur.slice();
+  const i=sel.indexOf(c);
+  if(i>=0) sel.splice(i,1); else sel.push(c);
+  econCur=(sel.length===0||sel.length===avail.length)?null:sel; // empty or all => show everything
+  try{localStorage.setItem('utf_econ_cur',JSON.stringify(econCur));}catch(e){}
+  const b=document.getElementById('dash-econ-body'); if(b) b.innerHTML=renderEconTableHTML();
+  const f=document.getElementById('dash-econ-filter'); if(f) f.innerHTML=econFilterChipsHTML();
+}
+function econFilterChipsHTML(){
+  const avail=econAvailableCurrencies();
+  if(!avail.length) return '';
+  return '<span style="font-size:10px;color:var(--text4);align-self:center;margin-inline-end:2px">'+(LANG==='ar'?'التركيز:':'Focus:')+'</span>'
+    +avail.map(function(c){
+      const on=(econCur===null)||econCur.indexOf(c)>=0;
+      return '<button onclick="toggleEconCur(\''+esc(c)+'\')" style="padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid '+(on?'#C9A84C':'var(--border)')+';background:'+(on?'rgba(201,168,76,.14)':'transparent')+';color:'+(on?'#C9A84C':'var(--text3)')+'">'+esc(c)+'</button>';
+    }).join('');
+}
 function renderEconTableHTML(){
   if(!econCache) return '<div style="padding:12px 2px;color:var(--text3);font-size:12px">'+(LANG==='ar'?'جارٍ تحميل التقويم…':'Loading calendar…')+'</div>';
-  const rows=econCache
-    .filter(function(e){const i=(e.impact||'').toLowerCase();return i==='high'||i==='medium';})
-    .sort(function(a,b){return new Date(a.date)-new Date(b.date);});
-  if(!rows.length) return '<div style="padding:12px 2px;color:var(--text3);font-size:12px">'+(LANG==='ar'?'لا أحداث عالية التأثير هذا الأسبوع':'No high-impact events this week')+'</div>';
+  let rows=econCache.filter(function(e){const i=(e.impact||'').toLowerCase();return i==='high'||i==='medium';});
+  if(econCur!==null) rows=rows.filter(function(e){return econCur.indexOf(e.country)>=0;});
+  if(!rows.length) return '<div style="padding:12px 2px;color:var(--text3);font-size:12px">'+(LANG==='ar'?'لا أحداث مطابقة هذا الأسبوع':'No matching events this week')+'</div>';
+  function keyOf(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  const byDay={};
+  rows.forEach(function(e){const d=new Date(e.date);const k=keyOf(d);if(!byDay[k])byDay[k]={date:new Date(d.getFullYear(),d.getMonth(),d.getDate()),events:[]};byDay[k].events.push(e);});
+  Object.keys(byDay).forEach(function(k){byDay[k].events.sort(function(a,b){return new Date(a.date)-new Date(b.date);});});
+  // Columns: Mon–Fri of the events' week, plus any weekend day that actually has events.
+  const anchor=Object.values(byDay).map(function(x){return x.date;}).sort(function(a,b){return a-b;})[0]||new Date();
+  const monday=new Date(anchor); monday.setDate(anchor.getDate()-((anchor.getDay()+6)%7));
+  const cols=[];
+  for(let i=0;i<5;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);cols.push(d);}
+  Object.values(byDay).forEach(function(x){const dow=x.date.getDay();if((dow===0||dow===6)&&!cols.some(function(c){return keyOf(c)===keyOf(x.date);}))cols.push(x.date);});
+  cols.sort(function(a,b){return a-b;});
   const DOWa=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-  const DOWe=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  let html='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">';
-  let lastDay='';
-  rows.forEach(function(e){
-    const d=new Date(e.date);
-    const dayKey=d.toDateString();
-    if(dayKey!==lastDay){
-      lastDay=dayKey;
-      const lbl=(LANG==='ar'?DOWa[d.getDay()]:DOWe[d.getDay()])+' '+d.getDate();
-      html+='<tr><td colspan="5" style="padding:10px 4px 5px;font-weight:800;color:#C9A84C;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;border-top:1px solid var(--border)">'+esc(lbl)+'</td></tr>';
+  const DOWe=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  let html='<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">';
+  cols.forEach(function(cd){
+    const day=byDay[keyOf(cd)];
+    html+='<div style="flex:1 0 0;min-width:148px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px 10px 3px">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--border)"><span style="font-weight:800;font-size:10.5px;letter-spacing:.5px;color:var(--text2)">'+(LANG==='ar'?DOWa[cd.getDay()]:DOWe[cd.getDay()])+'</span><span style="font-size:13px;font-weight:700;color:var(--text3)">'+cd.getDate()+'</span></div>';
+    if(day){
+      day.events.forEach(function(e){
+        let time='';try{time=new Date(e.date).toLocaleTimeString(LANG==='ar'?'ar':'en-US',{hour:'2-digit',minute:'2-digit'});}catch(_){}
+        const fp=[e.forecast?('F '+e.forecast):'',e.previous?('P '+e.previous):''].filter(Boolean).join('  ');
+        html+='<div style="margin-bottom:10px">'
+          +'<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);margin-bottom:2px"><span style="width:7px;height:7px;border-radius:50%;background:'+econImpactColor(e.impact)+';flex-shrink:0"></span><span style="font-variant-numeric:tabular-nums">'+esc(time)+'</span><span style="font-weight:700;color:var(--text2)">'+esc(e.country||'')+'</span></div>'
+          +'<div style="font-size:11.5px;color:var(--text);line-height:1.3">'+esc(e.title||'')+'</div>'
+          +(fp?'<div style="font-size:9.5px;color:var(--text4);margin-top:1px;font-variant-numeric:tabular-nums">'+esc(fp)+'</div>':'')
+          +'</div>';
+      });
     }
-    let time='';try{time=d.toLocaleTimeString(LANG==='ar'?'ar':'en-US',{hour:'2-digit',minute:'2-digit'});}catch(_){time='';}
-    const fp=[e.forecast?('F '+e.forecast):'',e.previous?('P '+e.previous):''].filter(Boolean).join('  ·  ');
-    html+='<tr>'
-      +'<td style="padding:5px 6px;color:var(--text3);white-space:nowrap;font-variant-numeric:tabular-nums">'+esc(time)+'</td>'
-      +'<td style="padding:5px 4px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+econImpactColor(e.impact)+'"></span></td>'
-      +'<td style="padding:5px 6px;font-weight:700;color:var(--text2);white-space:nowrap">'+esc(e.country||'')+'</td>'
-      +'<td style="padding:5px 6px;color:var(--text)">'+esc(e.title||'')+'</td>'
-      +'<td style="padding:5px 6px;color:var(--text3);white-space:nowrap;text-align:'+(LANG==='ar'?'left':'right')+';font-variant-numeric:tabular-nums">'+esc(fp)+'</td>'
-      +'</tr>';
+    html+='</div>';
   });
-  html+='</table></div>';
+  html+='</div>';
   return html;
 }
 function econWidgetHTML(){
@@ -2694,6 +2727,7 @@ function econWidgetHTML(){
     +'<span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--err-txt);margin-inline-end:4px"></span>'+(LANG==='ar'?'عالي':'High')+'</span>'
     +'<span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--warn-txt);margin-inline-end:4px"></span>'+(LANG==='ar'?'متوسط':'Medium')+'</span>'
     +'</span></div>'
+    +'<div id="dash-econ-filter" style="display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 12px">'+econFilterChipsHTML()+'</div>'
     +'<div id="dash-econ-body">'+renderEconTableHTML()+'</div>'
     +'</div>';
 }
