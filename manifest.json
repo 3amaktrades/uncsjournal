@@ -1,0 +1,17 @@
+{
+  "name": "Unc's Journal",
+  "short_name": "Unc's Journal",
+  "description": "Smart trading journal — log trades, track performance, and get AI coaching.",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#15130D",
+  "theme_color": "#15130D",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

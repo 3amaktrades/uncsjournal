@@ -5,7 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Unc's Journal</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230F1923'/><line x1='16' y1='4' x2='16' y2='9' stroke='%23C9A84C' stroke-width='2.5' stroke-linecap='round'/><rect x='11' y='9' width='10' height='14' rx='1.5' fill='none' stroke='%23C9A84C' stroke-width='2.5'/><line x1='16' y1='23' x2='16' y2='28' stroke='%23C9A84C' stroke-width='2.5' stroke-linecap='round'/></svg>"/>
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230F1923'/><line x1='16' y1='4' x2='16' y2='9' stroke='%23C9A84C' stroke-width='2.5' stroke-linecap='round'/><rect x='11' y='9' width='10' height='14' rx='1.5' fill='none' stroke='%23C9A84C' stroke-width='2.5'/><line x1='16' y1='23' x2='16' y2='28' stroke='%23C9A84C' stroke-width='2.5' stroke-linecap='round'/></svg>"/>
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"/>
+  <!-- PWA (installable app) -->
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#15130D"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Unc's Journal"/>
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 <style>
 :root{
   --bg:#F5F4F1;--bg2:#ffffff;--bg3:#f0ede8;
