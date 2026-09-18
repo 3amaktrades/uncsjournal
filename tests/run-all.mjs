@@ -18,8 +18,8 @@ let failed = 0;
 console.log(`Running ${testFiles.length} test file(s)...\n`);
 
 for (const file of testFiles) {
-  const result = spawnSync('node', [join(here, file)], { encoding: 'utf8' });
-  const out = (result.stdout || '') + (result.stderr || '');
+  const result = spawnSync(process.execPath, [join(here, file)], { encoding: 'utf8', cwd: here, timeout: 90000 });
+  const out = (result.stdout || '') + (result.stderr || '') + (result.error ? '\n'+result.error.message : '');
   // A test file is treated as failed if it exited non-zero, threw a script-level
   // error, or its own JSON result explicitly reports ok:false.
   const looksFailed = result.status !== 0
