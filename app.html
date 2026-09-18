@@ -759,6 +759,7 @@ body.dark .ws-table th,body.dark #tab-weekly th{background:var(--card2);color:va
 
 <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g" crossorigin="anonymous"></script>
 <script data-cfasync="false" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.50.0/dist/umd/supabase.min.js" integrity="sha384-jP+y6mxch/vbLrNpx4basfv6ciZQuHwdRHgZGa6Mhja0Xm4p87ok2OQavTrRIGxH" crossorigin="anonymous"></script>
+<script data-cfasync="false" src="/assets/vendor/html2canvas-1.4.1.min.js"></script>
 <script data-cfasync="false">
 // Global state — declared here so strict mode environments (Cloudflare) don't throw
 var customTemplates = [];
@@ -766,6 +767,7 @@ var activeTemplates = ['ict'];
 var editingTemplate = null;
 var LANG = localStorage.getItem('utf_lang') || 'en';
 var currentSession = null;
+restoreTemplates();
 var darkMode = (localStorage.getItem('utf_dark') || '1') === '1';
 var notifEnabled = localStorage.getItem('utf_notif') === '1';
 var calendarEvents = [];
@@ -844,10 +846,11 @@ async function saveSettings(){
   const acct=parseFloat(document.getElementById('set-acct')?.value)||0;
   const risk=parseFloat(document.getElementById('set-risk')?.value)||0;
   if(name&&profile){
-    profile.name=name;
-    if(acct) profile.account=acct;
-    if(risk) profile.risk=risk;
-    try{await saveProfileDB(profile);}catch(e){}
+    const owner=currentSession?.user?.id;
+    const updated={...profile,name,account:acct||profile.account,risk:risk||profile.risk};
+    try{await saveProfileDB(updated);}catch(e){toast('Could not save settings: '+e.message);return;}
+    if(currentSession?.user?.id!==owner) return;
+    profile=updated;
     updateUI();
     toast('✓ Settings saved');
     closeMo();
@@ -1439,6 +1442,24 @@ async function doUpdatePassword(){
   window.history.replaceState(null,'',window.location.pathname);
 }
 
+function showResetModal(){
+  openMo('Reset password','<div class="fl"><label for="am-reset-email">Email</label><input type="email" id="am-reset-email" autocomplete="email"/></div>'+
+    '<div id="am-reset-status" role="status" style="margin:12px 0"></div>'+
+    '<button class="setup-btn" id="am-reset-btn" onclick="sendResetLink()">Send reset link</button>'+
+    '<button onclick="showAuthModal()" style="margin-top:12px">Back to sign in</button>');
+}
+async function sendResetLink(){
+  const email=$('am-reset-email')?.value.trim();
+  const status=$('am-reset-status'),btn=$('am-reset-btn');
+  if(!email){status.textContent='Please enter your email';return;}
+  btn.disabled=true;
+  try{
+    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/app'});
+    if(error) throw error;
+    status.textContent='If an account exists for this email, check your inbox for a reset link.';
+  }catch(e){status.textContent='Could not send reset link: '+e.message;}
+  finally{btn.disabled=false;}
+}
 function authView(v){
   ['main','reset','confirm'].forEach(n=>{
     const el=$('av-'+n);
@@ -1471,8 +1492,8 @@ async function doSignIn(){
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('Connection timeout — check internet')),8000))
     ]);
   }catch(te){
-    if(btn){btn.disabled=false;btn.textContent='Sign in';}
-    if(err){err.textContent=te.message;err.style.display='block';}
+    setLoad('in',false);
+    showE('auth-err',te.message);
     return;
   }
   const{error}=_res;
@@ -1493,17 +1514,22 @@ async function doSignUp(){
   authView('confirm');
 }
 async function doReset(){
-  const email=$('reset-email')?.value||''.trim();
+  const email=$('reset-email')?.value.trim();
   if(!email){showE('reset-err','Please enter your email');return;}
   setLoad('reset',true);
-  await db.auth.resetPasswordForEmail(email,{redirectTo:'https://uncsjournal.com/app'});
-  setLoad('reset',false);
-  showOk('reset-ok','✓ Reset link sent — check your email');
+  try{
+    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/app'});
+    if(error) throw error;
+    showOk('reset-ok','If an account exists for this email, check your inbox for a reset link.');
+  }catch(e){showE('reset-err',e.message);}
+  finally{setLoad('reset',false);}
 }
 async function doSignOut(){
   // Local scope + try/catch: clears the stored session WITHOUT a server round-trip,
   // so sign-out always works even when the token is already dead (e.g. after the
   // Supabase project was paused). Never let a failed network call strand the user.
+  currentSession=null;pendingTrade=null;aiChatHistory=[];userAccounts=[];activeAccountId='all';
+  restoreTemplates();
   try{ await db.auth.signOut({scope:'local'}); }catch(e){ console.warn('signOut:',e?.message); }
   try{ localStorage.removeItem('sb-'+SB_URL.split('//')[1].split('.')[0]+'-auth-token'); }catch(e){}
   trades=[];profile=null;aiUsed=0;weekSummaries={};
@@ -1518,59 +1544,47 @@ function handleAuthBtn(){
 
 // ── DB
 async function loadUserData(){
+  const owner=currentSession?.user?.id;
+  if(!owner) return;
+  restoreTemplates();
+  weekSummaries=readUserJSON('utf_monthly_reports',{},owner);
   try{
-    // Run profile and trades queries in PARALLEL for speed
-    const[profileRes, tradesRes] = await Promise.all([
-      db.from('profiles').select('*').single(),
-      db.from('trades').select('*').order('trade_date',{ascending:false})
+    const [profileRes,tradesRes]=await Promise.all([
+      db.from('profiles').select('*').eq('id',owner).single(),
+      db.from('trades').select('*').eq('user_id',owner).order('trade_date',{ascending:false})
     ]);
-    const pd = profileRes.data;
-    const td = tradesRes.data;
-    if(pd)profile={
-      name:pd.name,account:pd.account_size,risk:pd.risk_pct,
+    if(currentSession?.user?.id!==owner) return;
+    if(tradesRes.error) throw tradesRes.error;
+    if(profileRes.error && profileRes.error.code!=='PGRST116') throw profileRes.error;
+    const pd=profileRes.data;
+    profile=pd?{name:pd.name,account:pd.account_size,risk:pd.risk_pct,
       aiUsed:pd.ai_used,joinDate:pd.join_date||pd.created_at?.split('T')[0],
       broker:pd.broker,tradingStyle:pd.trading_style,experience:pd.experience,
       accountType:pd.account_type,propFirm:pd.prop_firm,
-      instruments:pd.instruments?.join(', '),timezone:pd.timezone,goals:pd.goals
-    };
+      instruments:pd.instruments?.join(', '),timezone:pd.timezone,goals:pd.goals}:null;
+    if(Array.isArray(pd?.custom_templates) && localStorage.getItem(userStorageKey('utf_templates',owner))===null){
+      customTemplates=pd.custom_templates;
+      writeUserJSON('utf_templates',customTemplates,owner);
+      restoreTemplates();
+    }
     aiUsed=profile?.aiUsed||0;
-    if(td) trades=td.map(r=>({
-      id:r.id,dbId:r.id,date:r.trade_date,sym:r.sym||r.symbol,dir:r.direction,
-      r:r.r_result,rating:r.rating,session:r.session,notes:r.notes,
-      entry:r.entry_price,exit:r.exit_price,sl:r.stop_loss,tp:r.take_profit,
-      qty:r.quantity,pnl:r.pnl,fees:r.fees,screenshot:r.screenshot,
-      entryDOL:r.entry_dol||[],exitDOL:r.exit_dol||[],
-      htf:r.htf||[],ltf:r.ltf||[],of:r.order_flow||[],
-      smt:r.smt_type,smtVs:r.smt_vs,liqSwept:r.liq_swept,
-      vshape:r.vshape,ruleBreak:r.rule_break||'None',
-      preState:r.pre_state,metPlan:r.met_plan,followedPlan:r.followed_plan,
-      funded:!!r.funded,challenge:!!r.challenge,
-      aiAnalysis:r.ai_analysis,voiceNote:r.voice_note||null,
-      accountId:r.account_id||null,time:r.trade_time
-    }));
-    // Re-attach any locally-saved trades that never finished syncing (e.g. tab closed
-    // before the background write completed) and retry their sync now.
-    const stillPending=loadPendingCache().filter(pt=>!trades.some(t=>t.id===pt.id));
-    if(stillPending.length){
-      trades=[...stillPending,...trades];
-      syncAllPendingTrades();
-    }
-  // Re-render current tab now that trades are loaded
-  try{
-    updateAICounter();
-    const tc=document.getElementById('tc');
-    if(tc) tc.textContent=trades.length+' trade'+(trades.length!==1?'s':'');
-    if(typeof currentTab!=='undefined'){
-      if(currentTab==='dashboard') renderDashboard();
-      else if(currentTab==='log') renderLog();
-      else if(currentTab==='analytics') renderAnalytics();
-      else if(currentTab==='weekly') renderWeekly();
-    }
-  }catch(re){}
-  }catch(e){console.error('loadUserData error:',e);}
+    const loaded=(tradesRes.data||[]).map(dbToTrade);
+    // Pending edits take precedence over a stale server read. Preserve server IDs
+    // so retrying an acknowledged insert cannot create another row.
+    const pending=loadPendingCache(owner);
+    const pendingIds=new Set(pending.map(t=>String(t.id)));
+    trades=[...pending.map(t=>({...t,dbId:t.dbId||loaded.find(r=>String(r.id)===String(t.id))?.dbId})),
+      ...loaded.filter(t=>!pendingIds.has(String(t.id)))];
+    if(pending.length) syncAllPendingTrades();
+    updateAICounter();updateUI();
+    if(currentTab==='dashboard') renderDashboard();
+    else if(currentTab==='log') renderLog();
+    else if(currentTab==='analytics') renderAnalytics();
+    else if(currentTab==='weekly') renderWeekly();
+  }catch(e){console.error('loadUserData error:',e);toast('Could not load your journal: '+e.message);}
 }
 
-async function saveTradeDB(t){
+async function saveTradeDB(t, expectedOwner=currentSession?.user?.id){
   let userId = currentSession?.user?.id;
   if(!userId){
     // Fallback: get user from Supabase client directly
@@ -1579,6 +1593,7 @@ async function saveTradeDB(t){
     userId=user?.id;
   }
   if(!userId) throw new Error('Not signed in — please refresh and sign in again');
+  if((expectedOwner && userId!==expectedOwner)||(t.ownerId && t.ownerId!==userId)) throw new Error('Account changed — please retry from the original account');
   const row={user_id:userId,...tradeToDb(t)};
   const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Database timeout — Supabase is slow, try again')),30000));
   if(t.dbId){
@@ -1602,31 +1617,57 @@ async function deleteTradeDB(dbId){
 // ── LOCAL-FIRST PENDING TRADE CACHE ──
 // Trades are saved to this array/localStorage the instant "Save" is clicked, before
 // the network write completes, so a slow/blocked connection never loses trade data.
+function userStorageKey(base,owner=currentSession?.user?.id){return base+':'+(owner||'guest');}
+function readUserJSON(base,fallback,owner=currentSession?.user?.id){
+  try{return JSON.parse(localStorage.getItem(userStorageKey(base,owner)))??fallback;}catch(e){return fallback;}
+}
+function writeUserJSON(base,value,owner=currentSession?.user?.id){
+  localStorage.setItem(userStorageKey(base,owner),JSON.stringify(value));
+}
 function savePendingCache(){
-  try{
-    const pending=trades.filter(t=>t.pendingSync);
-    localStorage.setItem('utf_pending_trades',JSON.stringify(pending));
-  }catch(e){}
+  const owner=currentSession?.user?.id;
+  if(!owner) return;
+  writeUserJSON('utf_pending_trades',trades.filter(t=>t.pendingSync&&(!t.ownerId||t.ownerId===owner)).map(t=>({...t,ownerId:owner})),owner);
 }
-function loadPendingCache(){
-  try{return JSON.parse(localStorage.getItem('utf_pending_trades')||'[]');}catch(e){return [];}
+function loadPendingCache(owner=currentSession?.user?.id){
+  if(!owner) return [];
+  const stored=readUserJSON('utf_pending_trades',[],owner);
+  // The old, unowned cache is deliberately not auto-imported into any account.
+  return Array.isArray(stored)?stored.filter(t=>t.ownerId===owner):[];
 }
+const pendingSyncJobs=new Map();
 async function syncPendingTrade(trade){
-  try{
-    const saved=await saveTradeDB(trade);
-    const idx=trades.findIndex(t=>t.id===trade.id);
-    if(idx>=0) trades[idx]={...saved,pendingSync:false};
-    savePendingCache();
-    if(currentTab==='log') renderLog();
-    if(currentTab==='dashboard') renderDashboard();
-  }catch(e){
-    console.error('Background trade sync failed, will retry next load:',e);
+  const owner=currentSession?.user?.id;
+  if(!owner||(trade.ownerId&&trade.ownerId!==owner)) return;
+  const key=owner+':'+trade.id;
+  if(pendingSyncJobs.has(key)) return pendingSyncJobs.get(key);
+  const job=(async()=>{
+    try{
+      const saved=await saveTradeDB(trade,owner);
+      if(currentSession?.user?.id!==owner) return;
+      const idx=trades.findIndex(t=>String(t.id)===String(trade.id));
+      if(idx>=0){
+        // An edit made during this request must remain queued, not be replaced
+        // by the older response.
+        const newer=trades[idx]!==trade;
+        trades[idx]=newer?{...trades[idx],dbId:saved.dbId,pendingSync:true}:{...saved,pendingSync:false};
+      }
+      savePendingCache();
+      if(currentTab==='log') renderLog();
+      if(currentTab==='dashboard') renderDashboard();
+    }catch(e){console.error('Background trade sync failed, will retry next load:',e);}
+  })();
+  pendingSyncJobs.set(key,job);
+  try{await job;}finally{pendingSyncJobs.delete(key);}
+  if(currentSession?.user?.id===owner){
+    const newer=trades.find(t=>String(t.id)===String(trade.id));
+    if(newer&&newer!==trade&&newer.pendingSync) return syncPendingTrade(newer);
   }
 }
 async function syncAllPendingTrades(){
-  const pending=trades.filter(t=>t.pendingSync);
-  for(const t of pending){await syncPendingTrade(t);}
+  for(const trade of trades.filter(t=>t.pendingSync)) await syncPendingTrade(trade);
 }
+
 async function saveProfileDB(p){
   let uid=currentSession?.user?.id;
   if(!uid){
@@ -1634,9 +1675,9 @@ async function saveProfileDB(p){
     const{data:{user}}=await Promise.race([db.auth.getUser(),getUserTimeout]);
     uid=user?.id;
   }
-  if(!uid) return;
+  if(!uid) throw new Error('Please sign in first');
   const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Database timeout — Supabase is slow, try again')),15000));
-  await Promise.race([db.from('profiles').upsert({
+  const {error}=await Promise.race([db.from('profiles').upsert({
     id:uid,
     name:p.name,
     account_size:p.account,
@@ -1652,6 +1693,7 @@ async function saveProfileDB(p){
     join_date:p.joinDate||new Date().toISOString().split('T')[0],
     updated_at:new Date().toISOString()
   }),timeout]);
+  if(error) throw error;
 }
 async function saveWeekDB(wk,summary){
   let uid=currentSession?.user?.id;
@@ -1660,9 +1702,10 @@ async function saveWeekDB(wk,summary){
     const{data:{user}}=await Promise.race([db.auth.getUser(),getUserTimeout]);
     uid=user?.id;
   }
-  if(!uid) return;
+  if(!uid) throw new Error('Please sign in first');
   const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Database timeout — Supabase is slow, try again')),15000));
-  await Promise.race([db.from('week_summaries').upsert({user_id:uid,week_start:wk,summary}),timeout]);
+  const {error}=await Promise.race([db.from('week_summaries').upsert({user_id:uid,week_start:wk,summary}),timeout]);
+  if(error) throw error;
 }
 async function loadLBDB(){
   try{
@@ -1689,14 +1732,19 @@ async function postLBDB(){
     }
     if(!uid) throw new Error('Not signed in — please refresh and sign in again');
     const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Database timeout — Supabase is slow, try again')),15000));
-    await Promise.race([db.from('leaderboard').upsert({user_id:uid,name:profile?.name,trades_count:t.length,r_secured:rSec,win_rate:(wins.length+losses.length)?wins.length/(wins.length+losses.length):0,wins:wins.length,top_rule_break:topBreak,join_date:profile?.joinDate,updated_at:new Date().toISOString()}),timeout]);
+    const {error}=await Promise.race([db.from('leaderboard').upsert({user_id:uid,name:profile?.name,trades_count:t.length,r_secured:rSec,win_rate:(wins.length+losses.length)?wins.length/(wins.length+losses.length):0,wins:wins.length,top_rule_break:topBreak,join_date:profile?.joinDate,updated_at:new Date().toISOString()}),timeout]);
+    if(error) throw error;
     toast('✓ Stats posted to leaderboard');await loadLBDB();renderLB();
   }catch(e){toast('Could not post: '+e.message);}
 }
 
+function nullableNumber(value){
+  if(value===null||value===undefined||String(value).trim()==='') return null;
+  const number=Number(value);return Number.isFinite(number)?number:null;
+}
 function tradeToDb(t){
   // Core columns that must exist
-  const row={sym:t.sym||null,trade_date:t.date||null,trade_time:t.time||null,stop:parseFloat(t.stop)||null,r_result:parseFloat(t.r)||null,max_rr:parseFloat(t.maxRR)||null,mae:parseFloat(t.mae)||null,rating:t.rating||null,direction:t.dir||null,news:t.news||null,screenshot:t.screenshot||null,notes:t.notes||null,thoughts:t.thoughts||null,funded:!!t.funded,challenge:!!t.challenge,entry_dol:t.entryDOL||[],exit_dol:t.exitDOL||[],ltf:t.ltf||[],htf:t.htf||[],met_plan:!!t.metPlan,order_flow:t.of||[],pre_state:t.preState||null,rule_break:t.ruleBreak||'None',rule_break_why:t.why||null,followed_plan:!!t.followedPlan,post_notes:t.postNotes||null,outcome:t.outcome||null,ai_analysis:t.aiAnalysis||null};
+  const row={sym:t.sym||null,trade_date:t.date||null,trade_time:t.time||null,stop:nullableNumber(t.stop),r_result:nullableNumber(t.r),max_rr:nullableNumber(t.maxRR),mae:nullableNumber(t.mae),rating:t.rating||null,direction:t.dir||null,news:t.news||null,screenshot:t.screenshot||null,notes:t.notes||null,thoughts:t.thoughts||null,funded:!!t.funded,challenge:!!t.challenge,entry_dol:t.entryDOL||[],exit_dol:t.exitDOL||[],ltf:t.ltf||[],htf:t.htf||[],met_plan:!!t.metPlan,order_flow:t.of||[],pre_state:t.preState||null,rule_break:t.ruleBreak||'None',rule_break_why:t.why||null,followed_plan:!!t.followedPlan,post_notes:t.postNotes||null,outcome:t.outcome||null,ai_analysis:t.aiAnalysis||null};
   // Optional newer columns (added via ALTER TABLE)
   if(t.liqSwept!==undefined) row.liq_swept=t.liqSwept||null;
   if(t.vshape!==undefined) row.vshape=t.vshape||null;
@@ -1709,7 +1757,18 @@ function tradeToDb(t){
   if(t.voiceNote!==undefined) row.voice_note=t.voiceNote||null;
   return row;
 }
-function dbToTrade(d){return{id:'db_'+d.id,dbId:d.id,sym:d.sym||'',date:d.trade_date||'',time:d.trade_time||'',stop:d.stop?.toString()||'',r:d.r_result?.toString()||'',maxRR:d.max_rr?.toString()||'',mae:d.mae?.toString()||'',liqSwept:d.liq_swept||'',vshape:d.vshape||'',smt:d.smt_type||'',smtVs:d.smt_vs||'',rating:d.rating||'',dir:d.direction||'',news:d.news||'',valTF:d.val_tf||'',screenshot:d.screenshot||'',notes:d.notes||'',thoughts:d.thoughts||'',funded:d.funded||false,challenge:d.challenge||false,entryDOL:d.entry_dol||[],exitDOL:d.exit_dol||[],ltf:d.ltf||[],htf:d.htf||[],metPlan:d.met_plan||false,of:d.order_flow||[],preState:d.pre_state||'',ruleBreak:d.rule_break||'None',why:d.rule_break_why||'',followedPlan:d.followed_plan||false,postNotes:d.post_notes||'',outcome:d.outcome||'',aiAnalysis:d.ai_analysis||null,customFields:d.custom_fields||null,voiceNote:d.voice_note||null};}
+function dbToTrade(d){return{
+  id:d.client_id??d.id,dbId:d.id,ownerId:d.user_id,
+  sym:d.sym??d.symbol??'',date:d.trade_date??'',time:d.trade_time??'',
+  stop:d.stop?.toString()??'',r:d.r_result?.toString()??'',maxRR:d.max_rr?.toString()??'',mae:d.mae?.toString()??'',
+  liqSwept:d.liq_swept??'',vshape:d.vshape??'',smt:d.smt_type??'',smtVs:d.smt_vs??'',rating:d.rating??'',
+  dir:d.direction??'',news:d.news??'',valTF:d.val_tf??'',screenshot:d.screenshot??'',notes:d.notes??'',thoughts:d.thoughts??'',
+  funded:!!d.funded,challenge:!!d.challenge,entryDOL:d.entry_dol||[],exitDOL:d.exit_dol||[],ltf:d.ltf||[],htf:d.htf||[],
+  metPlan:!!d.met_plan,of:d.order_flow||[],preState:d.pre_state??'',ruleBreak:d.rule_break||'None',why:d.rule_break_why??'',
+  followedPlan:!!d.followed_plan,postNotes:d.post_notes??'',outcome:d.outcome||getOutcome(d.r_result==null?'':String(d.r_result)),
+  aiAnalysis:d.ai_analysis??null,customFields:d.custom_fields??null,voiceNote:d.voice_note??null,accountId:d.account_id??null,
+  session:d.session,entry:d.entry_price,exit:d.exit_price,sl:d.stop_loss,tp:d.take_profit,qty:d.quantity,pnl:d.pnl,fees:d.fees
+};}
 
 // ── CHIPS ─
 function makeCS(id,opts,color,ph){
@@ -1924,6 +1983,7 @@ async function saveTrade(){
 
     // Save locally first so the trade is never lost even if the network write stalls \u2014
     // it syncs to the database in the background and retries on next load if needed.
+    trade.ownerId=session.user.id;
     trade.pendingSync=true;
     trades.unshift(trade);
     savePendingCache();
@@ -1944,10 +2004,15 @@ async function saveTrade(){
 }
 
 async function updateTradeDB(tid, updates){
-  const row = tradeToDb(updates);
+  const owner=currentSession?.user?.id;
+  if(!owner) throw new Error('Please sign in first');
+  const original=trades.find(t=>String(t.dbId)===String(tid));
+  if(!original) throw new Error('Trade no longer available — reload and try again');
+  const row = tradeToDb({...original,...updates});
   const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Database timeout — Supabase is slow, try again')),15000));
-  const{data,error}=await Promise.race([db.from('trades').update(row).eq('id',tid).select().single(),timeout]);
+  const{data,error}=await Promise.race([db.from('trades').update(row).eq('id',tid).eq('user_id',owner).select().single(),timeout]);
   if(error) throw error;
+  if(currentSession?.user?.id!==owner) throw new Error('Account changed during save');
   return dbToTrade(data);
 }
 
@@ -2006,13 +2071,22 @@ function toggleEdit(tid){
 }
 
 async function deleteTrade(tid){
-  const t=trades.find(x=>String(x.dbId)===String(tid)||String(x.id)===String(tid));
-  if(!t)return;
-  try{if(t.dbId)await deleteTradeDB(t.dbId);}catch(e){}
-  trades=trades.filter(x=>String(x.dbId)!==String(tid)&&String(x.id)!==String(tid));
-  savePendingCache();
-  updateUI();renderLog();renderAnalytics();toast('Trade deleted');
+  const owner=currentSession?.user?.id;
+  let trade=trades.find(t=>String(t.dbId)===String(tid)||String(t.id)===String(tid));
+  if(!trade) return;
+  try{
+    const job=pendingSyncJobs.get(owner+':'+trade.id);
+    if(job) await job;
+    if(currentSession?.user?.id!==owner) return;
+    trade=trades.find(t=>String(t.id)===String(trade.id));
+    if(!trade) return;
+    if(trade.dbId) await deleteTradeDB(trade.dbId);
+    if(currentSession?.user?.id!==owner) return;
+    trades=trades.filter(t=>t!==trade);
+    savePendingCache();updateUI();renderLog();renderAnalytics();toast('Trade deleted');
+  }catch(e){toast('Could not delete trade: '+e.message);}
 }
+
 
 // ── PROFILE SETUP ─
 function showProfileSetup(pending){
@@ -2067,7 +2141,8 @@ async function completeSetup(){
   // Use cached session - avoid slow getSession() call
   if(!currentSession){toast('Please sign in first');showAuthModal();return;}
   const account=parseFloat($('pm-acct')?.value)||50000,risk=parseFloat($('pm-risk')?.value)||1;
-  profile={
+  const owner=currentSession.user.id;
+  const updatedProfile={
     name,account,risk,
     joinDate:profile?.joinDate||new Date().toISOString().split('T')[0],
     broker:document.getElementById('pm-broker')?.value||'',
@@ -2079,7 +2154,9 @@ async function completeSetup(){
     timezone:document.getElementById('pm-tz')?.value||'',
     goals:document.getElementById('pm-goals')?.value||''
   };
-  try{await saveProfileDB(profile);}catch(e){console.error('Profile save error:',e);}
+  try{await saveProfileDB(updatedProfile);}catch(e){toast('Could not save profile: '+e.message);return;}
+  if(currentSession?.user?.id!==owner) return;
+  profile=updatedProfile;
   if(pendingTrade){
     try{const saved=await saveTradeDB(pendingTrade);trades.unshift(saved);pendingTrade=null;toast(`Welcome to Unc's Trading Floor, ${name}! Trade saved.`);}
     catch(e){toast('Profile saved but trade error: '+e.message);}
@@ -2133,7 +2210,7 @@ function togglePassVis(inputId,btn){
 function showAuthModal(){
   openMo('Welcome to Unc\'s Journal',`
     <div style="display:flex;border:1px solid #E0DED8;border-radius:8px;overflow:hidden;margin-bottom:16px">
-      <button id="am-tab-in" style="flex:1;padding:10px;font-size:13px;font-weight:bold;border:none;background:#0F1923;color:#C9A84C;cursor:pointer">Sign in</button>
+      <button id="am-tab-in" onclick="amTab('in')" style="flex:1;padding:10px;font-size:13px;font-weight:bold;border:none;background:#0F1923;color:#C9A84C;cursor:pointer">Sign in</button>
       <button id="am-tab-up" style="flex:1;padding:10px;font-size:13px;font-weight:bold;border:none;background:var(--card);color:var(--text3);cursor:pointer" onclick="amTab('up')">Create account</button>
     </div>
     <div class="auth-err" id="am-err" style="margin-bottom:12px"></div>
@@ -2148,7 +2225,7 @@ function showAuthModal(){
           <button type="button" onclick="togglePassVis('am-pass-in',this)" style="background:#f5f5f5;border:1px solid #E0DED8;border-radius:6px;padding:0 10px;cursor:pointer;font-size:14px">👁</button>
         </div>
       </div>
-      <div style="text-align:right;margin-bottom:14px"><span onclick="authView('reset')" style="font-size:11px;color:#C9A84C;cursor:pointer">Forgot password?</span></div>
+      <div style="text-align:right;margin-bottom:14px"><span onclick="showResetModal()" style="font-size:11px;color:#C9A84C;cursor:pointer">Forgot password?</span></div>
       <button class="setup-btn" id="am-in-btn" onclick="amSignIn()">Sign in →</button>
       <div style="text-align:center;margin-top:10px;font-size:12px;color:#888">No account? <a style="color:#0F1923;font-weight:bold;cursor:pointer" onclick="amTab('up')">Create one free</a></div>
     </div>
@@ -3088,7 +3165,7 @@ function renderForm(){try{
     } else {
       if(!activeTemplates.includes(chosen))activeTemplates.push(chosen);
     }
-    localStorage.setItem('utf_active_templates',JSON.stringify(activeTemplates));
+    writeUserJSON('utf_active_templates',activeTemplates);
     renderForm();
   });
 }catch(e){console.error('renderForm error:',e);$('tab-new').innerHTML='<div style="padding:20px;color:var(--err-txt);font-size:13px">Form error: '+e.message+'<br><br>Check browser console (F12) for details.</div>';}
@@ -3366,37 +3443,29 @@ function buildEditRow(t,tid){
 }
 
 
+function makeTradeCSV(tradeList){
+  const fields=[['Date','date'],['Time','time'],['Symbol','sym'],['Direction','dir'],['R Result','r'],['Rating','rating'],['Session','session'],
+    ['Entry Price','entry'],['Exit Price','exit'],['Stop Loss','sl'],['Take Profit','tp'],['Quantity','qty'],['PnL','pnl'],['Fees','fees'],
+    ['Stop (R)','stop'],['Max RR','maxRR'],['Max Heat (R)','mae'],['Entry DOL','entryDOL'],['Exit DOL','exitDOL'],['HTF Bias','htf'],['LTF Confluence','ltf'],
+    ['Order Flow','of'],['SMT Pair','smtVs'],['SMT Direction','smt'],['Liq Sweep','liqSwept'],['V-Shape','vshape'],['Rule Breaks','ruleBreak'],
+    ['Rule Break Explanation','why'],['Emotion','preState'],['Psychology','thoughts'],['Post-trade Reflection','postNotes'],['Met Plan','metPlan'],
+    ['Followed Plan','followedPlan'],['Funded','funded'],['Challenge','challenge'],['News','news'],['Validation TF','valTF'],['Outcome','outcome'],
+    ['Account ID','accountId'],['Notes','notes'],['Screenshot','screenshot'],['Custom Fields','customFields']];
+  const rows=[fields.map(([name])=>name).concat('AI Grade'),...tradeList.map(t=>fields.map(([,key])=>{
+    const value=t[key];return Array.isArray(value)?value.join('|'):value&&typeof value==='object'?JSON.stringify(value):value??'';
+  }).concat(t.aiAnalysis?.grade??''))];
+  return rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+}
 function exportCSV(){
   if(!trades.length){toast('No trades to export');return;}
-  var headers=['Date','Time','Symbol','Direction','R Result','Rating','Session',
-    'Entry Price','Exit Price','Stop Loss','Take Profit','Quantity','PnL',
-    'Entry DOL','Exit DOL','HTF Bias','LTF Confluence','Order Flow',
-    'SMT Pair','SMT Direction','Liq Sweep','V-Shape','Rule Breaks',
-    'Emotion','Psychology','Execution','Notes','Screenshot','AI Grade'];
-  var rows=trades.map(function(t){return[
-    t.date||'',t.time||'',t.sym||'',t.dir||'',t.r||'',t.rating||'',t.session||'',
-    t.entry||'',t.exit||'',t.sl||'',t.tp||'',t.qty||'',t.pnl||'',
-    (t.entryDOL||[]).join('|'),(t.exitDOL||[]).join('|'),
-    (t.htf||[]).join('|'),(t.ltf||[]).join('|'),(t.orderFlow||[]).join('|'),
-    t.smt||'',t.smtDir||'',t.liqSweep?'Yes':'',t.vShape?'Yes':'',
-    (t.ruleBreaks||[]).join('|'),t.emotion||'',t.psych||'',t.execution||'',
-    (t.notes||'').split(',').join(';'),
-    t.screenshot||'',
-    (t.aiAnalysis&&t.aiAnalysis.grade)||''
-  ];});
-  var lines=[headers].concat(rows).map(function(r){
-    return r.map(function(v){return '"'+String(v||'').split('"').join('""')+'"';}).join(',');
-  });
-  var csv=lines.join(String.fromCharCode(13,10)); var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;
-  a.download='uncs_trades_'+new Date().toISOString().slice(0,10)+'.csv';
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+  const blob=new Blob([makeTradeCSV(trades)],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='uncs_trades_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},200);
   toast('Exported '+trades.length+' trades!');
 }
+
 
 function renderLog(){
   let sorted=[...filterByAccount(trades)].sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -3501,16 +3570,16 @@ function renderWeekly(){
     var gc=gColor(saved.grade);
     sumHTML='<div style="background:rgba(0,0,0,.03);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px">'+
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'+
-        '<div style="font-size:22px;font-weight:800;color:'+gc+'">'+saved.grade+'</div>'+
-        '<div style="font-size:14px;font-weight:700">'+saved.headline+'</div></div>'+
-      '<div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px">'+saved.narrative+'</div>'+
+        '<div style="font-size:22px;font-weight:800;color:'+gc+'">'+esc(saved.grade)+'</div>'+
+        '<div style="font-size:14px;font-weight:700">'+esc(saved.headline)+'</div></div>'+
+      '<div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px">'+esc(saved.narrative)+'</div>'+
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'+
         '<div style="background:var(--ok-bg);border-radius:8px;padding:10px"><div style="font-size:11px;font-weight:700;color:var(--ok-txt);margin-bottom:6px">✓ Strengths</div>'+
-          (saved.strengths||[]).map(function(s){return'<div style="font-size:12px;color:var(--ok-txt);margin-bottom:3px">• '+s+'</div>';}).join('')+'</div>'+
+          (saved.strengths||[]).map(function(s){return'<div style="font-size:12px;color:var(--ok-txt);margin-bottom:3px">• '+esc(s)+'</div>';}).join('')+'</div>'+
         '<div style="background:#FFF0D6;border-radius:8px;padding:10px"><div style="font-size:11px;font-weight:700;color:#B8600A;margin-bottom:6px">△ Work on</div>'+
-          (saved.improvements||[]).map(function(s){return'<div style="font-size:12px;color:#B8600A;margin-bottom:3px">• '+s+'</div>';}).join('')+'</div></div>'+
-      (saved.psychology?'<div style="background:#F7E0ED;border-radius:8px;padding:10px;margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:#8B2A5A;margin-bottom:4px">Psychology</div><div style="font-size:12px;color:#5C1A3A;line-height:1.5">'+saved.psychology+'</div></div>':'')+
-      (saved.nextMonth?'<div style="background:#E0EDFF;border-radius:8px;padding:10px;margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:#1A3A8B;margin-bottom:4px">→ Next month focus</div><div style="font-size:12px;color:#1A3A8B;line-height:1.5">'+saved.nextMonth+'</div></div>':'')+
+          (saved.improvements||[]).map(function(s){return'<div style="font-size:12px;color:#B8600A;margin-bottom:3px">• '+esc(s)+'</div>';}).join('')+'</div></div>'+
+      (saved.psychology?'<div style="background:#F7E0ED;border-radius:8px;padding:10px;margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:#8B2A5A;margin-bottom:4px">Psychology</div><div style="font-size:12px;color:#5C1A3A;line-height:1.5">'+esc(saved.psychology)+'</div></div>':'')+
+      (saved.nextMonth?'<div style="background:#E0EDFF;border-radius:8px;padding:10px;margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:#1A3A8B;margin-bottom:4px">→ Next month focus</div><div style="font-size:12px;color:#1A3A8B;line-height:1.5">'+esc(saved.nextMonth)+'</div></div>':'')+
       '<button class="gen-btn" onclick="generateMonthlySummary()" style="margin-top:4px;opacity:.6;font-size:11px">↺ Re-generate</button></div>';
   } else if(isFuture){
     sumHTML='<div style="text-align:center;padding:24px;color:#aaa">That month has not happened yet</div>';
@@ -4421,8 +4490,13 @@ async function init(){
     if(wantsSignIn) showAuthModal();
     console.log('Init session check timeout - waiting for onAuthStateChange');
   }
-  db.auth.onAuthStateChange(async(event,session)=>{
+  db.auth.onAuthStateChange((event,session)=>{
+    const previousOwner=currentSession?.user?.id;
     currentSession=session;
+    if(previousOwner!==session?.user?.id){trades=[];profile=null;aiChatHistory=[];userAccounts=[];activeAccountId='all';restoreTemplates();}
+    // Leave Supabase's auth lock before making authenticated queries.
+    setTimeout(async()=>{
+    if(currentSession!==session) return;
     if((event==='SIGNED_IN'||event==='INITIAL_SESSION')&&session){
       toast('Auth: '+event);
       $('auth-screen').style.display='none';
@@ -4444,9 +4518,10 @@ async function init(){
         updateUI();
       }
     }else if(event==='SIGNED_OUT'){
-      trades=[];profile=null;aiUsed=0;weekSummaries={};
+      trades=[];profile=null;aiUsed=0;weekSummaries={};pendingTrade=null;
       updateUI();renderLog();renderAnalytics();
     }
+    },0);
   });
 }// ══════ IMPORT MODULE ══════
 async function warmupDB(){
@@ -4478,9 +4553,28 @@ function clearLogSearch(){logSearchQuery='';logOutcomeFilter='all';renderLog();}
 // ═══════════════════════════════════════════════════════════════
 const CSV_PLATFORMS={tradovate:{name:'Tradovate',logo:'🟢',desc:'Export from Tradovate → Account → Trade History → Export CSV',cols:{sym:['symbol','contractname'],date:['tradedat','timestamp'],dir:['action','side'],pnl:['realizedpnl','pnl','netpnl'],qty:['qty','quantity']},dirMap:{BUY:'Bullish',Buy:'Bullish',buy:'Bullish',SELL:'Bearish',Sell:'Bearish',sell:'Bearish'}},ninjatrader:{name:'NinjaTrader',logo:'🟠',desc:'NinjaTrader → Control Center → Account Performance → Trade List → Export',cols:{sym:['instrument','symbol'],date:['entry time','entrytime'],dir:['market pos.','type','direction'],pnl:['profit','p&l','net profit'],qty:['quantity','qty']},dirMap:{Long:'Bullish',long:'Bullish',Short:'Bearish',short:'Bearish'}},tradestation:{name:'TradeStation',logo:'🔵',desc:'TradeStation → Reports → TradeLog → Export to CSV',cols:{sym:['symbol'],date:['entry date','date'],dir:['type','side','buy/sell'],pnl:['net p&l','profit','p&l'],qty:['qty','quantity']},dirMap:{Buy:'Bullish',Long:'Bullish',BUY:'Bullish',Sell:'Bearish',Short:'Bearish',SELL:'Bearish'}},mt4:{name:'MetaTrader 4/5',logo:'⚫',desc:'MT4/5 → Terminal → Account History → Save as Report (detailed)',cols:{sym:['symbol','item'],date:['open time','opentime'],dir:['type','direction'],pnl:['profit','net profit'],qty:['volume','lot']},dirMap:{buy:'Bullish',Buy:'Bullish',sell:'Bearish',Sell:'Bearish'}},ibkr:{name:'Interactive Brokers',logo:'🔴',desc:'IBKR → Reports → Flex Queries → Trades section',cols:{sym:['symbol'],date:['date/time','tradedate'],dir:['buy/sell','side'],pnl:['realized p&l','fifopnlrealized'],qty:['quantity','qty']},dirMap:{BUY:'Bullish',Buy:'Bullish',SELL:'Bearish',Sell:'Bearish'}},custom:{name:'Custom / Excel',logo:'⚙️',desc:'Map any spreadsheet or platform export to your journal fields',cols:null}};
 let csvPlatform='tradovate',csvData={headers:[],rows:[]},csvMap={},csvStep=1;
+let csvPreview=[];
 let tvEnv='demo',tvToken=null,tvAccount=null;
 
-function parseCSV(text){const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').trim().split('\n');const parseRow=row=>{const vals=[];let val='',inQ=false;for(let i=0;i<row.length;i++){const ch=row[i];if(ch==='"'){if(inQ&&row[i+1]==='"'){val+='"';i++;}else inQ=!inQ;}else if(ch===','&&!inQ){vals.push(val.trim());val='';}else val+=ch;}vals.push(val.trim());return vals;};const headers=parseRow(lines[0]).map(h=>h.trim().replace(/"/g,''));const rows=lines.slice(1).filter(l=>l.trim()&&!l.startsWith('#')).map(l=>{const vals=parseRow(l);return Object.fromEntries(headers.map((h,i)=>[h,vals[i]||'']));});return{headers,rows};}
+function parseCSV(text){
+  const records=[];let row=[],value='',quoted=false;
+  text=String(text).replace(/^\uFEFF/,'');
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(ch==='"'){
+      if(quoted&&text[i+1]==='"'){value+='"';i++;}else quoted=!quoted;
+    }else if(ch===','&&!quoted){row.push(value);value='';}
+    else if((ch==='\n'||ch==='\r')&&!quoted){
+      row.push(value);if(row.some(v=>v.trim())) records.push(row);row=[];value='';
+      if(ch==='\r'&&text[i+1]==='\n') i++;
+    }else value+=ch;
+  }
+  if(quoted) throw new Error('CSV contains an unclosed quoted field');
+  row.push(value);if(row.some(v=>v.trim())) records.push(row);
+  const headers=(records.shift()||[]).map(h=>h.trim());
+  if(new Set(headers).size!==headers.length) throw new Error('CSV has duplicate column names');
+  return{headers,rows:records.filter(r=>!r[0]?.startsWith('#')).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??''])))};
+}
 
 function autoDetectCols(){const plt=CSV_PLATFORMS[csvPlatform];if(!plt.cols){csvMap={};return;}csvMap={};const hdrs=csvData.headers.map(h=>h.toLowerCase().trim());Object.entries(plt.cols).forEach(([field,candidates])=>{const found=candidates.find(c=>hdrs.some(h=>h===c.toLowerCase()||h.includes(c.toLowerCase())));if(found){const idx=hdrs.findIndex(h=>h===found.toLowerCase()||h.includes(found.toLowerCase()));csvMap[field]=csvData.headers[idx]||'';}else{csvMap[field]='';}});}
 
@@ -4497,13 +4591,13 @@ function renderCSVStep1(){const cards=Object.entries(CSV_PLATFORMS).map(([key,p]
 function renderCSVStep2(){$('import-step-content').innerHTML=`<div class="card"><div class="ch" style="background:#0F1923"><span>Upload ${CSV_PLATFORMS[csvPlatform].name} CSV</span></div><div class="cb"><div id="csv-drop-zone" style="border:2px dashed var(--border);border-radius:10px;padding:32px;text-align:center;cursor:pointer;background:var(--bg2)" onclick="document.getElementById('csv-file-input').click()" ondragover="event.preventDefault();this.style.borderColor='#C9A84C'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleCSVDrop(event)"><div style="margin-bottom:10px;color:#C9A84C"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13v8"/><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m8 17 4-4 4 4"/></svg></div><div style="font-size:14px;font-weight:bold;color:var(--text);margin-bottom:4px">Drop your CSV here or click to browse</div></div><input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none" onchange="handleCSVFile(this.files[0])"/><div id="csv-upload-status" style="margin-top:10px"></div><div style="display:flex;justify-content:space-between;margin-top:12px"><button onclick="renderCSVStep(1)" style="background:var(--card2);color:var(--text2);border:none;padding:10px 18px;border-radius:8px;font-size:12px;cursor:pointer">← Back</button><button id="csv-next-btn" onclick="renderCSVStep(3)" style="background:#0F1923;color:#C9A84C;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;display:none">Next → Map columns</button></div></div></div>`;}
 
 function handleCSVDrop(e){e.preventDefault();const file=e.dataTransfer.files[0];if(file)handleCSVFile(file);}
-function handleCSVFile(file){if(!file)return;const reader=new FileReader();reader.onload=e=>{csvData=parseCSV(e.target.result);if(!csvData.rows.length){$('csv-upload-status').innerHTML='<div style="background:var(--err-bg);border-radius:7px;padding:9px 12px;font-size:12px;color:var(--err-txt)">No data rows found.</div>';return;}$('csv-upload-status').innerHTML=`<div style="background:var(--ok-bg);border-radius:7px;padding:9px 12px;font-size:12px;color:var(--ok-txt);font-weight:bold">✓ Loaded: ${csvData.rows.length} rows · ${csvData.headers.length} columns</div><div style="margin-top:6px;font-size:11px;color:var(--text3)">Columns: ${csvData.headers.slice(0,8).join(', ')}${csvData.headers.length>8?'…':''}</div>`;$('csv-next-btn').style.display='inline-block';autoDetectCols();};reader.readAsText(file);}
+function handleCSVFile(file){if(!file)return;const reader=new FileReader();reader.onload=e=>{try{csvData=parseCSV(e.target.result);csvPreview=[];}catch(error){$('csv-upload-status').textContent=error.message;return;}if(!csvData.rows.length){$('csv-upload-status').innerHTML='<div style="background:var(--err-bg);border-radius:7px;padding:9px 12px;font-size:12px;color:var(--err-txt)">No data rows found.</div>';return;}$('csv-upload-status').innerHTML=`<div style="background:var(--ok-bg);border-radius:7px;padding:9px 12px;font-size:12px;color:var(--ok-txt);font-weight:bold">✓ Loaded: ${csvData.rows.length} rows · ${csvData.headers.length} columns</div><div style="margin-top:6px;font-size:11px;color:var(--text3)">Columns: ${csvData.headers.slice(0,8).map(esc).join(', ')}${csvData.headers.length>8?'…':''}</div>`;$('csv-next-btn').style.display='inline-block';autoDetectCols();};reader.readAsText(file);}
 
-function renderCSVStep3(){if(!csvData.rows.length){renderCSVStep(2);return;}const plt=CSV_PLATFORMS[csvPlatform];const fields=[{key:'sym',label:'Symbol',req:false},{key:'date',label:'Trade date',req:true},{key:'dir',label:'Direction column',req:true},{key:'pnl',label:'P&L / R Result',req:true},{key:'qty',label:'Quantity',req:false},{key:'notes',label:'Notes',req:false}];const mapRows=fields.map(f=>`<div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:center;padding:8px 12px;background:var(--card2);border-radius:7px;margin-bottom:6px"><div style="font-size:12px;font-weight:bold;color:var(--text)">${f.label}<span style="color:${f.req?'var(--err-txt)':'var(--text4)'};margin-left:3px">${f.req?'*':'(opt)'}</span></div><select style="padding:6px 9px;border:1px solid var(--border);border-radius:7px;font-size:12px;width:100%;background:var(--card);color:var(--text)" id="csvmap-${f.key}" onchange="csvMap['${f.key}']=this.value"><option value="">— not mapped</option>${csvData.headers.map(h=>`<option value="${h}" ${h===csvMap[f.key]?'selected':''}>${h}</option>`).join('')}</select></div>`).join('');const bullDef=Object.entries(plt.dirMap||{}).find(([k,v])=>v==='Bullish')?.[0]||'Buy';const bearDef=Object.entries(plt.dirMap||{}).find(([k,v])=>v==='Bearish')?.[0]||'Sell';$('import-step-content').innerHTML=`<div class="card"><div class="ch" style="background:#2D4057"><span>Map columns</span></div><div class="cb">${mapRows}<div style="background:var(--warn-bg);border-radius:8px;padding:12px 14px;margin-top:12px"><div style="font-size:11px;font-weight:bold;color:var(--warn-txt);text-transform:uppercase;margin-bottom:8px">Direction values</div><div class="g2"><div class="fl"><label for="csv-dir-bull">Bullish value in CSV</label><input id="csv-dir-bull" value="${bullDef}"/></div><div class="fl"><label for="csv-dir-bear">Bearish value in CSV</label><input id="csv-dir-bear" value="${bearDef}"/></div></div></div><div style="background:var(--info-bg);border-radius:8px;padding:12px 14px;margin-top:10px"><div style="font-size:11px;font-weight:bold;color:var(--info-txt);text-transform:uppercase;margin-bottom:8px">P&L format</div><div class="g2"><div class="fl"><label for="csv-pnl-type">P&L column contains</label><select id="csv-pnl-type" style="padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:12px"><option value="dollar">Dollar amount</option><option value="r">R multiple</option></select></div><div class="fl"><label for="csv-risk-dollar">Your risk per trade ($)</label><input type="number" id="csv-risk-dollar" value="${profile?.account&&profile?.risk?(profile?.account*profile?.risk/100).toFixed(0):'500'}"/></div></div></div><div style="display:flex;justify-content:space-between;margin-top:14px"><button onclick="renderCSVStep(2)" style="background:var(--card2);color:var(--text2);border:none;padding:10px 18px;border-radius:8px;font-size:12px;cursor:pointer">← Back</button><button onclick="renderCSVStep(4)" style="background:#0F1923;color:#C9A84C;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">Next → Preview trades</button></div></div></div>`;}
+function renderCSVStep3(){if(!csvData.rows.length){renderCSVStep(2);return;}const plt=CSV_PLATFORMS[csvPlatform];const fields=[{key:'sym',label:'Symbol',req:false},{key:'date',label:'Trade date',req:true},{key:'dir',label:'Direction column',req:true},{key:'pnl',label:'P&L / R Result',req:true},{key:'qty',label:'Quantity',req:false},{key:'notes',label:'Notes',req:false}];const mapRows=fields.map(f=>`<div style="display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:center;padding:8px 12px;background:var(--card2);border-radius:7px;margin-bottom:6px"><div style="font-size:12px;font-weight:bold;color:var(--text)">${f.label}<span style="color:${f.req?'var(--err-txt)':'var(--text4)'};margin-left:3px">${f.req?'*':'(opt)'}</span></div><select style="padding:6px 9px;border:1px solid var(--border);border-radius:7px;font-size:12px;width:100%;background:var(--card);color:var(--text)" id="csvmap-${f.key}" onchange="csvMap['${f.key}']=this.value"><option value="">— not mapped</option>${csvData.headers.map(h=>`<option value="${esc(h)}" ${h===csvMap[f.key]?'selected':''}>${esc(h)}</option>`).join('')}</select></div>`).join('');const bullDef=Object.entries(plt.dirMap||{}).find(([k,v])=>v==='Bullish')?.[0]||'Buy';const bearDef=Object.entries(plt.dirMap||{}).find(([k,v])=>v==='Bearish')?.[0]||'Sell';$('import-step-content').innerHTML=`<div class="card"><div class="ch" style="background:#2D4057"><span>Map columns</span></div><div class="cb">${mapRows}<div style="background:var(--warn-bg);border-radius:8px;padding:12px 14px;margin-top:12px"><div style="font-size:11px;font-weight:bold;color:var(--warn-txt);text-transform:uppercase;margin-bottom:8px">Direction values</div><div class="g2"><div class="fl"><label for="csv-dir-bull">Bullish value in CSV</label><input id="csv-dir-bull" value="${bullDef}"/></div><div class="fl"><label for="csv-dir-bear">Bearish value in CSV</label><input id="csv-dir-bear" value="${bearDef}"/></div></div></div><div style="background:var(--info-bg);border-radius:8px;padding:12px 14px;margin-top:10px"><div style="font-size:11px;font-weight:bold;color:var(--info-txt);text-transform:uppercase;margin-bottom:8px">P&L format</div><div class="g2"><div class="fl"><label for="csv-pnl-type">P&L column contains</label><select id="csv-pnl-type" style="padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:12px"><option value="dollar">Dollar amount</option><option value="r">R multiple</option></select></div><div class="fl"><label for="csv-risk-dollar">Your risk per trade ($)</label><input type="number" id="csv-risk-dollar" value="${profile?.account&&profile?.risk?(profile?.account*profile?.risk/100).toFixed(0):'500'}"/></div></div></div><div style="display:flex;justify-content:space-between;margin-top:14px"><button onclick="renderCSVStep(2)" style="background:var(--card2);color:var(--text2);border:none;padding:10px 18px;border-radius:8px;font-size:12px;cursor:pointer">← Back</button><button onclick="renderCSVStep(4)" style="background:#0F1923;color:#C9A84C;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer">Next → Preview trades</button></div></div></div>`;}
 
-function renderCSVStep4(){const mapped=buildMappedTrades();if(!mapped.length){$('import-step-content').innerHTML='<div class="card"><div class="cb"><div style="text-align:center;padding:24px;color:var(--err-txt)">No trades parsed. Go back and check column mapping.</div><div style="text-align:center;margin-top:10px"><button onclick="renderCSVStep(3)" style="background:var(--card2);color:var(--text2);border:none;padding:10px 18px;border-radius:8px;font-size:12px;cursor:pointer">← Back</button></div></div></div>';return;}const rows=mapped.slice(0,100).map((t,i)=>`<tr><td><input type="checkbox" checked id="csv-chk-${i}" style="accent-color:var(--ok-txt)"/></td><td style="font-weight:bold;white-space:nowrap">${esc(t.date||'—')}</td><td style="font-weight:bold">${esc(t.sym||'—')}</td><td>${t.dir?`<span class="ib ${t.dir==='Bullish'?'bull':'bear'}">${esc(t.dir)}</span>`:'—'}</td><td style="font-weight:bold;color:${parseFloat(t.r)>0?'var(--ok-txt)':parseFloat(t.r)<0?'var(--err-txt)':'var(--warn-txt)'}">${t.r?(parseFloat(t.r)>0?'+':'')+t.r+'R':'—'}</td><td>${t.outcome?`<span class="ib ${outCls(t.outcome)}">${t.outcome}</span>`:'—'}</td></tr>`).join('');$('import-step-content').innerHTML=`<div class="card"><div class="ch" style="background:#1A5C3A"><span>Preview — ${mapped.length} trades ready</span></div><div class="cb"><div style="background:var(--ok-bg);border-radius:7px;padding:9px 12px;font-size:11px;color:var(--ok-txt);margin-bottom:10px">✓ <strong>${mapped.length} trades</strong> parsed. Add DOL targets, order flow and psychology after import.</div><div style="max-height:260px;overflow-y:auto;overflow-x:auto;border:1px solid var(--border);border-radius:8px"><table><thead><tr><th></th><th>Date</th><th>Symbol</th><th>Direction</th><th>R</th><th>Outcome</th></tr></thead><tbody>${rows}</tbody></table></div><div id="csv-import-result" style="margin-top:10px"></div><button id="csv-import-btn" onclick="doCSVImport()" style="width:100%;padding:12px;background:#1A5C3A;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;margin-top:10px">Import trades into journal</button><div style="text-align:center;margin-top:8px"><button onclick="renderCSVStep(1);csvData={headers:[],rows:[]}" style="background:none;border:none;color:var(--text4);font-size:12px;cursor:pointer">← Start over</button></div></div></div>`;}
+function renderCSVStep4(){const mapped=csvPreview=buildMappedTrades();if(!mapped.length){$('import-step-content').innerHTML='<div class="card"><div class="cb"><div style="text-align:center;padding:24px;color:var(--err-txt)">No trades parsed. Go back and check column mapping.</div><div style="text-align:center;margin-top:10px"><button onclick="renderCSVStep(3)" style="background:var(--card2);color:var(--text2);border:none;padding:10px 18px;border-radius:8px;font-size:12px;cursor:pointer">← Back</button></div></div></div>';return;}const rows=mapped.slice(0,100).map((t,i)=>`<tr><td><input type="checkbox" checked id="csv-chk-${i}" style="accent-color:var(--ok-txt)"/></td><td style="font-weight:bold;white-space:nowrap">${esc(t.date||'—')}</td><td style="font-weight:bold">${esc(t.sym||'—')}</td><td>${t.dir?`<span class="ib ${t.dir==='Bullish'?'bull':'bear'}">${esc(t.dir)}</span>`:'—'}</td><td style="font-weight:bold;color:${parseFloat(t.r)>0?'var(--ok-txt)':parseFloat(t.r)<0?'var(--err-txt)':'var(--warn-txt)'}">${t.r?(parseFloat(t.r)>0?'+':'')+t.r+'R':'—'}</td><td>${t.outcome?`<span class="ib ${outCls(t.outcome)}">${t.outcome}</span>`:'—'}</td></tr>`).join('');$('import-step-content').innerHTML=`<div class="card"><div class="ch" style="background:#1A5C3A"><span>Preview — ${mapped.length} trades ready</span></div><div class="cb"><div style="background:var(--ok-bg);border-radius:7px;padding:9px 12px;font-size:11px;color:var(--ok-txt);margin-bottom:10px">✓ <strong>${mapped.length} trades</strong> parsed. Add DOL targets, order flow and psychology after import.</div><div style="max-height:260px;overflow-y:auto;overflow-x:auto;border:1px solid var(--border);border-radius:8px"><table><thead><tr><th></th><th>Date</th><th>Symbol</th><th>Direction</th><th>R</th><th>Outcome</th></tr></thead><tbody>${rows}</tbody></table></div><div id="csv-import-result" style="margin-top:10px"></div><button id="csv-import-btn" onclick="doCSVImport()" style="width:100%;padding:12px;background:#1A5C3A;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;margin-top:10px">Import trades into journal</button><div style="text-align:center;margin-top:8px"><button onclick="renderCSVStep(1);csvData={headers:[],rows:[]}" style="background:none;border:none;color:var(--text4);font-size:12px;cursor:pointer">← Start over</button></div></div></div>`;}
 
-async function doCSVImport(){const mapped=buildMappedTrades();const selected=mapped.filter((_,i)=>{const cb=$('csv-chk-'+i);return cb?cb.checked:true;});if(!selected.length){toast('No trades selected');return;}const btn=$('csv-import-btn');btn.disabled=true;btn.textContent='Importing...';const{data:{session}}=await db.auth.getSession();if(!session){btn.disabled=false;btn.textContent='Import trades into journal';toast('Please sign in first');return;}let imported=0,errors=0;for(const trade of selected){try{const saved=await saveTradeDB({...trade,entryDOL:[],exitDOL:[],ltf:[],htf:[],of:[],ruleBreak:'None',aiAnalysis:null});trades.unshift(saved);imported++;}catch(e){errors++;}}updateUI();$('csv-import-result').innerHTML=`<div style="background:var(--ok-bg);border-radius:7px;padding:10px 12px;font-size:13px;color:var(--ok-txt);font-weight:bold;text-align:center">✓ ${imported} trades imported${errors>0?' ('+errors+' failed)':''}. Head to Trade Log to add context.</div>`;btn.textContent='✓ '+imported+' trades imported';toast('✓ '+imported+' trades imported');}
+async function doCSVImport(){const mapped=csvPreview;const selected=mapped.filter((_,i)=>{const cb=$('csv-chk-'+i);return cb?cb.checked:true;});if(!selected.length){toast('No trades selected');return;}const btn=$('csv-import-btn');btn.disabled=true;btn.textContent='Importing...';const{data:{session}}=await db.auth.getSession();if(!session){btn.disabled=false;btn.textContent='Import trades into journal';toast('Please sign in first');return;}let imported=0,errors=0;for(const trade of selected){try{const saved=await saveTradeDB({...trade,entryDOL:[],exitDOL:[],ltf:[],htf:[],of:[],ruleBreak:'None',aiAnalysis:null});trades.unshift(saved);imported++;}catch(e){errors++;}}updateUI();$('csv-import-result').innerHTML=`<div style="background:var(--ok-bg);border-radius:7px;padding:10px 12px;font-size:13px;color:var(--ok-txt);font-weight:bold;text-align:center">✓ ${imported} trades imported${errors>0?' ('+errors+' failed)':''}. Head to Trade Log to add context.</div>`;btn.textContent='✓ '+imported+' trades imported';toast('✓ '+imported+' trades imported');}
 
 function setTVEnv(env){tvEnv=env;$('env-live').style.cssText=env==='live'?'flex:1;padding:8px;font-size:12px;font-weight:bold;border:none;cursor:pointer;background:#0F1923;color:#C9A84C':'flex:1;padding:8px;font-size:12px;font-weight:bold;border:none;cursor:pointer;background:var(--card);color:var(--text3)';$('env-demo').style.cssText=env==='demo'?'flex:1;padding:8px;font-size:12px;font-weight:bold;border:none;cursor:pointer;background:#0F1923;color:#C9A84C':'flex:1;padding:8px;font-size:12px;font-weight:bold;border:none;cursor:pointer;background:var(--card);color:var(--text3)';}
 
@@ -4600,7 +4694,30 @@ const ICONS=['🎯','📈','📉','🔄','📦','⚡','🏆','🎨','🔥','💎
 const FIELD_TYPES=[{val:'text',label:'Short text',icon:'💬'},{val:'textarea',label:'Long text',icon:'📝'},{val:'number',label:'Number',icon:'🔢'},{val:'toggle',label:'Yes / No',icon:'✅'},{val:'dropdown',label:'Dropdown',icon:'📋'},{val:'multiselect',label:'Multi-select',icon:'🏷️'},{val:'rating',label:'Star rating',icon:'⭐'}];
 const SAMPLE_TEMPLATES={sd:{name:'Supply & Demand',icon:'📦',strategy:'Supply & Demand zones',fields:[{id:uid(),label:'Zone type',type:'dropdown',options:['Supply Zone','Demand Zone','Order Block','Breaker Block'],required:true},{id:uid(),label:'Zone quality',type:'dropdown',options:['Fresh','Tested once','Tested twice','Extended'],required:true},{id:uid(),label:'Pattern',type:'dropdown',options:['Drop Base Drop','Drop Base Rally','Rally Base Rally','Rally Base Drop']},{id:uid(),label:'Zone level (price)',type:'number',placeholder:'e.g. 21450'},{id:uid(),label:'Zone strength (1-5)',type:'rating'},{id:uid(),label:'Clean origin candle',type:'toggle'},{id:uid(),label:'Notes on zone',type:'textarea',placeholder:'Describe the zone...'}]},bo:{name:'Breakout / Range',icon:'📈',strategy:'Breakout and range strategies',fields:[{id:uid(),label:'Breakout level',type:'number',placeholder:'e.g. 21500',required:true},{id:uid(),label:'Break type',type:'dropdown',options:['Clean break','Fake-out then real','Failed breakout'],required:true},{id:uid(),label:'Volume spike',type:'toggle'},{id:uid(),label:'Retest confirmed',type:'toggle'},{id:uid(),label:'Range high',type:'number'},{id:uid(),label:'Range low',type:'number'},{id:uid(),label:'Confluence factors',type:'multiselect',options:['Key level','VWAP','EMA','Volume','News','Session open']}]},pa:{name:'Price Action',icon:'🔄',strategy:'Price action patterns',fields:[{id:uid(),label:'Pattern type',type:'dropdown',options:['Pin bar','Inside bar','Engulfing','Double top','Double bottom','Head & shoulders','Triangle','Flag','Wedge'],required:true},{id:uid(),label:'Key level type',type:'dropdown',options:['Support','Resistance','Trend line','Moving average','Prev high/low']},{id:uid(),label:'Trend direction',type:'dropdown',options:['Uptrend','Downtrend','Ranging','Reversal']},{id:uid(),label:'Confluence count',type:'number'},{id:uid(),label:'Candle confirmation',type:'toggle'},{id:uid(),label:'Pattern quality',type:'rating'}]},sc:{name:'Scalping',icon:'⚡',strategy:'Scalping and momentum',fields:[{id:uid(),label:'Momentum direction',type:'dropdown',options:['Strong bull','Weak bull','Neutral','Weak bear','Strong bear'],required:true},{id:uid(),label:'VWAP position',type:'dropdown',options:['Above VWAP','At VWAP','Below VWAP']},{id:uid(),label:'Level 2 confirmed',type:'toggle'},{id:uid(),label:'Spread (ticks)',type:'number'},{id:uid(),label:'Hold time (mins)',type:'number'},{id:uid(),label:'Scalp setup quality',type:'rating'}]}};
 
-function saveTemplates(){localStorage.setItem('utf_templates',JSON.stringify(customTemplates));localStorage.setItem('utf_active_templates',JSON.stringify(activeTemplates));try{db.auth.getSession().then(({data:{session}})=>{if(session)db.from('profiles').update({custom_templates:customTemplates}).then(()=>{});});}catch(e){}}
+function restoreTemplates(){
+  const owner=currentSession?.user?.id;
+  let saved=readUserJSON('utf_templates',null,owner);
+  let active=readUserJSON('utf_active_templates',null,owner);
+  if(!owner){
+    try{saved??=JSON.parse(localStorage.getItem('utf_templates')||'null');active??=JSON.parse(localStorage.getItem('utf_active_templates')||'null');}catch(e){}
+  }
+  customTemplates=Array.isArray(saved)?saved:[];
+  const valid=new Set(['ict',...customTemplates.map(t=>t.id)]);
+  activeTemplates=Array.isArray(active)?active.filter(id=>valid.has(id)):['ict'];
+  if(!activeTemplates.length) activeTemplates=['ict'];
+}
+function saveTemplates(){
+  try{
+    writeUserJSON('utf_templates',customTemplates);
+    writeUserJSON('utf_active_templates',activeTemplates);
+  }catch(e){toast('Could not save templates on this device: '+e.message);return;}
+  const owner=currentSession?.user?.id;
+  if(owner){
+    db.from('profiles').update({custom_templates:customTemplates}).eq('id',owner).then(({error})=>{
+      if(error&&currentSession?.user?.id===owner) toast('Templates saved on this device; cloud sync failed: '+error.message);
+    }).catch(()=>{if(currentSession?.user?.id===owner) toast('Templates saved on this device; cloud sync failed');});
+  }
+}
 
 function buildTmplActivateBtn(id,isActive){
   var ar=LANG==='ar';
@@ -4616,7 +4733,7 @@ function activateTemplate(id){
   showTab('new');
 }
 
-function toggleTemplate(id){if(activeTemplates.includes(id)){if(activeTemplates.length===1){toast('At least one template must be active');return;}activeTemplates=activeTemplates.filter(t=>t!==id);}else{activeTemplates.push(id);}localStorage.setItem('utf_active_templates',JSON.stringify(activeTemplates));renderForm();renderTemplates();}
+function toggleTemplate(id){if(activeTemplates.includes(id)){if(activeTemplates.length===1){toast('At least one template must be active');return;}activeTemplates=activeTemplates.filter(t=>t!==id);}else{activeTemplates.push(id);}writeUserJSON('utf_active_templates',activeTemplates);renderForm();renderTemplates();}
 
 function getActiveTemplateDefs(){return activeTemplates.filter(id=>id!=='ict').map(id=>customTemplates.find(t=>t.id===id)).filter(Boolean);}
 
@@ -4784,6 +4901,8 @@ function onSignedIn(user){
 }
 
 function onSignedOut(){
+  currentSession=null;pendingTrade=null;aiChatHistory=[];userAccounts=[];activeAccountId='all';weekSummaries={};
+  restoreTemplates();
   const authEl=document.getElementById('auth-screen');
   const appEl=document.getElementById('main-app');
   if(authEl) authEl.style.display='flex';
@@ -4906,7 +5025,8 @@ function buildShareCardHTML(t,shareNote,overrideScreenshot){
   const dirCls=t.dir==='Bullish'?'sc-dir-bull':'sc-dir-bear';
   const dirLabel=t.dir==='Bullish'?'Long':'Short';
   const ssUrl=(overrideScreenshot!==undefined&&overrideScreenshot!==null)?overrideScreenshot:null;
-  const ssHtml=ssUrl?'<img src="'+ssUrl+'" class="sc-ss"/>':'<div class="sc-ss-placeholder">No screenshot</div>';
+  const safeSS=ssUrl&&/^(https?:|data:image\/)/i.test(ssUrl)?ssUrl:null;
+  const ssHtml=safeSS?'<img src="'+esc(safeSS)+'" class="sc-ss"/>':'<div class="sc-ss-placeholder">No screenshot</div>';
   const notesHtml=t.notes?'<div class="sc-notes">'+esc(t.notes.slice(0,200))+'</div>':'';
   const logoSVG='<svg width="12" height="18" viewBox="0 0 16 24" fill="none"><line x1="8" y1="0" x2="8" y2="5" stroke="#B8912A" stroke-width="2" stroke-linecap="round"/><rect x="3" y="5.5" width="10" height="13" rx="0.5" stroke="#B8912A" stroke-width="1.5"/><line x1="8" y1="18.5" x2="8" y2="24" stroke="#B8912A" stroke-width="2" stroke-linecap="round"/></svg>';
   return '<div class="sc-wrap">' +
@@ -4948,7 +5068,7 @@ async function captureShareCard(){
   if(!el||typeof html2canvas==='undefined') return null;
   try{
     await document.fonts.ready;
-    const canvas=await html2canvas(el.querySelector('.sc-wrap')||el,{scale:4,useCORS:true,allowTaint:true,backgroundColor:'#FFFFFF',logging:false,width:480,windowWidth:480});
+    const canvas=await html2canvas(el.querySelector('.sc-wrap')||el,{scale:4,useCORS:true,allowTaint:false,backgroundColor:'#FFFFFF',logging:false,width:480,windowWidth:480});
     return canvas;
   }catch(e){console.error('html2canvas error:',e);return null;}
 }
@@ -4957,7 +5077,7 @@ async function captureStoryCard(){
   const el=document.getElementById('share-card-el');
   if(!el||typeof html2canvas==='undefined') return null;
   try{
-    const cardCanvas=await html2canvas(el.querySelector('.sc-wrap')||el,{scale:4,useCORS:true,allowTaint:true,backgroundColor:'#FFFFFF',logging:false,width:480,windowWidth:480});
+    const cardCanvas=await html2canvas(el.querySelector('.sc-wrap')||el,{scale:4,useCORS:true,allowTaint:false,backgroundColor:'#FFFFFF',logging:false,width:480,windowWidth:480});
     const SW=1080,SH=1920;
     const story=document.createElement('canvas');
     story.width=SW;story.height=SH;
@@ -5036,8 +5156,8 @@ function renderAcctDropdown(){
   const dd=document.getElementById('acct-dropdown');
   if(!dd) return;
   const canAdd=userAccounts.filter(a=>a.id!=='all').length<5;
-  dd.innerHTML=userAccounts.map(a=>'<div class="acct-dd-item'+(a.id===activeAccountId?' active-acct':'')+'" onclick="switchAccount(\''+a.id+'\')">' +
-    '<div class="acct-dd-dot" style="background:'+a.color+'"></div><span style="flex:1">'+a.name+'</span>' +
+  dd.innerHTML=userAccounts.filter(a=>/^[a-zA-Z0-9_-]+$/.test(a.id)).map(a=>'<div class="acct-dd-item'+(a.id===activeAccountId?' active-acct':'')+'" onclick="switchAccount(\''+a.id+'\')">' +
+    '<div class="acct-dd-dot" style="background:'+esc(a.color)+'"></div><span style="flex:1">'+esc(a.name)+'</span>' +
     (a.id==='all'?'<span class="acct-dd-tag" style="background:rgba(201,168,76,.2);color:#C9A84C">Default</span>':'') +
     (a.id!=='all'?'<span onclick="event.stopPropagation();openEditAcct(\''+a.id+'\')" style="font-size:11px;color:rgba(255,255,255,.3);padding:2px 5px;cursor:pointer"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg></span>':'') +
   '</div>').join('<div class="acct-dd-div"></div>') +
@@ -5074,9 +5194,9 @@ function openAcctModal(acct){
   mo.className='acct-mo-overlay';mo.id='acct-mo';
   mo.innerHTML='<div class="acct-mo-card" onclick="event.stopPropagation()">' +
     '<div class="acct-mo-title">'+(isEdit?'Edit account':'New account')+'</div>' +
-    '<div class="acct-mo-field"><div class="acct-mo-label">Account name</div><input class="acct-mo-input" id="acct-mo-name" placeholder="e.g. Topstep MNQ" value="'+(acct&&acct.name?acct.name:'')+'"/></div>' +
+    '<div class="acct-mo-field"><div class="acct-mo-label">Account name</div><input class="acct-mo-input" id="acct-mo-name" placeholder="e.g. Topstep MNQ" value="'+esc(acct&&acct.name?acct.name:'')+'"/></div>' +
     '<div class="acct-mo-field"><div class="acct-mo-label">Type</div><select class="acct-mo-select" id="acct-mo-type">'+['Funded','Challenge','Personal','Paper'].map(tp=>'<option'+(tp===(acct&&acct.type?acct.type:'Personal')?' selected':'')+'>'+tp+'</option>').join('')+'</select></div>' +
-    '<div class="acct-mo-field"><div class="acct-mo-label">Broker / Firm (optional)</div><input class="acct-mo-input" id="acct-mo-firm" placeholder="e.g. Topstep, Apex..." value="'+(acct&&acct.firm?acct.firm:'')+'"/></div>' +
+    '<div class="acct-mo-field"><div class="acct-mo-label">Broker / Firm (optional)</div><input class="acct-mo-input" id="acct-mo-firm" placeholder="e.g. Topstep, Apex..." value="'+esc(acct&&acct.firm?acct.firm:'')+'"/></div>' +
     '<div class="acct-mo-field"><div class="acct-mo-label">Color</div><div class="acct-colors">'+ACCT_COLORS.map(c=>'<div class="acct-color-btn'+(c===selColor?' selected':'')+'" style="background:'+c+'" data-color="'+c+'" onclick="selectAcctColor(this)"></div>').join('')+'</div></div>' +
     '<div class="acct-mo-btns">' +
       '<button class="acct-mo-cancel" onclick="closeAcctModal()">Cancel</button>' +
@@ -5167,6 +5287,8 @@ function getMonthTrades(start,end){
 function changeMonth(dir){if(monthOffset+dir>0)return;monthOffset+=dir;renderWeekly();}
 
 async function generateMonthlySummary(){
+  const reportOwner=currentSession?.user?.id;
+  if(!reportOwner){toast('Please sign in first');return;}
   const range=getMonthRange(monthOffset);
   const mt=getMonthTrades(range.start,range.end);
   const key=getMonthKey(monthOffset);
@@ -5188,6 +5310,8 @@ async function generateMonthlySummary(){
     const parsed=JSON.parse(clean);
     parsed.generatedAt=new Date().toLocaleDateString();
     if(!weekSummaries) weekSummaries={};
+    writeUserJSON('utf_monthly_reports',{...readUserJSON('utf_monthly_reports',{},reportOwner),[key]:parsed},reportOwner);
+    if(currentSession?.user?.id!==reportOwner) return;
     weekSummaries[key]=parsed;
     renderWeekly();toast('✓ Monthly coaching report generated');
   }catch(e){
@@ -5414,4 +5538,4 @@ document.addEventListener('DOMContentLoaded',function(){init();});
 </div>
 
 </body>
-</html
+</html>
