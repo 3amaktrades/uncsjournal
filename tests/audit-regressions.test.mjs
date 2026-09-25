@@ -25,7 +25,7 @@ function setup(storage={}){
       return q;
     }};
   w.supabase={createClient:()=>client};
-  w.eval(scripts+'\n;window.api={tradeToDb,dbToTrade,loadUserData,saveTradeDB,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,'+
+  w.eval(scripts+'\n;window.api={buildEditRow,renderAnalytics,renderLog,tradeOutcome,tradeToDb,dbToTrade,loadUserData,saveTradeDB,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,'+
     'setState(x){if("session" in x)currentSession=x.session;if("trades" in x)trades=x.trades;if("profile" in x)profile=x.profile;if("accounts" in x)userAccounts=x.accounts;if("templates" in x)customTemplates=x.templates;if("active" in x)activeTemplates=x.active;if("csvData" in x)csvData=x.csvData;if("csvMap" in x)csvMap=x.csvMap;if("csvPlatform" in x)csvPlatform=x.csvPlatform;if("summaries" in x)weekSummaries=x.summaries;currentTab="new";},'+
     'state(){return {trades,profile,customTemplates,activeTemplates,weekSummaries,csvPreview,currentSession};},setAI(fn){callAI=fn;}};');
   const api=w.api;
@@ -37,6 +37,26 @@ const rich={id:'client-1',dbId:'db-1',ownerId:'A',sym:'NQ',date:'2026-09-01',tim
   entryDOL:['PDH'],exitDOL:['PDL'],ltf:['1min'],htf:['4H'],of:['Bullish'],funded:true,challenge:true,metPlan:true,followedPlan:true,aiAnalysis:{grade:'A'},accountId:'acct-A'};
 const tests=[];
 function test(name,fn){tests.push([name,fn])}
+test('editor preserves legacy dropdowns, zero values and SMT correlation',async({api,w,calls})=>{
+  const trade={...rich,r:0,rating:'A-',news:'News done',ruleBreak:'Sized down',liqSwept:'swept',vshape:'V-shape',valTF:'1min',smt:'Bearish SMT',smtVs:'ES'};
+  api.setState({trades:[trade]});
+  w.document.getElementById('tab-log').innerHTML='<table><tbody>'+api.buildEditRow(trade,'db-1')+'</tbody></table>';
+  for(const [id,value] of Object.entries({'ed-r':'0','ed-rating':'A-','ed-news':'News done','ed-ruleBreak':'Sized down','ed-liqSwept':'swept','ed-vshape':'V-shape','ed-valTF':'1min'}))assert.equal(w.document.getElementById(id).value,value,id);
+  await api.saveEditedTrade('db-1');
+  assert.equal(calls.find(c=>c.op==='update').row.smt_vs,'ES');
+});
+test('streak reflects the latest loss or breakeven rather than an earlier win',({api,w})=>{
+  for(const [last,expected] of [['-1','-1'],['0','\u2014']]){
+    api.setState({trades:[{...rich,date:'2026-09-01',r:'2'},{...rich,date:'2026-09-02',r:last}]});
+    api.renderAnalytics();
+    const label=[...w.document.querySelectorAll('#tab-analytics div')].find(e=>e.textContent==='Current Streak');
+    assert.equal(label.previousElementSibling.textContent,expected);
+  }
+});
+test('missing results are distinct from numeric breakevens',({api})=>{
+  for(const r of ['',null,undefined,'invalid'])assert.equal(api.tradeOutcome({r,outcome:'Breakeven'}),'Missing R');
+  for(const r of [0,'0'])assert.equal(api.tradeOutcome({r}),'Breakeven');
+});
 test('zero and every saved field survive the real reload path',async({api,setHandler})=>{
   const row=api.tradeToDb(rich);assert.equal(row.r_result,0);
   setHandler(({table})=>({data:table==='profiles'?{name:'Test'}:[{id:'db-1',user_id:'A',...row}],error:null}));

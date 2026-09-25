@@ -1332,6 +1332,8 @@ let profile=null,pendingTrade=null,lbSort='r',mentorUnlocked=false,lbData=[];
 const chips={},togState={};
 
 const toast=msg=>{const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);};
+const hasTradeResult=t=>t.r!==null&&t.r!==undefined&&String(t.r).trim()!==''&&Number.isFinite(Number(t.r));
+const tradeOutcome=t=>hasTradeResult(t)?getOutcome(t.r):'Missing R';
 const getOutcome=r=>{const n=parseFloat(r);if(isNaN(n)||r==='')return'';return n>0?'Win':n<0?'Loss':'Breakeven';};
 const f2=n=>isNaN(n)||!isFinite(n)?'0.00':Number(n).toFixed(2);
 const f0=n=>isNaN(n)||!isFinite(n)?'0':Math.round(n).toLocaleString();
@@ -1716,7 +1718,7 @@ async function loadLBDB(){
 }
 async function postLBDB(){
   if(!profile){toast('Log a trade first');return;}
-  const t=trades.filter(x=>x.r!=='');
+  const t=trades.filter(hasTradeResult);
   if(!t.length){toast('Log at least one trade first');return;}
   const wins=t.filter(x=>parseFloat(x.r)>0);
   const losses=t.filter(x=>parseFloat(x.r)<0);
@@ -2026,7 +2028,7 @@ async function saveEditedTrade(tid){
     preState:v('ed-preState'),ruleBreak:v('ed-ruleBreak'),
     why:v('ed-why'),postNotes:v('ed-postNotes'),
     liqSwept:v('ed-liqSwept'),vshape:v('ed-vshape'),
-    smt:v('ed-smt'),smtVs:v('ed-smtVs'),valTF:v('ed-valTF'),
+    smt:v('ed-smt'),valTF:v('ed-valTF'),
     outcome:getOutcome(v('ed-r'))
   };
   const acctEl=document.getElementById('ed-account');
@@ -2403,7 +2405,7 @@ function initAnalyticsCharts(){
   if(typeof Chart==='undefined'){console.warn('Chart.js not loaded');return;}
   if(document.getElementById('tab-analytics')?.style.display==='none')return;
 
-  const sorted=[...trades.filter(x=>x.r!=='')].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const sorted=[...trades.filter(hasTradeResult)].sort((a,b)=>new Date(a.date)-new Date(b.date));
   let cumR=0;
   const eqData=sorted.map(x=>{cumR+=parseFloat(x.r)||0;return Math.round(cumR*10)/10;});
   const eqLabels=sorted.map(x=>x.date||'');
@@ -2476,7 +2478,7 @@ function runChallengeSimulation(){
   if(!resultsEl)return;
   const target=parseFloat(document.getElementById('ch-target')?.value)||6;
   const maxLoss=parseFloat(document.getElementById('ch-maxloss')?.value)||4;
-  const t=trades.filter(x=>x.r!=='');
+  const t=trades.filter(hasTradeResult);
   if(t.length<5){resultsEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">'+(LANG==='ar'?'يلزم 5 صفقات على الأقل لتشغيل المحاكاة':'Log at least 5 trades to run this simulation')+'</div>';return;}
   resultsEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">'+(LANG==='ar'?'جارٍ المحاكاة…':'Simulating…')+'</div>';
   setTimeout(()=>{
@@ -2834,9 +2836,10 @@ function renderDashboard(){
   const grossW=_t.filter(t2=>parseFloat(t2.r)>0).reduce((s,t2)=>s+(parseFloat(t2.r)||0),0);
   const grossL=Math.abs(_t.filter(t2=>parseFloat(t2.r)<0).reduce((s,t2)=>s+(parseFloat(t2.r)||0),0));
   const pf=grossL?( grossW/grossL).toFixed(2):'—';
-  const sorted=[..._t].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const sorted=[..._t].sort((a,b)=>(b.date+'T'+(b.time||'00:00')).localeCompare(a.date+'T'+(a.time||'00:00')));
   let streak=0;for(const t2 of sorted){if(parseFloat(t2.r)>0)streak++;else break;}
-  const avgR=_t.length?(allR/_t.length):0;
+  const completedCount=_t.filter(hasTradeResult).length;
+  const avgR=completedCount?(allR/completedCount):0;
   const nowM=new Date(),mStr=nowM.getFullYear()+'-'+String(nowM.getMonth()+1).padStart(2,'0');
   const monthTrades2=_t.filter(t2=>t2.date&&t2.date.startsWith(mStr));
   const monthTrades=monthTrades2.length;
@@ -3381,13 +3384,14 @@ function renderCalc(){
 function setBalance(amount){const el=$('rc-acct');if(el){el.value=amount;calcRisk();}}
 
 function buildEditRow(t,tid){
-  const esc=s=>(s||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  const esc=s=>(s??'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   const sel=(id,val,opts,extra)=>{
+    if(val&&!opts.includes(val))opts=[...opts,val];
     let s='<select id="'+id+'" style="width:100%"'+(extra||'')+'>';
     opts.forEach(o=>{s+='<option value="'+esc(o)+'"'+(val===o?' selected':'')+'>'+esc(o||'—')+'</option>';});
     return s+'</select>';
   };
-  const R=['A+','A','B','C','D'];
+  const R=['A+','A','A-','B+','B','B-','C','D'];
   const NW=['High Impact','Medium Impact','Low Impact','No News'];
   const RB=['None','Chased entry','Moved SL','Oversized','FOMO','Revenge trade','News trade','No setup','Early exit'];
   const LQ=['','Buy side','Sell side','Both','Neither'];
@@ -3493,7 +3497,7 @@ function renderLog(){
     sorted=sorted.filter(t=>(t.sym||'').toLowerCase().includes(q)||(t.notes||'').toLowerCase().includes(q)||(t.thoughts||'').toLowerCase().includes(q)||(t.postNotes||'').toLowerCase().includes(q));
   }
   if(logOutcomeFilter!=='all'){
-    sorted=sorted.filter(t=>t.outcome===logOutcomeFilter);
+    sorted=sorted.filter(t=>tradeOutcome(t)===logOutcomeFilter);
   }
   const searchBar=`<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
     <input type="text" id="log-search" placeholder="${LANG==='ar'?'ابحث بالرمز أو الملاحظات…':'Search symbol or notes…'}" value="${(logSearchQuery||'').replace(/"/g,'&quot;')}" oninput="logSearchInput(this.value)" style="flex:1;min-width:180px;padding:9px 14px;border:1px solid var(--border);border-radius:9px;background:var(--card);color:var(--text);font-size:13px;font-family:inherit">
@@ -3501,6 +3505,7 @@ function renderLog(){
       <option value="all" ${logOutcomeFilter==='all'?'selected':''}>${LANG==='ar'?'كل النتائج':'All outcomes'}</option>
       <option value="Win" ${logOutcomeFilter==='Win'?'selected':''}>${LANG==='ar'?'فوز':'Win'}</option>
       <option value="Loss" ${logOutcomeFilter==='Loss'?'selected':''}>${LANG==='ar'?'خسارة':'Loss'}</option>
+      <option value="Missing R" ${logOutcomeFilter==='Missing R'?'selected':''}>Missing R</option>
       <option value="Breakeven" ${logOutcomeFilter==='Breakeven'?'selected':''}>${LANG==='ar'?'تعادل':'Breakeven'}</option>
     </select>
     ${(logSearchQuery||logOutcomeFilter!=='all')?`<button onclick="clearLogSearch()" style="padding:9px 14px;border:1px solid var(--border);border-radius:9px;background:var(--card);color:var(--text3);font-size:13px;cursor:pointer;font-family:inherit">✕ Clear</button>`:''}
@@ -3521,8 +3526,8 @@ function renderLog(){
       <td style="font-weight:bold;white-space:nowrap">${t.date||'—'}${t.pendingSync?` <span title="Syncing to server…" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#C9A84C;margin-left:2px"></span>`:''}</td>
       <td style="font-weight:bold">${esc(t.sym)||'—'}</td>
       <td>${t.dir?`<span class="ib ${t.dir==='Bullish'?'bull':'bear'}">${t.dir}</span>`:'—'}</td>
-      <td style="font-weight:bold;color:${parseFloat(t.r)>0?'var(--ok-txt)':parseFloat(t.r)<0?'var(--err-txt)':'var(--warn-txt)'}">${t.r?(parseFloat(t.r)>0?'+':'')+t.r+'R':'—'}</td>
-      <td>${t.outcome?`<span class="ib ${outCls(t.outcome)}">${t.outcome}</span>`:'—'}</td>
+      <td style="font-weight:bold;color:${parseFloat(t.r)>0?'var(--ok-txt)':parseFloat(t.r)<0?'var(--err-txt)':'var(--warn-txt)'}">${hasTradeResult(t)?(parseFloat(t.r)>0?'+':'')+t.r+'R':'Missing R'}</td>
+      <td>${`<span class="ib ${outCls(tradeOutcome(t))}">${tradeOutcome(t)}</span>`}</td>
       <td>${t.rating?`<span class="ib ${ratCls(t.rating)}">${t.rating}</span>`:'—'}</td>
       <td>${t.smt?`<span class="ib ${t.smt==='Bullish SMT'?'bull':'bear'}" style="font-size:9px;white-space:nowrap">${t.smt==='Bullish SMT'?'↑ Bull':'↓ Bear'} SMT${t.smtVs?' vs '+t.smtVs:''}</span>`:'<span style="color:#aaa;font-size:10px">—</span>'}</td>
       <td>${(t.entryDOL||[]).map(v=>`<span class="chip" style="background:#A0782822;color:#A07828;border:1px solid #A0782844;font-size:9px;padding:1px 5px">${v}</span>`).join('')||'—'}</td>
@@ -3555,7 +3560,8 @@ function renderWeekly(){
   const losses=mt.filter(function(t){return parseFloat(t.r)<0;});
   const totalR=mt.reduce(function(a,t){return a+(parseFloat(t.r)||0);},0);
   const wr=(wins.length+losses.length)?Math.round(wins.length/(wins.length+losses.length)*100):0;
-  const avgR=mt.length?(totalR/mt.length):0;
+  const completedCount=mt.filter(hasTradeResult).length;
+  const avgR=completedCount?(totalR/completedCount):0;
   const breaks=mt.filter(function(t){return t.ruleBreak&&t.ruleBreak!=='None';});
   const isFuture=monthOffset>0;
   function gColor(g){
@@ -3595,7 +3601,7 @@ function renderWeekly(){
   var tradeRows=mt.length?[...mt].sort(function(a,b){return new Date(a.date)-new Date(b.date);}).map(function(t){
     return'<tr><td style="font-weight:600">'+esc(t.date)+'</td><td>'+esc(t.sym||'—')+'</td><td>'+
       (t.dir?'<span class="ib '+(t.dir==='Bullish'?'bull':'bear')+'">'+(t.dir==='Bullish'?'Long':'Short')+'</span>':'—')+'</td>'+
-      '<td style="color:'+(parseFloat(t.r)>0?'var(--ok-txt)':parseFloat(t.r)<0?'var(--err-txt)':'#555')+';font-weight:700">'+(parseFloat(t.r)>0?'+':'')+(t.r||'—')+'R</td>'+
+      '<td style="color:'+(parseFloat(t.r)>0?'var(--ok-txt)':parseFloat(t.r)<0?'var(--err-txt)':'#555')+';font-weight:700">'+(hasTradeResult(t)?(parseFloat(t.r)>0?'+':'')+t.r+'R':'Missing R')+'</td>'+
       '<td>'+(t.rating||'—')+'</td></tr>';
   }).join(''):'<tr><td colspan="5" style="text-align:center;color:#aaa;padding:12px">No trades</td></tr>';
   $('tab-weekly').innerHTML='<div class="ws-wrap">'+
@@ -3786,7 +3792,7 @@ function simulateChallenge(rArr,targetPct,maxLossPct,riskPct,trailing,iterations
 }
 
 function renderAnalytics(){
-  const t=trades.filter(x=>x.r!=='');
+  const t=trades.filter(hasTradeResult);
   if(!t.length){$('tab-analytics').innerHTML='<div class="empty">Log some trades to see your analytics</div>';return;}
   const wins=t.filter(x=>parseFloat(x.r)>0),losses=t.filter(x=>parseFloat(x.r)<0),bes=t.filter(x=>parseFloat(x.r)===0);
   const rSec=t.reduce((a,x)=>a+(parseFloat(x.r)||0),0),wr=wins.length/t.length;
@@ -3875,14 +3881,15 @@ function renderAnalytics(){
   const textColor=isDark?'#a0a8b0':'#888';
 
   // Calculate streaks
-  const sortedForStreak=[...t].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const sortedForStreak=[...trades].sort((a,b)=>(a.date+'T'+(a.time||'00:00')).localeCompare(b.date+'T'+(b.time||'00:00')));
   let maxWinStreak=0,maxLossStreak=0,curW=0,curL=0;
   let curWinStreak=0,curLossStreak=0;
   sortedForStreak.forEach(x=>{
     const r=parseFloat(x.r)||0;
-    if(r>0){curW++;curL=0;maxWinStreak=Math.max(maxWinStreak,curW);curWinStreak=curW;}
-    else if(r<0){curL++;curW=0;maxLossStreak=Math.max(maxLossStreak,curL);curLossStreak=curL;}
+    if(r>0){curW++;curL=0;maxWinStreak=Math.max(maxWinStreak,curW);}
+    else if(r<0){curL++;curW=0;maxLossStreak=Math.max(maxLossStreak,curL);}
     else{curW=0;curL=0;}
+    curWinStreak=curW;curLossStreak=curL;
   });
 
   $('tab-analytics').innerHTML=`
@@ -4057,7 +4064,7 @@ function renderAnalytics(){
 
 function renderLB(){
   const sorted=sortedLB();
-  const myStats=trades.filter(x=>x.r!=='');
+  const myStats=trades.filter(hasTradeResult);
   const myR=myStats.reduce((a,x)=>a+(parseFloat(x.r)||0),0);
   const myWins=myStats.filter(x=>parseFloat(x.r)>0);
   const myWr=myStats.length?myWins.length/myStats.length:0;
