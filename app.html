@@ -472,7 +472,7 @@ body.dark .ws-table th,body.dark #tab-weekly th{background:var(--card2);color:va
 
 /* ── WELCOME SCREEN ── */
 #welcome-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
-.welcome-box{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:540px;width:100%;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.4)}
+.welcome-box{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:540px;max-height:calc(100vh - 32px);width:100%;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.4)}
 .welcome-header{background:#0F1923;padding:28px 32px 20px;text-align:center}
 .welcome-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#C9A84C;margin-bottom:14px}
 .welcome-step-dots{display:flex;gap:6px;justify-content:center;margin-top:12px}
@@ -1511,7 +1511,7 @@ async function doSignUp(){
   if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showE('auth-err','Please enter a valid email');return;}
   if(pass.length<8){showE('auth-err','Password must be at least 8 characters');return;}
   setLoad('up',true);
-  const{error}=await db.auth.signUp({email,password:pass,options:{data:{name},emailRedirectTo:'https://uncsjournal.com/app'}});
+  const{error}=await db.auth.signUp({email,password:pass,options:{data:{name,template_onboarding_pending:true},emailRedirectTo:'https://uncsjournal.com/app'}});
   setLoad('up',false);
   if(error){showE('auth-err',error.message);return;}
   authView('confirm');
@@ -2297,7 +2297,7 @@ async function amSignUp(){
   if(pass.length<8){if(err){err.textContent='Password must be at least 8 characters';err.style.display='block';}return;}
   if(confirm!==undefined&&confirm!==pass){if(err){err.textContent='Passwords do not match';err.style.display='block';}return;}
   const btn=$('am-up-btn');if(btn){btn.disabled=true;btn.textContent='Creating account...';}
-  const{error}=await db.auth.signUp({email,password:pass,options:{data:{name},emailRedirectTo:'https://uncsjournal.com/app'}});
+  const{error}=await db.auth.signUp({email,password:pass,options:{data:{name,template_onboarding_pending:true},emailRedirectTo:'https://uncsjournal.com/app'}});
   if(error){if(err){err.textContent=error.message;err.style.display='block';}if(btn){btn.disabled=false;btn.textContent='Create account & save trade \u2192';}return;}
   // If email confirmation is off, onAuthStateChange fires immediately
   // If confirmation is on, show message
@@ -4149,7 +4149,7 @@ function renderLB(){
 
 // ── WELCOME ONBOARDING ──
 var welcomeSlide = 0;
-var welcomeSlides = 5;
+var welcomeSlides = 6;
 
 function setWelcomeLang(lang){
   LANG = lang;
@@ -4177,9 +4177,9 @@ function setWelcomeLang(lang){
   updateUI();
 }
 
-function showWelcomeScreen(name){
-  const seen = localStorage.getItem('utf_welcomed');
-  if(seen) return;
+function showWelcomeScreen(name,force){
+  const seen = localStorage.getItem(userStorageKey('utf_welcomed'))||localStorage.getItem('utf_welcomed');
+  if(seen&&!force) return;
   // Update welcome title with name
   const t0 = document.getElementById('w-title-0');
   if(t0 && name) t0.textContent = (LANG==='ar' ? 'أهلاً ' + name + '!' : 'Welcome, ' + name + '!');
@@ -4197,7 +4197,7 @@ function updateWelcomeSlide(){
     if(d)d.classList.remove('active');
   }
   // Handle non-standard slide IDs
-  const slideIds=['wslide-0','wslide-1b','wslide-1','wslide-2','wslide-3'];
+  const slideIds=['wslide-0','wslide-1b','wslide-1','wslide-2','wslide-template','wslide-3'];
   for(let i=0;i<slideIds.length;i++){
     const s=document.getElementById(slideIds[i]);
     if(s)s.classList.remove('active');
@@ -4214,7 +4214,7 @@ function updateWelcomeSlide(){
   const btn=document.getElementById('w-next-btn');
   const skip=document.getElementById('w-skip-btn');
   const footer=document.querySelector('.welcome-footer');
-  if(welcomeSlide===0){
+  if(welcomeSlide===0||welcomeSlide===4){
     // Language slide — hide next/skip buttons (user must click a language)
     if(footer)footer.style.display='none';
   } else {
@@ -4241,8 +4241,33 @@ function nextWelcomeSlide(){
 
 function dismissWelcome(){
   localStorage.setItem('utf_welcomed','1');
+  localStorage.setItem(userStorageKey('utf_welcomed'),'1');
+  if(currentSession?.user?.user_metadata?.template_onboarding_pending===true){
+    currentSession.user.user_metadata.template_onboarding_pending=false;
+    db.auth.updateUser({data:{template_onboarding_pending:false}}).catch(()=>{});
+  }
   const overlay=document.getElementById('welcome-overlay');
   if(overlay){overlay.style.opacity='0';overlay.style.transition='opacity .3s';setTimeout(()=>overlay.style.display='none',300);}
+}
+
+function chooseWelcomeTemplate(type){
+  if(type==='ict'){
+    activeTemplates=['ict'];
+  }else{
+    const tmpl=SAMPLE_TEMPLATES[type];
+    if(!tmpl)return;
+    const id='tmpl_'+uid();
+    customTemplates.push({...tmpl,id,fields:(tmpl.fields||[]).map(f=>({...f,id:uid()}))});
+    activeTemplates=[id];
+  }
+  saveTemplates();renderForm();
+  welcomeSlide=welcomeSlides-1;updateWelcomeSlide();
+  toast('✓ Template selected');
+}
+
+function createWelcomeTemplate(){
+  dismissWelcome();
+  setTimeout(openNewTemplate,320);
 }
 
 
@@ -4519,8 +4544,9 @@ async function init(){
       showTab(currentTab||'dashboard');
       closeMo();
       // Show welcome for brand new users (no trades, no welcome seen)
-      if(!localStorage.getItem('utf_welcomed') && trades.length===0){
-        setTimeout(()=>showWelcomeScreen(profile?.name||''),400);
+      const templateOnboardingPending=session.user?.user_metadata?.template_onboarding_pending===true;
+      if(templateOnboardingPending||(!localStorage.getItem('utf_welcomed')&&trades.length===0)){
+        setTimeout(()=>showWelcomeScreen(profile?.name||'',templateOnboardingPending),400);
       }
       if(pendingTrade){
         try{const saved=await saveTradeDB(pendingTrade);trades.unshift(saved);pendingTrade=null;toast('\u2713 Trade saved');resetForm();renderLog();}
@@ -5546,13 +5572,14 @@ document.addEventListener('DOMContentLoaded',function(){init();});
   <div class="welcome-box">
     <div class="welcome-header">
       <div class="welcome-logo">◆ Unc's Journal</div>
-      <div style="font-size:13px;color:rgba(255,255,255,.5)" id="w-step-label">1 / 4</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5)" id="w-step-label">1 / 6</div>
       <div class="welcome-step-dots">
         <div class="w-dot active" id="wdot-0"></div>
         <div class="w-dot" id="wdot-1"></div>
         <div class="w-dot" id="wdot-2"></div>
         <div class="w-dot" id="wdot-3"></div>
         <div class="w-dot" id="wdot-4"></div>
+        <div class="w-dot" id="wdot-5"></div>
       </div>
     </div>
     <div class="welcome-body">
@@ -5603,7 +5630,22 @@ document.addEventListener('DOMContentLoaded',function(){init();});
         </div>
       </div>
 
-      <!-- SLIDE 4: Ready -->
+      <!-- SLIDE 5: Template selection -->
+      <div class="welcome-slide" id="wslide-template">
+        <span class="welcome-icon">🎯</span>
+        <div class="welcome-title">Choose your trading template</div>
+        <div class="welcome-desc">Pick the journal fields that match your strategy. You can change or combine templates later.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <button onclick="chooseWelcomeTemplate('ict')" class="w-next" style="padding:10px 8px">ICT / SMC</button>
+          <button onclick="chooseWelcomeTemplate('sd')" class="w-next" style="padding:10px 8px">Supply &amp; Demand</button>
+          <button onclick="chooseWelcomeTemplate('bo')" class="w-next" style="padding:10px 8px">Breakout / Range</button>
+          <button onclick="chooseWelcomeTemplate('pa')" class="w-next" style="padding:10px 8px">Price Action</button>
+          <button onclick="chooseWelcomeTemplate('sc')" class="w-next" style="padding:10px 8px">Scalping</button>
+          <button onclick="createWelcomeTemplate()" class="w-next" style="padding:10px 8px;background:#534AB7;color:#fff">Create my own</button>
+        </div>
+      </div>
+
+      <!-- SLIDE 6: Ready -->
       <div class="welcome-slide" id="wslide-3">
         <span class="welcome-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span>
         <div class="welcome-title" id="w-title-3">جاهز تبدأ؟</div>

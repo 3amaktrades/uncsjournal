@@ -15,7 +15,7 @@ function setup(storage={}){
   w.Chart.registry={plugins:{get:()=>null}};
   const calls=[];
   let handler=({table,op,row})=>({data:op==='select'?(table==='profiles'?{name:'Test',account_size:10000}:[]):{id:'db-1',...row},error:null});
-  const client={auth:{getSession:async()=>({data:{session:{user:{id:'A'}}}}),getUser:async()=>({data:{user:{id:'A'}}}),onAuthStateChange:()=>{},signOut:async()=>({})},
+  const client={auth:{getSession:async()=>({data:{session:{user:{id:'A'}}}}),getUser:async()=>({data:{user:{id:'A'}}}),onAuthStateChange:()=>{},signOut:async()=>({}),updateUser:async()=>({data:{},error:null})},
     from(table){
       let op='select',row;const filters=[];
       const q={select(){return q},single(){return q},order(){return q},limit(){return q},
@@ -25,7 +25,7 @@ function setup(storage={}){
       return q;
     }};
   w.supabase={createClient:()=>client};
-  w.eval(scripts+'\n;window.api={buildEditRow,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,aiHTML,tradeToDb,dbToTrade,loadUserData,saveTradeDB,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,'+
+  w.eval(scripts+'\n;window.api={buildEditRow,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,aiHTML,tradeToDb,dbToTrade,loadUserData,saveTradeDB,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,showWelcomeScreen,updateWelcomeSlide,chooseWelcomeTemplate,'+
     'setState(x){if("session" in x)currentSession=x.session;if("trades" in x)trades=x.trades;if("profile" in x)profile=x.profile;if("accounts" in x)userAccounts=x.accounts;if("templates" in x)customTemplates=x.templates;if("active" in x)activeTemplates=x.active;if("csvData" in x)csvData=x.csvData;if("csvMap" in x)csvMap=x.csvMap;if("csvPlatform" in x)csvPlatform=x.csvPlatform;if("summaries" in x)weekSummaries=x.summaries;currentTab="new";},'+
     'state(){return {trades,profile,customTemplates,activeTemplates,weekSummaries,csvPreview,currentSession};},setAI(fn){callAI=fn;}};');
   const api=w.api;
@@ -39,6 +39,16 @@ const tests=[];
 function test(name,fn){tests.push([name,fn])}
 test('Tradovate connection stays hidden until the integration is resumed',()=>{
   assert.match(html,/#itab-tv,#import-tv-sec\{display:none!important\}/);
+});
+test('new-account onboarding offers and activates a template choice',({api,w})=>{
+  api.setState({templates:[],active:['ict'],session:{user:{id:'A',user_metadata:{template_onboarding_pending:true}}}});
+  api.showWelcomeScreen('New Trader',true);
+  assert.match(w.document.getElementById('welcome-overlay').textContent,/Choose your trading template/);
+  api.chooseWelcomeTemplate('bo');
+  const state=api.state();
+  assert.equal(state.customTemplates.length,1);
+  assert.equal(state.customTemplates[0].name,'Breakout / Range');
+  assert.deepEqual([...state.activeTemplates],[state.customTemplates[0].id]);
 });
 test('AI trade analysis escapes model output and tolerates malformed lists',({api})=>{
   const rendered=api.aiHTML({grade:'<img src=x>',summary:'<script>bad()</script>',strengths:['<b>unsafe</b>'],improvements:'not-an-array',psychology:'<svg onload=bad()>',pattern:'<i>x</i>',verdict:'<a href=x>go</a>'});
