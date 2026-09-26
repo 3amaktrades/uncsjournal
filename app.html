@@ -2307,18 +2307,19 @@ async function amSignUp(){
 function gsStyle(g){return({'A+':['#1A5C3A','#DCF5E7'],'A':['#228B22','#E8F5E8'],'A-':['#52B788','#EAF7EE'],'B+':['#B8600A','#FFF0D6'],'B':['#C45E00','#FFF0D6'],'B-':['#8B2020','#FCE8E8'],'C':['#555','#f5f4f1']}[g]||['#534AB7','#EEEDFE']);}
 
 function aiHTML(a){
-  const[gc,gl]=gsStyle(a.grade);
+  const grade=String(a?.grade||'—'),strengths=Array.isArray(a?.strengths)?a.strengths:[],improvements=Array.isArray(a?.improvements)?a.improvements:[];
+  const[gc,gl]=gsStyle(grade);
   return `
     <div class="ai-grade-wrap"><div style="text-align:center">
-      <div class="ai-grade" style="color:${gc};border-color:${gc};background:${gl};margin:0 auto 8px">${a.grade}</div>
+      <div class="ai-grade" style="color:${gc};border-color:${gc};background:${gl};margin:0 auto 8px">${esc(grade)}</div>
       <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px">AI Grade</div>
     </div></div>
-    <div class="ai-summary">"${a.summary}"</div>
-    ${a.strengths?.length?`<div class="ai-sec"><div class="ai-sec-t">✓ Strengths</div>${a.strengths.map(s=>`<div class="ai-item"><span class="dot-g"></span>${s}</div>`).join('')}</div>`:''}
-    ${a.improvements?.length?`<div class="ai-sec"><div class="ai-sec-t">△ Improvements</div>${a.improvements.map(s=>`<div class="ai-item"><span class="dot-a"></span>${s}</div>`).join('')}</div>`:''}
-    ${a.psychology?`<div class="ai-sec"><div class="ai-sec-t">Psychology</div><div class="ai-psych">${a.psychology}</div></div>`:''}
-    ${a.pattern?`<div class="ai-sec"><div class="ai-sec-t">Pattern to watch</div><div class="ai-pattern">${a.pattern}</div></div>`:''}
-    <div class="ai-verdict">${a.verdict}</div>`;
+    <div class="ai-summary">"${esc(a?.summary||'')}"</div>
+    ${strengths.length?`<div class="ai-sec"><div class="ai-sec-t">✓ Strengths</div>${strengths.map(s=>`<div class="ai-item"><span class="dot-g"></span>${esc(s)}</div>`).join('')}</div>`:''}
+    ${improvements.length?`<div class="ai-sec"><div class="ai-sec-t">△ Improvements</div>${improvements.map(s=>`<div class="ai-item"><span class="dot-a"></span>${esc(s)}</div>`).join('')}</div>`:''}
+    ${a?.psychology?`<div class="ai-sec"><div class="ai-sec-t">Psychology</div><div class="ai-psych">${esc(a.psychology)}</div></div>`:''}
+    ${a?.pattern?`<div class="ai-sec"><div class="ai-sec-t">Pattern to watch</div><div class="ai-pattern">${esc(a.pattern)}</div></div>`:''}
+    <div class="ai-verdict">${esc(a?.verdict||'')}</div>`;
 }
 
 // ── AI ANALYSIS ───
@@ -2355,7 +2356,7 @@ async function analyseAI(tid){
     openMo(`AI Analysis — ${trade.date}`,aiHTML(a));
   }catch(e){
     const msg=e?.message||'Unknown error';
-    $('mo-b').innerHTML='<div style="text-align:center;padding:20px;color:var(--err-txt);font-size:13px">'+msg+'</div>';
+    $('mo-b').innerHTML='<div style="text-align:center;padding:20px;color:var(--err-txt);font-size:13px">'+esc(msg)+'</div>';
   }
 }
 
