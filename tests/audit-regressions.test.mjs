@@ -46,6 +46,11 @@ test('AI trade analysis escapes model output and tolerates malformed lists',({ap
   assert.match(rendered,/&lt;script&gt;bad\(\)&lt;\/script&gt;/);
   assert.doesNotMatch(rendered,/not-an-array/);
 });
+test('dashboard coach messages are never assigned as HTML',()=>{
+  assert.doesNotMatch(html,/innerHTML=dashAIMsg/);
+  assert.match(html,/dashAIMsg\?esc\(dashAIMsg\)/);
+  assert.match(html,/el2\.textContent=dashAIMsg/);
+});
 test('editor preserves legacy dropdowns, zero values and SMT correlation',async({api,w,calls})=>{
   const trade={...rich,r:0,rating:'A-',news:'News done',ruleBreak:'Sized down',liqSwept:'swept',vshape:'V-shape',valTF:'1min',smt:'Bearish SMT',smtVs:'ES'};
   api.setState({trades:[trade]});
