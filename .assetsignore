@@ -1,7 +1,7 @@
-.git
-.gitignore
-.gitattributes
-.wrangler
-node_modules
-tests
-wrangler.jsonc
+.git/
+.github/
+tests/
+worker/
+node_modules/
+work/
+outputs/
