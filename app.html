@@ -2936,7 +2936,7 @@ function renderDashboard(){
       +'</div></div>'
     ):'<div style="padding-top:6px;font-size:12px;color:var(--text3)">'+(LANG==='ar'?'لا توجد صفقات بعد':'No trades yet')+'</div>')
     +'</div>'
-    +'<div class="dash-widget" id="ai-motivation-card"><div class="dwt">'+t('Coach Message')+'</div><div id="ai-motivation-text" class="ai-msg">'+(dashAIMsg||'<span style="color:#aaa;font-size:12px">'+t('Loading your personalized message...')+'</span>')+'</div><button onclick="loadDashAIMsg(true)" style="margin-top:10px;background:none;border:1px solid #E0DED8;border-radius:6px;padding:5px 10px;font-size:11px;color:#888;cursor:pointer">'+t('↻ Refresh')+'</button></div>'
+    +'<div class="dash-widget" id="ai-motivation-card"><div class="dwt">'+t('Coach Message')+'</div><div id="ai-motivation-text" class="ai-msg">'+(dashAIMsg?esc(dashAIMsg):'<span style="color:#aaa;font-size:12px">'+t('Loading your personalized message...')+'</span>')+'</div><button onclick="loadDashAIMsg(true)" style="margin-top:10px;background:none;border:1px solid #E0DED8;border-radius:6px;padding:5px 10px;font-size:11px;color:#888;cursor:pointer">'+t('↻ Refresh')+'</button></div>'
     +'</div></div>'
     +econWidgetHTML();
   if(!dashAIMsg)loadDashAIMsg(false);
@@ -2963,23 +2963,23 @@ async function loadDashAIMsg(force){
   const today=new Date().toDateString();
   const cached=localStorage.getItem('utf_coach_msg');
   const cachedDay=localStorage.getItem('utf_coach_day');
-  if(!force&&cached&&cachedDay===today){dashAIMsg=cached;const el2=document.getElementById('ai-motivation-text');if(el2)el2.innerHTML=dashAIMsg;return;}
+  if(!force&&cached&&cachedDay===today){dashAIMsg=cached;const el2=document.getElementById('ai-motivation-text');if(el2)el2.textContent=dashAIMsg;return;}
   if(dashAIMsg&&!force)return;
   const el=document.getElementById('ai-motivation-text');
   if(el)el.innerHTML='<span style="color:#aaa;font-size:12px">'+t('Generating your message...')+'</span>';
   const notes=trades.slice(0,15).map(t2=>[t2.notes,t2.thoughts,t2.postNotes].filter(Boolean).join(' ')).filter(Boolean).join(' | ');
-  if(!notes){dashAIMsg=t('Log some trades with notes to get a personalized message!');if(el)el.innerHTML='<span style="color:#aaa;font-size:12px">'+dashAIMsg+'</span>';return;}
+  if(!notes){dashAIMsg=t('Log some trades with notes to get a personalized message!');if(el)el.textContent=dashAIMsg;return;}
   try{
     const sys=LANG==='ar'?'أنت مدرب تداول. اكتب رسالة تحفيزية قصيرة (2-3 جمل) بناءً على ملاحظات المتداول. بدون رموز تعبيرية. اكتب باللغة العربية.':'You are a trading coach. Write a short personal motivational message (2-3 sentences) based on the trader journal notes. Be specific, encouraging but honest. No emojis.';
     const data=await callAI({model:'claude-haiku-4-5-20251001',max_tokens:150,system:sys,messages:[{role:'user',content:'My recent trading notes: '+notes.slice(0,400)}]});
     dashAIMsg=data?.content?.[0]?.text||'Consistency is the edge. Keep logging, keep growing.';
     localStorage.setItem('utf_coach_msg',dashAIMsg);
     localStorage.setItem('utf_coach_day',today);
-    if(el)el.innerHTML=dashAIMsg;
+    if(el)el.textContent=dashAIMsg;
   }catch(e){
     const msgs=['Every trade logged is a step toward mastery. Your journal is your edge.','Process over outcome. Focus on executing your plan perfectly.','Consistency in your journal leads to consistency in your results.'];
     dashAIMsg=msgs[Math.floor(Math.random()*msgs.length)];
-    if(el)el.innerHTML=dashAIMsg;
+    if(el)el.textContent=dashAIMsg;
   }
 }
 
