@@ -51,6 +51,14 @@ test('dashboard coach messages are never assigned as HTML',()=>{
   assert.match(html,/dashAIMsg\?esc\(dashAIMsg\)/);
   assert.match(html,/el2\.textContent=dashAIMsg/);
 });
+test('trade log escapes imported and stored display values',({api,w})=>{
+  const payload='<img src=x onerror=bad()>';
+  api.setState({trades:[{...rich,id:'bad\' onclick=bad()',date:payload,sym:payload,dir:payload,r:'1',rating:payload,smt:'Bearish SMT',smtVs:payload,entryDOL:[payload],of:[payload],preState:payload,ruleBreak:payload}]});
+  api.renderLog();
+  const rendered=w.document.getElementById('tab-log').innerHTML;
+  assert.doesNotMatch(rendered,/<img|onclick=bad/);
+  assert.match(rendered,/&lt;img src=x onerror=bad\(\)&gt;/);
+});
 test('editor preserves legacy dropdowns, zero values and SMT correlation',async({api,w,calls})=>{
   const trade={...rich,r:0,rating:'A-',news:'News done',ruleBreak:'Sized down',liqSwept:'swept',vshape:'V-shape',valTF:'1min',smt:'Bearish SMT',smtVs:'ES'};
   api.setState({trades:[trade]});
