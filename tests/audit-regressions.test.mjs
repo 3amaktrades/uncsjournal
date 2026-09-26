@@ -37,6 +37,9 @@ const rich={id:'client-1',dbId:'db-1',ownerId:'A',sym:'NQ',date:'2026-09-01',tim
   entryDOL:['PDH'],exitDOL:['PDL'],ltf:['1min'],htf:['4H'],of:['Bullish'],funded:true,challenge:true,metPlan:true,followedPlan:true,aiAnalysis:{grade:'A'},accountId:'acct-A'};
 const tests=[];
 function test(name,fn){tests.push([name,fn])}
+test('Tradovate connection stays hidden until the integration is resumed',()=>{
+  assert.match(html,/#itab-tv,#import-tv-sec\{display:none!important\}/);
+});
 test('editor preserves legacy dropdowns, zero values and SMT correlation',async({api,w,calls})=>{
   const trade={...rich,r:0,rating:'A-',news:'News done',ruleBreak:'Sized down',liqSwept:'swept',vshape:'V-shape',valTF:'1min',smt:'Bearish SMT',smtVs:'ES'};
   api.setState({trades:[trade]});
