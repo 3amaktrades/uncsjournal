@@ -4513,7 +4513,8 @@ async function init(){
       loadAccounts();
       toast('✓ Data loaded: '+(profile?.name||'no profile')+' / '+trades.length+' trades');
       updateUI();
-      showTab('dashboard');
+      // Keep the tab the user selected while the session and account data were loading.
+      showTab(currentTab||'dashboard');
       closeMo();
       // Show welcome for brand new users (no trades, no welcome seen)
       if(!localStorage.getItem('utf_welcomed') && trades.length===0){
@@ -4902,7 +4903,7 @@ function onSignedIn(user){
     const authBtn=document.getElementById(id);
     if(authBtn) authBtn.textContent='Sign out';
   });
-  loadUserData();loadAccounts();showTab(DEFAULT_TAB_ORDER[0]);warmupDB();
+  loadUserData();loadAccounts();showTab(currentTab||DEFAULT_TAB_ORDER[0]);warmupDB();
   const mo=document.getElementById('auth-modal-overlay');
   if(mo) mo.style.display='none';
 }

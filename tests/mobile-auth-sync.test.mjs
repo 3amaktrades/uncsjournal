@@ -31,8 +31,11 @@ const testInvocation = `
     const results = {};
     results.duplicateIdsInInitialDOM = ${JSON.stringify(dupes)};
 
+    // Simulate a user selecting Trades while session restoration is still finishing.
+    currentTab = 'log';
     // Simulate sign-in
     onSignedIn({email:'trader@test.com'});
+    results.tabAfterSignIn = currentTab;
     results.desktopAfterSignIn = document.getElementById('hdr-auth-btn').textContent;
     results.mobileAfterSignIn = document.getElementById('hdr-auth-btn-mobile').textContent;
     results.desktopAvatarDisplay = document.getElementById('hdr-av').style.display;
@@ -66,3 +69,12 @@ try {
   process.exit(1);
 }
 console.log(JSON.stringify(window.__testResult, null, 2));
+
+if (window.__testResult?.results?.tabAfterSignIn !== 'log') {
+  console.error('Sign-in reset the active tab instead of preserving the user selection');
+  process.exit(1);
+}
+if (!fullScript.includes("showTab(currentTab||'dashboard')")) {
+  console.error('Auth restoration callback still forces the dashboard');
+  process.exit(1);
+}
