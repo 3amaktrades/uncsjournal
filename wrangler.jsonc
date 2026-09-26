@@ -1,12 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "uncsjournal",
+  "main": "worker/index.js",
   "compatibility_date": "2026-07-21",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/tradovate/*"]
   },
   "compatibility_flags": [
     "nodejs_compat"

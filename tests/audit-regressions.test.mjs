@@ -25,7 +25,7 @@ function setup(storage={}){
       return q;
     }};
   w.supabase={createClient:()=>client};
-  w.eval(scripts+'\n;window.api={buildEditRow,renderAnalytics,renderLog,tradeOutcome,tradeToDb,dbToTrade,loadUserData,saveTradeDB,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,'+
+  w.eval(scripts+'\n;window.api={buildEditRow,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,tradeToDb,dbToTrade,loadUserData,saveTradeDB,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,'+
     'setState(x){if("session" in x)currentSession=x.session;if("trades" in x)trades=x.trades;if("profile" in x)profile=x.profile;if("accounts" in x)userAccounts=x.accounts;if("templates" in x)customTemplates=x.templates;if("active" in x)activeTemplates=x.active;if("csvData" in x)csvData=x.csvData;if("csvMap" in x)csvMap=x.csvMap;if("csvPlatform" in x)csvPlatform=x.csvPlatform;if("summaries" in x)weekSummaries=x.summaries;currentTab="new";},'+
     'state(){return {trades,profile,customTemplates,activeTemplates,weekSummaries,csvPreview,currentSession};},setAI(fn){callAI=fn;}};');
   const api=w.api;
@@ -56,6 +56,18 @@ test('streak reflects the latest loss or breakeven rather than an earlier win',(
 test('missing results are distinct from numeric breakevens',({api})=>{
   for(const r of ['',null,undefined,'invalid'])assert.equal(api.tradeOutcome({r,outcome:'Breakeven'}),'Missing R');
   for(const r of [0,'0'])assert.equal(api.tradeOutcome({r}),'Breakeven');
+});
+test('Tradovate fills reconstruct supported closed trades with real symbols and P&L',({api})=>{
+  const result=api.buildTradovateTrades({
+    contracts:[{id:10,name:'MNQZ6'}],orders:[{id:21,accountId:7},{id:22,accountId:7}],
+    fills:[
+      {id:31,orderId:21,contractId:10,timestamp:'2026-09-25T14:30:00Z',action:'Buy',qty:2,price:20000},
+      {id:32,orderId:22,contractId:10,timestamp:'2026-09-25T15:00:00Z',action:'Sell',qty:2,price:20010}
+    ]
+  },100,7);
+  assert.equal(result.trades.length,1);assert.equal(result.trades[0].sym,'MNQ');
+  assert.equal(result.trades[0].pnl,40);assert.equal(result.trades[0].r,'0.40');
+  assert.equal(result.trades[0].dir,'Bullish');assert.equal(result.trades[0].qty,2);
 });
 test('zero and every saved field survive the real reload path',async({api,setHandler})=>{
   const row=api.tradeToDb(rich);assert.equal(row.r_result,0);
@@ -161,11 +173,11 @@ test('recovery navigation is visible, tabs are wired, network rejection unlocks 
   await api.doSignIn();assert.equal(w.document.getElementById('in-btn').disabled,false);
   assert.match(w.document.getElementById('auth-err').textContent,/Network down/);
 });
-test('media/broker policy allows only the required additional sources',()=>{
+test('media policy allows recordings and broker traffic stays same-origin',()=>{
   const headers=fs.readFileSync('../_headers','utf8');
   assert.match(headers,/media-src 'self' data: blob:/);
   const connect=headers.match(/connect-src ([^;]+)/)[1];
-  for(const host of ['https://live.tradovate.com','https://demo.tradovate.com']) assert.ok(connect.split(' ').includes(host));
+  for(const host of ['https://live.tradovate.com','https://demo.tradovate.com','https://live.tradovateapi.com','https://demo.tradovateapi.com']) assert.ok(!connect.split(' ').includes(host));
   assert.ok(!connect.includes('*'));assert.match(headers,/frame-ancestors 'none'/);
 });
 test('share downloads have a bundled renderer and use its canvas',async({api,w})=>{
