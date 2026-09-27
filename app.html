@@ -1570,6 +1570,12 @@ async function loadUserData(){
       writeUserJSON('utf_templates',customTemplates,owner);
       restoreTemplates();
     }
+    if(localStorage.getItem(userStorageKey('utf_active_templates',owner))===null && Array.isArray(currentSession.user.user_metadata?.active_templates)){
+      const valid=new Set(['ict',...customTemplates.map(t=>t.id)]);
+      activeTemplates=currentSession.user.user_metadata.active_templates.filter(id=>valid.has(id));
+      if(!activeTemplates.length) activeTemplates=['ict'];
+      writeUserJSON('utf_active_templates',activeTemplates,owner);
+    }
     aiUsed=profile?.aiUsed||0;
     const loaded=(tradesRes.data||[]).map(dbToTrade);
     // Pending edits take precedence over a stale server read. Preserve server IDs
@@ -3170,7 +3176,7 @@ function renderForm(){try{
     } else {
       if(!activeTemplates.includes(chosen))activeTemplates.push(chosen);
     }
-    writeUserJSON('utf_active_templates',activeTemplates);
+    saveActiveTemplates();
     renderForm();
   });
 }catch(e){console.error('renderForm error:',e);$('tab-new').innerHTML='<div style="padding:20px;color:var(--err-txt);font-size:13px">Form error: '+e.message+'<br><br>Check browser console (F12) for details.</div>';}
@@ -4821,7 +4827,7 @@ function restoreTemplates(){
 function saveTemplates(){
   try{
     writeUserJSON('utf_templates',customTemplates);
-    writeUserJSON('utf_active_templates',activeTemplates);
+    saveActiveTemplates();
   }catch(e){toast('Could not save templates on this device: '+e.message);return;}
   const owner=currentSession?.user?.id;
   if(owner){
@@ -4829,6 +4835,13 @@ function saveTemplates(){
       if(error&&currentSession?.user?.id===owner) toast('Templates saved on this device; cloud sync failed: '+error.message);
     }).catch(()=>{if(currentSession?.user?.id===owner) toast('Templates saved on this device; cloud sync failed');});
   }
+}
+function saveActiveTemplates(){
+  writeUserJSON('utf_active_templates',activeTemplates);
+  const owner=currentSession?.user?.id;
+  if(owner) db.auth.updateUser({data:{active_templates:activeTemplates}}).then(({error})=>{
+    if(error&&currentSession?.user?.id===owner) toast('Template choice saved on this device; account sync failed: '+error.message);
+  }).catch(()=>{if(currentSession?.user?.id===owner) toast('Template choice saved on this device; account sync failed');});
 }
 
 function buildTmplActivateBtn(id,isActive){
@@ -4845,7 +4858,7 @@ function activateTemplate(id){
   showTab('new');
 }
 
-function toggleTemplate(id){if(activeTemplates.includes(id)){if(activeTemplates.length===1){toast('At least one template must be active');return;}activeTemplates=activeTemplates.filter(t=>t!==id);}else{activeTemplates.push(id);}writeUserJSON('utf_active_templates',activeTemplates);renderForm();renderTemplates();}
+function toggleTemplate(id){if(activeTemplates.includes(id)){if(activeTemplates.length===1){toast('At least one template must be active');return;}activeTemplates=activeTemplates.filter(t=>t!==id);}else{activeTemplates.push(id);}saveActiveTemplates();renderForm();renderTemplates();}
 
 function getActiveTemplateDefs(){return activeTemplates.filter(id=>id!=='ict').map(id=>customTemplates.find(t=>t.id===id)).filter(Boolean);}
 

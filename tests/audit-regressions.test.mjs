@@ -15,7 +15,7 @@ function setup(storage={}){
   w.Chart.registry={plugins:{get:()=>null}};
   const calls=[];
   let handler=({table,op,row})=>({data:op==='select'?(table==='profiles'?{name:'Test',account_size:10000}:[]):{id:'db-1',...row},error:null});
-  const client={auth:{getSession:async()=>({data:{session:{user:{id:'A'}}}}),getUser:async()=>({data:{user:{id:'A'}}}),onAuthStateChange:()=>{},signOut:async()=>({}),updateUser:async()=>({data:{},error:null})},
+  const client={auth:{getSession:async()=>({data:{session:{user:{id:'A'}}}}),getUser:async()=>({data:{user:{id:'A'}}}),onAuthStateChange:()=>{},signOut:async()=>({}),updateUser:async(value)=>{calls.push({table:'auth',op:'updateUser',row:value});return {data:{},error:null}}},
     from(table){
       let op='select',row;const filters=[];
       const q={select(){return q},single(){return q},order(){return q},limit(){return q},
@@ -49,6 +49,17 @@ test('new-account onboarding offers and activates a template choice',({api,w})=>
   assert.equal(state.customTemplates.length,1);
   assert.equal(state.customTemplates[0].name,'Breakout / Range');
   assert.deepEqual([...state.activeTemplates],[state.customTemplates[0].id]);
+  assert.match(w.document.getElementById('tab-new').textContent,/Breakout level/);
+});
+test('chosen signup template restores on another device',async({api,w,calls,setHandler})=>{
+  const template={id:'tmpl_breakout',name:'Breakout / Range',fields:[]};
+  api.setState({templates:[],active:['ict'],session:{user:{id:'A',user_metadata:{active_templates:[template.id]}}}});
+  setHandler(({table,op})=>({data:op==='select'?(table==='profiles'?{name:'Test',custom_templates:[template]}:[]):{},error:null}));
+  await api.loadUserData();
+  assert.equal(api.state().customTemplates[0].id,template.id);
+  assert.deepEqual([...api.state().activeTemplates],[template.id]);
+  api.chooseWelcomeTemplate('ict');
+  assert.ok(calls.some(c=>c.table==='auth'&&c.op==='updateUser'&&c.row.data.active_templates[0]==='ict'));
 });
 test('AI trade analysis escapes model output and tolerates malformed lists',({api})=>{
   const rendered=api.aiHTML({grade:'<img src=x>',summary:'<script>bad()</script>',strengths:['<b>unsafe</b>'],improvements:'not-an-array',psychology:'<svg onload=bad()>',pattern:'<i>x</i>',verdict:'<a href=x>go</a>'});
