@@ -1971,6 +1971,7 @@ async function saveTrade(){
     const date=document.getElementById('f-date')?.value||'';
     const r=document.getElementById('f-r')?.value||'';
     if(!date||!r){toast('Fill in Date and R Result first');return;}
+    if(!validateRequiredTemplateFields()) return;
 
     const trade=buildTrade();
     if(!trade) return;
@@ -4882,6 +4883,18 @@ function renderCustomFieldsForTemplate(tmpl){
 function setRating(fId,val){const inp=document.getElementById('cf-'+fId);if(inp)inp.value=val;[1,2,3,4,5].forEach(n=>{const btn=document.getElementById(`cfr-${fId}-${n}`);if(btn)btn.style.background=n<=val?'var(--warn-bg)':'var(--card)';});}
 
 function collectCustomFields(){const defs=getActiveTemplateDefs();if(!defs.length)return null;const result={};defs.forEach(tmpl=>{if(!tmpl?.fields?.length)return;tmpl.fields.forEach(f=>{if(f.type==='multiselect'){result[f.label]=(f.options||[]).filter(o=>{const cb=document.getElementById(`cf-${f.id}-${o.replace(/\s+/g,'_')}`);return cb&&cb.checked;});}else if(f.type==='toggle'){const btn=document.getElementById('cf-'+f.id);result[f.label]=btn?.dataset.on==='1'?'Yes':'No';}else{const el=document.getElementById('cf-'+f.id);result[f.label]=el?.value||'';}});});return Object.keys(result).length?result:null;}
+
+function validateRequiredTemplateFields(){
+  for(const tmpl of getActiveTemplateDefs()) for(const f of tmpl.fields||[]){
+    if(!f.required) continue;
+    const el=document.getElementById('cf-'+f.id);
+    const filled=f.type==='multiselect'
+      ?(f.options||[]).some(o=>document.getElementById(`cf-${f.id}-${o.replace(/\s+/g,'_')}`)?.checked)
+      :f.type==='toggle'?el?.dataset.on==='1':String(el?.value||'').trim()!=='';
+    if(!filled){toast('Fill in required field: '+f.label);el?.focus();return false;}
+  }
+  return true;
+}
 
 function createSampleTemplate(type){const tmpl=SAMPLE_TEMPLATES[type];if(!tmpl)return;const id='tmpl_'+uid();const newTmpl={...tmpl,id,fields:(tmpl.fields||[]).map(f=>({...f,id:uid()}))};customTemplates.push(newTmpl);if(!activeTemplates.includes(id))activeTemplates.push(id);saveTemplates();toast('✓ Template added & activated: '+tmpl.name);renderTemplates();renderForm();}
 function deleteTemplate(id){customTemplates=customTemplates.filter(t=>t.id!==id);if(activeTemplates.includes(id)){activeTemplates=activeTemplates.filter(t=>t!==id);if(!activeTemplates.length)activeTemplates=['ict'];}saveTemplates();renderTemplates();renderForm();toast('Template deleted');}
