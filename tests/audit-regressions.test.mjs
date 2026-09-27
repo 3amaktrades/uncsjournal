@@ -25,9 +25,9 @@ function setup(storage={}){
       return q;
     }};
   w.supabase={createClient:()=>client};
-  w.eval(scripts+'\n;window.api={buildEditRow,renderForm,renderTemplates,openEditTemplate,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,aiHTML,analyseAI,tradeToDb,dbToTrade,loadUserData,saveTradeDB,saveTrade,validateRequiredTemplateFields,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,showWelcomeScreen,updateWelcomeSlide,chooseWelcomeTemplate,'+
+  w.eval(scripts+'\n;window.api={callAI,buildEditRow,renderForm,renderTemplates,openEditTemplate,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,aiHTML,analyseAI,tradeToDb,dbToTrade,loadUserData,saveTradeDB,saveTrade,validateRequiredTemplateFields,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,showWelcomeScreen,updateWelcomeSlide,chooseWelcomeTemplate,'+
     'setState(x){if("session" in x)currentSession=x.session;if("trades" in x)trades=x.trades;if("profile" in x)profile=x.profile;if("accounts" in x)userAccounts=x.accounts;if("templates" in x)customTemplates=x.templates;if("active" in x)activeTemplates=x.active;if("csvData" in x)csvData=x.csvData;if("csvMap" in x)csvMap=x.csvMap;if("csvPlatform" in x)csvPlatform=x.csvPlatform;if("summaries" in x)weekSummaries=x.summaries;currentTab="new";},'+
-    'state(){return {trades,profile,customTemplates,activeTemplates,weekSummaries,csvPreview,currentSession};},setAI(fn){callAI=fn;}};');
+    'state(){return {trades,profile,customTemplates,activeTemplates,weekSummaries,csvPreview,currentSession,aiUsed};},setAI(fn){callAI=fn;}};');
   const api=w.api;
   api.setState({session:{user:{id:'A'}},profile:{name:'Test',account:10000},accounts:[]});
   return {dom,w,api,client,calls,setHandler(fn){handler=fn},close(){dom.window.close()}};
@@ -104,6 +104,14 @@ test('trade analysis calls a supported Claude model and displays its result',asy
   assert.equal(model,'claude-haiku-4-5-20251001');
   assert.equal(api.state().trades[0].aiAnalysis.grade,'B');
   assert.match(w.document.getElementById('mo-inner').textContent,/Test analysis/);
+});
+test('AI errors refresh the actual credit count',async({api,w,client,setHandler})=>{
+  client.auth.getSession=async()=>({data:{session:{user:{id:'A'},access_token:'test',expires_at:Date.now()/1000+3600}}});
+  w.fetch=async()=>({ok:false,status:400,json:async()=>({error:{message:'Model unavailable'}})});
+  setHandler(({table})=>({data:table==='profiles'?{ai_used:4}:[],error:null}));
+  await assert.rejects(api.callAI({model:'test'}),/Model unavailable/);
+  assert.equal(api.state().aiUsed,4);
+  assert.match(w.document.getElementById('ai-ctr').textContent,/1 AI left/);
 });
 test('dashboard coach messages are never assigned as HTML',()=>{
   assert.doesNotMatch(html,/innerHTML=dashAIMsg/);

@@ -1215,6 +1215,17 @@ async function callAI(payload){
     body:JSON.stringify(payload)
   });
   const data=await res.json().catch(()=>({}));
+  if(!res.ok||data?.error){
+    try{
+      const usage=await db.from('profiles').select('ai_used').eq('id',session.user.id).single();
+      if(!usage.error&&Number.isFinite(usage.data?.ai_used)){
+        aiUsed=usage.data.ai_used;
+        if(profile)profile.aiUsed=aiUsed;
+        updateAICounter();
+        renderLog();
+      }
+    }catch(e){}
+  }
   // A 401 here means the WORKER couldn't verify the token — we already proactively
   // refreshed above, so the session is valid. Don't log the user out (that just bounces
   // a signed-in user for a server-side problem); surface a retry message instead.
