@@ -2041,6 +2041,14 @@ async function saveEditedTrade(tid){
   };
   const acctEl=document.getElementById('ed-account');
   if(acctEl) updates.accountId=acctEl.value||null;
+  const original=trades.find(t=>String(t.dbId||t.id)===String(tid));
+  if(original?.customFields){
+    updates.customFields={...original.customFields};
+    document.querySelectorAll('[data-edit-custom-key]').forEach(el=>{
+      const key=el.dataset.editCustomKey;
+      updates.customFields[key]=el.dataset.kind==='array'?el.value.split(',').map(v=>v.trim()).filter(Boolean):el.value;
+    });
+  }
   updates.voiceNote=getVoiceState('edit-'+tid).dataURL||null;
   const btn=document.getElementById('ed-save-btn');
 
@@ -3402,7 +3410,12 @@ function buildEditRow(t,tid){
   const VS=['','Yes','No','Partial'];
   const TF=['','1W','1D','4H','1H','15M','5M','1M'];
   const sp=t.screenshot?'<img src="'+esc(t.screenshot)+'" class="ss-prev" style="width:100%;max-height:180px;object-fit:contain;border-radius:6px;margin-top:6px"/>':'';
-  const syms=SYMS.map(s=>'<option value="'+s+'"'+(t.sym===s?' selected':'')+'>'+s+'</option>').join('');
+  const syms=(t.sym&&!SYMS.includes(t.sym)?[t.sym,...SYMS]:SYMS).map(s=>'<option value="'+esc(s)+'"'+(t.sym===s?' selected':'')+'>'+esc(s)+'</option>').join('');
+  const customFieldInputs=Object.entries(t.customFields||{}).map(([key,value])=>{
+    const array=Array.isArray(value);
+    const shown=array?value.join(', '):value??'';
+    return '<div class="fl"><label>'+esc(key)+'</label><input data-edit-custom-key="'+esc(key)+'" data-kind="'+(array?'array':'text')+'" value="'+esc(shown)+'" style="width:100%"/></div>';
+  }).join('');
   const realAccts=(userAccounts||[]).filter(a=>a.id!=='all');
   const acctField=realAccts.length?'<div class="fl"><label for="ed-account">Account</label><select id="ed-account" style="width:100%">'
     +realAccts.map(a=>'<option value="'+esc(a.id)+'"'+(t.accountId===a.id?' selected':'')+'>'+esc(a.name)+'</option>').join('')
@@ -3441,6 +3454,7 @@ function buildEditRow(t,tid){
     +'<div class="fl"><label for="ed-postNotes">Post-trade notes</label><textarea id="ed-postNotes" rows="3" style="width:100%;resize:vertical">'+esc(t.postNotes)+'</textarea></div>'
     +'</div>'
     +'<div class="fl" style="margin-bottom:12px"><label for="ed-preState">Market state</label><input id="ed-preState" value="'+esc(t.preState)+'" style="width:100%"/></div>'
+    +(customFieldInputs?'<div style="font-size:12px;font-weight:bold;margin-bottom:8px">Strategy fields</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:12px">'+customFieldInputs+'</div>':'')
     +'<div class="fl" style="margin-bottom:12px"><label>Voice note</label><div id="voice-wrap-edit-'+tid+'" style="padding-top:4px"></div></div>'
     +'<div style="display:flex;gap:8px">'
     +'<button id="ed-save-btn" data-tid="'+tid+'" onclick="saveEditedTrade(this.dataset.tid)" style="background:#C9A84C;color:#0F1923;border:none;padding:10px 24px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:13px">Save changes</button>'
