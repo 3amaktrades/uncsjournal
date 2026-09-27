@@ -162,6 +162,18 @@ test('CSV imports use exactly the previewed R and custom direction',async({api,w
   await api.doCSVImport();const row=calls.find(c=>c.table==='trades'&&c.op==='upsert').row;
   assert.equal(row.r_result,1);assert.equal(row.direction,'Bullish');
 });
+test('CSV import only saves selected rows beyond the first 100',async({api,w,calls})=>{
+  const rows=Array.from({length:101},(_,i)=>({date:'2026-09-01',pnl:String(i+1)}));
+  api.setState({csvPlatform:'custom',csvData:{headers:['date','pnl'],rows},csvMap:{date:'date',pnl:'pnl'}});
+  w.document.getElementById('tab-import').innerHTML='<div id="import-step-content"></div>';
+  api.renderCSVStep3();api.renderCSVStep4();
+  const checkboxes=[...w.document.querySelectorAll('[id^="csv-chk-"]')];
+  assert.equal(checkboxes.length,101);
+  checkboxes.forEach(cb=>{cb.checked=false;});
+  w.document.getElementById('csv-chk-100').checked=true;
+  await api.doCSVImport();
+  assert.equal(calls.filter(c=>c.table==='trades'&&c.op==='upsert').length,1);
+});
 test('CSV multiline notes, escaped quotes, commas and zero round-trip',({api})=>{
   const csv=api.makeTradeCSV([{...rich,notes:'one, "quoted"\r\nsecond line',r:0,pnl:0}]);
   const parsed=api.parseCSV(csv);assert.equal(parsed.rows.length,1);
