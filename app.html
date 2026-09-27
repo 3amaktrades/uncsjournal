@@ -2359,7 +2359,7 @@ async function analyseAI(tid){
   const lang=LANG==='ar'?'Arabic':'English';
   const p=`You are a trading coach at Unc's Trading Floor. Be direct and honest. Trader uses ICT/SMC with order flow. IMPORTANT: Respond in ${lang}.\n\nTrade: ${trade.sym||'?'} | ${trade.date} | ${trade.dir||'?'} | Result: ${trade.r}R (${trade.outcome}) | Self-rated: ${trade.rating||'?'}\nLiq swept: ${trade.liqSwept||'?'} | V-shape: ${trade.vshape||'?'} | SMT: ${trade.smt||'None'}${trade.smtVs?' vs '+trade.smtVs:''}\nEntry DOL: ${trade.entryDOL?.join(',')||'none'} | Exit DOL: ${trade.exitDOL?.join(',')||'none'}\nLTF: ${trade.ltf?.join(',')||'none'} | HTF: ${trade.htf?.join(',')||'none'}\nOrder flow: ${trade.of?.join(',')||'none'} | Met plan: ${trade.metPlan?'Yes':'No'}\nPre-state: ${trade.preState||'?'} | Rule broken: ${trade.ruleBreak||'None'} | Why: ${trade.why||'N/A'}\n\nRespond JSON only: {"grade":"A+/A/A-/B+/B/B-/C","summary":"2-3 honest sentences in ${lang}","strengths":["s1","s2"],"improvements":["i1","i2"],"psychology":"1-2 honest sentences in ${lang}","pattern":"1 sentence in ${lang}","verdict":"one bottom line in ${lang}"}`;
   try{
-    const data=await callAI({model:'claude-3-5-haiku-20241022',max_tokens:600,messages:[{role:'user',content:p}]});
+    const data=await callAI({model:'claude-haiku-4-5-20251001',max_tokens:600,messages:[{role:'user',content:p}]});
     const raw=data?.content?.[0]?.text||'';
     if(!raw)throw new Error('No response text. Full response: '+JSON.stringify(data).slice(0,300));
     let a;
@@ -2397,7 +2397,7 @@ async function generateWeeklySummary(){
   const lang2=LANG==='ar'?'Arabic':'English';
   const p=`You are the head coach at Unc's Trading Floor reviewing a student's week. Be honest and direct. IMPORTANT: Respond in ${lang2}.\n\nWeek: ${fmtD(start)} to ${fmtD(end)}\nStats: ${wt.length} trades | ${f2(rSec)}R | ${pct(wins.length/wt.length)}% win rate | Rule breaks: ${JSON.stringify(bk)}\n\nTrades:\n${tList}\n\nRespond JSON only:\n{"grade":"A+/A/A-/B+/B/B-/C","headline":"one punchy sentence","narrative":"2-3 paragraph honest review","strengths":["s1","s2","s3"],"improvements":["i1","i2","i3"],"psychology":"2-3 sentences on mental patterns","pattern":"key repeating habit","focus":["next week focus 1","next week focus 2"]}`;
   try{
-    const data=await callAI({model:'claude-3-5-haiku-20241022',max_tokens:700,messages:[{role:'user',content:p}]});
+    const data=await callAI({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:p}]});
     const raw2=data?.content?.[0]?.text||'';
     if(!raw2)throw new Error('Empty response: '+JSON.stringify(data).slice(0,200));
     let summary;
