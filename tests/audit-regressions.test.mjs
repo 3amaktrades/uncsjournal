@@ -109,6 +109,21 @@ test('editor preserves legacy dropdowns, zero values and SMT correlation',async(
   await api.saveEditedTrade('db-1');
   assert.equal(calls.find(c=>c.op==='update').row.smt_vs,'ES');
 });
+test('editing retains imported symbols and updates saved strategy fields',async({api,w,calls})=>{
+  const trade={...rich,sym:'CUSTOM-INDEX',customFields:{Zone:'Supply',Factors:['VWAP','News']}};
+  api.setState({trades:[trade]});
+  w.document.getElementById('tab-log').innerHTML='<table><tbody>'+api.buildEditRow(trade,'db-1')+'</tbody></table>';
+  assert.equal(w.document.getElementById('ed-sym').value,'CUSTOM-INDEX');
+  const zone=w.document.querySelector('[data-edit-custom-key="Zone"]');
+  const factors=w.document.querySelector('[data-edit-custom-key="Factors"]');
+  assert.equal(zone.value,'Supply');
+  zone.value='Demand';factors.value='VWAP, EMA';
+  await api.saveEditedTrade('db-1');
+  const row=calls.find(c=>c.op==='update').row;
+  assert.equal(row.sym,'CUSTOM-INDEX');
+  assert.equal(row.custom_fields.Zone,'Demand');
+  assert.deepEqual([...row.custom_fields.Factors],['VWAP','EMA']);
+});
 test('streak reflects the latest loss or breakeven rather than an earlier win',({api,w})=>{
   for(const [last,expected] of [['-1','-1'],['0','\u2014']]){
     api.setState({trades:[{...rich,date:'2026-09-01',r:'2'},{...rich,date:'2026-09-02',r:last}]});
