@@ -3171,12 +3171,7 @@ function renderForm(){try{
   // Attach template switcher
   const ts=document.getElementById('tmpl-select');
   if(ts)ts.addEventListener('change',function(){
-    const chosen=this.value;
-    if(chosen==='ict'){
-      activeTemplates=['ict'];
-    } else {
-      if(!activeTemplates.includes(chosen))activeTemplates.push(chosen);
-    }
+    activeTemplates=[this.value];
     saveActiveTemplates();
     renderForm();
   });

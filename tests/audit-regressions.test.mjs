@@ -25,7 +25,7 @@ function setup(storage={}){
       return q;
     }};
   w.supabase={createClient:()=>client};
-  w.eval(scripts+'\n;window.api={buildEditRow,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,aiHTML,tradeToDb,dbToTrade,loadUserData,saveTradeDB,saveTrade,validateRequiredTemplateFields,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,showWelcomeScreen,updateWelcomeSlide,chooseWelcomeTemplate,'+
+  w.eval(scripts+'\n;window.api={buildEditRow,renderForm,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,aiHTML,tradeToDb,dbToTrade,loadUserData,saveTradeDB,saveTrade,validateRequiredTemplateFields,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,showWelcomeScreen,updateWelcomeSlide,chooseWelcomeTemplate,'+
     'setState(x){if("session" in x)currentSession=x.session;if("trades" in x)trades=x.trades;if("profile" in x)profile=x.profile;if("accounts" in x)userAccounts=x.accounts;if("templates" in x)customTemplates=x.templates;if("active" in x)activeTemplates=x.active;if("csvData" in x)csvData=x.csvData;if("csvMap" in x)csvMap=x.csvMap;if("csvPlatform" in x)csvPlatform=x.csvPlatform;if("summaries" in x)weekSummaries=x.summaries;currentTab="new";},'+
     'state(){return {trades,profile,customTemplates,activeTemplates,weekSummaries,csvPreview,currentSession};},setAI(fn){callAI=fn;}};');
   const api=w.api;
@@ -72,6 +72,15 @@ test('required template fields block an incomplete first trade',async({api,w,cal
   w.document.getElementById('cf-'+fields.find(f=>f.label==='Breakout level').id).value='21500';
   w.document.getElementById('cf-'+fields.find(f=>f.label==='Break type').id).value='Clean break';
   assert.equal(api.validateRequiredTemplateFields(),true);
+});
+test('strategy selector switches to only the chosen template',({api,w})=>{
+  api.setState({templates:[{id:'tmpl_zone',name:'Zones',fields:[{id:'field1',label:'Zone',type:'text'}]}],active:['ict']});
+  api.renderForm();
+  const selector=w.document.getElementById('tmpl-select');
+  selector.value='tmpl_zone';selector.dispatchEvent(new w.Event('change'));
+  assert.deepEqual([...api.state().activeTemplates],['tmpl_zone']);
+  assert.match(w.document.getElementById('tab-new').textContent,/Zone/);
+  assert.doesNotMatch(w.document.getElementById('tab-new').textContent,/ICT CONFLUENCES/);
 });
 test('AI trade analysis escapes model output and tolerates malformed lists',({api})=>{
   const rendered=api.aiHTML({grade:'<img src=x>',summary:'<script>bad()</script>',strengths:['<b>unsafe</b>'],improvements:'not-an-array',psychology:'<svg onload=bad()>',pattern:'<i>x</i>',verdict:'<a href=x>go</a>'});
