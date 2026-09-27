@@ -25,7 +25,7 @@ function setup(storage={}){
       return q;
     }};
   w.supabase={createClient:()=>client};
-  w.eval(scripts+'\n;window.api={buildEditRow,renderForm,renderTemplates,openEditTemplate,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,aiHTML,tradeToDb,dbToTrade,loadUserData,saveTradeDB,saveTrade,validateRequiredTemplateFields,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,showWelcomeScreen,updateWelcomeSlide,chooseWelcomeTemplate,'+
+  w.eval(scripts+'\n;window.api={buildEditRow,renderForm,renderTemplates,openEditTemplate,renderAnalytics,renderLog,tradeOutcome,buildTradovateTrades,aiHTML,analyseAI,tradeToDb,dbToTrade,loadUserData,saveTradeDB,saveTrade,validateRequiredTemplateFields,savePendingCache,loadPendingCache,syncPendingTrade,updateTradeDB,saveEditedTrade,deleteTrade,saveProfileDB,saveWeekDB,postLBDB,makeTradeCSV,parseCSV,renderCSVStep3,renderCSVStep4,doCSVImport,renderAcctDropdown,openAcctModal,restoreTemplates,saveTemplates,generateMonthlySummary,showAuthModal,showResetModal,amTab,doSignIn,sendResetLink,shareTrade,downloadShareCard,downloadStoryCard,readUserJSON,writeUserJSON,saveSettings,doSignOut,showWelcomeScreen,updateWelcomeSlide,chooseWelcomeTemplate,'+
     'setState(x){if("session" in x)currentSession=x.session;if("trades" in x)trades=x.trades;if("profile" in x)profile=x.profile;if("accounts" in x)userAccounts=x.accounts;if("templates" in x)customTemplates=x.templates;if("active" in x)activeTemplates=x.active;if("csvData" in x)csvData=x.csvData;if("csvMap" in x)csvMap=x.csvMap;if("csvPlatform" in x)csvPlatform=x.csvPlatform;if("summaries" in x)weekSummaries=x.summaries;currentTab="new";},'+
     'state(){return {trades,profile,customTemplates,activeTemplates,weekSummaries,csvPreview,currentSession};},setAI(fn){callAI=fn;}};');
   const api=w.api;
@@ -95,6 +95,15 @@ test('AI trade analysis escapes model output and tolerates malformed lists',({ap
   assert.doesNotMatch(rendered,/<script>|<img|<svg|<b>|<i>|<a /);
   assert.match(rendered,/&lt;script&gt;bad\(\)&lt;\/script&gt;/);
   assert.doesNotMatch(rendered,/not-an-array/);
+});
+test('trade analysis calls a supported Claude model and displays its result',async({api,w})=>{
+  api.setState({trades:[{...rich,aiAnalysis:null}]});
+  let model;
+  api.setAI(async payload=>{model=payload.model;return {content:[{text:JSON.stringify({grade:'B',summary:'Test analysis',strengths:[],improvements:[],verdict:'Review'})}]};});
+  await api.analyseAI('db-1');
+  assert.equal(model,'claude-haiku-4-5-20251001');
+  assert.equal(api.state().trades[0].aiAnalysis.grade,'B');
+  assert.match(w.document.getElementById('mo-inner').textContent,/Test analysis/);
 });
 test('dashboard coach messages are never assigned as HTML',()=>{
   assert.doesNotMatch(html,/innerHTML=dashAIMsg/);
