@@ -1120,7 +1120,7 @@ async function lcSend(){
   m.appendChild(ty);m.scrollTop=m.scrollHeight;
   try{
     const res=await fetch('https://uncai.omar3halabi.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({system:`You are a helpful assistant for Unc's Journal, a smart trading journal at uncsjournal.com. Answer questions about the product and trading. Keep answers concise. Always encourage users to try the app for free.`,max_tokens:350,messages:lcHistory.slice(-6)})});
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',system:`You are a helpful assistant for Unc's Journal, a smart trading journal at uncsjournal.com. Answer questions about the product and trading. Keep answers concise. Always encourage users to try the app for free.`,max_tokens:350,messages:lcHistory.slice(-6)})});
     const data=await res.json();
     const reply=data?.content?.[0]?.text||'Sorry, something went wrong.';
     document.getElementById('lc-typing')?.remove();
