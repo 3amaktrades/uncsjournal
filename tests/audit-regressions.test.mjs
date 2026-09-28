@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {JSDOM,VirtualConsole} from 'jsdom';
 
 const html=fs.readFileSync('../app.html','utf8');
+const landing=fs.readFileSync('../index.html','utf8');
 const scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n;\n');
 const body=html.match(/<body[^>]*>([\s\S]*)<\/body>/)[1].replace(/<script[\s\S]*?<\/script>/g,'');
 function setup(storage={}){
@@ -104,6 +105,12 @@ test('trade analysis calls a supported Claude model and displays its result',asy
   assert.equal(model,'claude-haiku-4-5-20251001');
   assert.equal(api.state().trades[0].aiAnalysis.grade,'B');
   assert.match(w.document.getElementById('mo-inner').textContent,/Test analysis/);
+});
+test('journal and landing chat requests choose Haiku 4.5 explicitly',()=>{
+  const calls=[...html.matchAll(/await callAI\(\{([^\n]*)/g)];
+  assert.ok(calls.length>=6);
+  for(const call of calls) assert.match(call[1],/^model:'claude-haiku-4-5-20251001'/);
+  assert.match(landing,/JSON\.stringify\(\{model:'claude-haiku-4-5-20251001',system:/);
 });
 test('AI errors refresh the actual credit count',async({api,w,client,setHandler})=>{
   client.auth.getSession=async()=>({data:{session:{user:{id:'A'},access_token:'test',expires_at:Date.now()/1000+3600}}});

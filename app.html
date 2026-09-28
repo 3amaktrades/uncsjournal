@@ -4411,7 +4411,7 @@ async function sendChat(){
 Keep answers concise and practical. Never give specific financial advice or tell users to make specific trades.`;
 
   try {
-    const data = await callAI({system: systemPrompt, max_tokens: 500, messages: chatHistory.slice(-10)});
+    const data = await callAI({model:'claude-haiku-4-5-20251001',system: systemPrompt, max_tokens: 500, messages: chatHistory.slice(-10)});
     const reply = data?.content?.[0]?.text || (isAr ? 'عذراً، حدث خطأ. حاول مرة أخرى.' : 'Sorry, something went wrong. Try again.');
     removeTyping();
     addChatMsg('ai', reply);
