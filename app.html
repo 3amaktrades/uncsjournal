@@ -2359,11 +2359,11 @@ async function analyseAI(tid){
   if(!trade.dbId){toast('This trade is still syncing. Try AI analysis after it is saved.');return;}
   const left=FREE_LIMIT-aiUsed;
   if(left<=0){
-    openMo('Upgrade to continue',`<div style="text-align:center;padding:24px 20px">
+    openMo(LANG==='ar'?'انتهى رصيد التحليل لهذا الشهر':'Monthly AI limit reached',`<div style="text-align:center;padding:24px 20px">
       <div style="margin-bottom:12px;color:#C9A84C"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></div>
-      <div style="font-size:18px;font-weight:bold;color:#0F1923;margin-bottom:8px">You've used all 5 free analyses</div>
-      <div style="font-size:13px;color:#888;line-height:1.6;margin-bottom:18px">Contact your mentor to unlock unlimited AI coaching.</div>
-      <button class="upgrade-btn" onclick="closeMo()">Contact mentor to upgrade</button>
+      <div style="font-size:18px;font-weight:bold;color:#0F1923;margin-bottom:8px">${LANG==='ar'?'استخدمت تحليلاتك الخمسة لهذا الشهر':'You have used this month’s 5 AI analyses'}</div>
+      <div style="font-size:13px;color:#888;line-height:1.6;margin-bottom:18px">${LANG==='ar'?'يتجدد الرصيد الشهر القادم. يمكنك مواصلة تسجيل صفقاتك ومراجعة إحصاءاتك.':'Your credits reset next month. You can still log trades and review your stats.'}</div>
+      <button class="upgrade-btn" onclick="closeMo()">${LANG==='ar'?'حسناً':'Got it'}</button>
     </div>`);
     return;
   }
