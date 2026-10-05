@@ -2356,7 +2356,6 @@ async function analyseAI(tid){
   const trade=trades.find(t=>String(t.id)===String(tid)||String(t.dbId)===String(tid));
   if(!trade)return;
   if(trade.aiAnalysis){openMo(`AI Analysis — ${trade.date}`,aiHTML(trade.aiAnalysis));return;}
-  if(!trade.dbId){toast('This trade is still syncing. Try AI analysis after it is saved.');return;}
   const left=FREE_LIMIT-aiUsed;
   if(left<=0){
     openMo('Upgrade to continue',`<div style="text-align:center;padding:24px 20px">
@@ -2371,13 +2370,14 @@ async function analyseAI(tid){
   const lang=LANG==='ar'?'Arabic':'English';
   const p=`You are a trading coach at Unc's Trading Floor. Be direct and honest. Trader uses ICT/SMC with order flow. IMPORTANT: Respond in ${lang}.\n\nTrade: ${trade.sym||'?'} | ${trade.date} | ${trade.dir||'?'} | Result: ${trade.r}R (${trade.outcome}) | Self-rated: ${trade.rating||'?'}\nLiq swept: ${trade.liqSwept||'?'} | V-shape: ${trade.vshape||'?'} | SMT: ${trade.smt||'None'}${trade.smtVs?' vs '+trade.smtVs:''}\nEntry DOL: ${trade.entryDOL?.join(',')||'none'} | Exit DOL: ${trade.exitDOL?.join(',')||'none'}\nLTF: ${trade.ltf?.join(',')||'none'} | HTF: ${trade.htf?.join(',')||'none'}\nOrder flow: ${trade.of?.join(',')||'none'} | Met plan: ${trade.metPlan?'Yes':'No'}\nPre-state: ${trade.preState||'?'} | Rule broken: ${trade.ruleBreak||'None'} | Why: ${trade.why||'N/A'}\n\nRespond JSON only: {"grade":"A+/A/A-/B+/B/B-/C","summary":"2-3 honest sentences in ${lang}","strengths":["s1","s2"],"improvements":["i1","i2"],"psychology":"1-2 honest sentences in ${lang}","pattern":"1 sentence in ${lang}","verdict":"one bottom line in ${lang}"}`;
   try{
-    const data=await callAI({model:'claude-haiku-4-5-20251001',purpose:'trade_analysis',trade_id:trade.dbId,max_tokens:600,messages:[{role:'user',content:p}]});
+    const data=await callAI({model:'claude-haiku-4-5-20251001',max_tokens:600,messages:[{role:'user',content:p}]});
     const raw=data?.content?.[0]?.text||'';
     if(!raw)throw new Error('No response text. Full response: '+JSON.stringify(data).slice(0,300));
     let a;
     try{a=JSON.parse(raw.replace(/```json|```/g,'').trim());}
     catch(pe){throw new Error('Could not parse AI response: '+raw.slice(0,200));}
     trade.aiAnalysis=a;
+    if(trade.dbId)try{await db.from('trades').update({ai_analysis:a}).eq('id',trade.dbId);}catch(e){}
     updateUI();renderLog();
     openMo(`AI Analysis — ${trade.date}`,aiHTML(a));
   }catch(e){
@@ -2408,7 +2408,7 @@ async function generateWeeklySummary(){
   const lang2=LANG==='ar'?'Arabic':'English';
   const p=`You are the head coach at Unc's Trading Floor reviewing a student's week. Be honest and direct. IMPORTANT: Respond in ${lang2}.\n\nWeek: ${fmtD(start)} to ${fmtD(end)}\nStats: ${wt.length} trades | ${f2(rSec)}R | ${pct(wins.length/wt.length)}% win rate | Rule breaks: ${JSON.stringify(bk)}\n\nTrades:\n${tList}\n\nRespond JSON only:\n{"grade":"A+/A/A-/B+/B/B-/C","headline":"one punchy sentence","narrative":"2-3 paragraph honest review","strengths":["s1","s2","s3"],"improvements":["i1","i2","i3"],"psychology":"2-3 sentences on mental patterns","pattern":"key repeating habit","focus":["next week focus 1","next week focus 2"]}`;
   try{
-    const data=await callAI({model:'claude-haiku-4-5-20251001',purpose:'weekly_summary',max_tokens:700,messages:[{role:'user',content:p}]});
+    const data=await callAI({model:'claude-haiku-4-5-20251001',max_tokens:700,messages:[{role:'user',content:p}]});
     const raw2=data?.content?.[0]?.text||'';
     if(!raw2)throw new Error('Empty response: '+JSON.stringify(data).slice(0,200));
     let summary;
@@ -2962,7 +2962,7 @@ function renderDashboard(){
       +'</div></div>'
     ):'<div style="padding-top:6px;font-size:12px;color:var(--text3)">'+(LANG==='ar'?'لا توجد صفقات بعد':'No trades yet')+'</div>')
     +'</div>'
-    +'<div class="dash-widget" id="ai-motivation-card"><div class="dwt">'+t('Coach Message')+'</div><div id="ai-motivation-text" class="ai-msg">'+(dashAIMsg?esc(dashAIMsg):'<span style="color:#aaa;font-size:12px">'+(LANG==='ar'?'أنشئ رسالة تدريب شخصية عند الطلب.':'Generate a personal coach message when you want one.')+'</span>')+'</div><button onclick="loadDashAIMsg(true)" style="margin-top:10px;background:none;border:1px solid #E0DED8;border-radius:6px;padding:5px 10px;font-size:11px;color:#888;cursor:pointer">'+(LANG==='ar'?'إنشاء / تحديث (رصيد AI واحد)':'Generate / refresh (1 AI credit)')+'</button></div>'
+    +'<div class="dash-widget" id="ai-motivation-card"><div class="dwt">'+t('Coach Message')+'</div><div id="ai-motivation-text" class="ai-msg">'+(dashAIMsg?esc(dashAIMsg):'<span style="color:#aaa;font-size:12px">'+t('Loading your personalized message...')+'</span>')+'</div><button onclick="loadDashAIMsg(true)" style="margin-top:10px;background:none;border:1px solid #E0DED8;border-radius:6px;padding:5px 10px;font-size:11px;color:#888;cursor:pointer">'+t('↻ Refresh')+'</button></div>'
     +'</div></div>'
     +econWidgetHTML();
   if(!dashAIMsg)loadDashAIMsg(false);
@@ -2990,14 +2990,14 @@ async function loadDashAIMsg(force){
   const cached=localStorage.getItem('utf_coach_msg');
   const cachedDay=localStorage.getItem('utf_coach_day');
   if(!force&&cached&&cachedDay===today){dashAIMsg=cached;const el2=document.getElementById('ai-motivation-text');if(el2)el2.textContent=dashAIMsg;return;}
-  if(!force)return; // Dashboard rendering must never spend a credit automatically.
+  if(dashAIMsg&&!force)return;
   const el=document.getElementById('ai-motivation-text');
   if(el)el.innerHTML='<span style="color:#aaa;font-size:12px">'+t('Generating your message...')+'</span>';
   const notes=trades.slice(0,15).map(t2=>[t2.notes,t2.thoughts,t2.postNotes].filter(Boolean).join(' ')).filter(Boolean).join(' | ');
-  if(!notes.length){dashAIMsg=t('Log some trades with notes to get a personalized message!');if(el)el.textContent=dashAIMsg;return;}
+  if(!notes){dashAIMsg=t('Log some trades with notes to get a personalized message!');if(el)el.textContent=dashAIMsg;return;}
   try{
     const sys=LANG==='ar'?'أنت مدرب تداول. اكتب رسالة تحفيزية قصيرة (2-3 جمل) بناءً على ملاحظات المتداول. بدون رموز تعبيرية. اكتب باللغة العربية.':'You are a trading coach. Write a short personal motivational message (2-3 sentences) based on the trader journal notes. Be specific, encouraging but honest. No emojis.';
-    const data=await callAI({model:'claude-haiku-4-5-20251001',max_tokens:150,system:sys,messages:[{role:'user',content:'My recent trading notes: '+notes.join(' | ').slice(0,400)}]});
+    const data=await callAI({model:'claude-haiku-4-5-20251001',max_tokens:150,system:sys,messages:[{role:'user',content:'My recent trading notes: '+notes.slice(0,400)}]});
     dashAIMsg=data?.content?.[0]?.text||'Consistency is the edge. Keep logging, keep growing.';
     localStorage.setItem('utf_coach_msg',dashAIMsg);
     localStorage.setItem('utf_coach_day',today);
@@ -5462,7 +5462,7 @@ async function generateMonthlySummary(){
   const tradesSummary=mt.map(function(t){return t.date+' '+(t.sym||'')+' '+(t.dir==='Bullish'?'Long':'Short')+' '+(t.r||0)+'R'+(t.ruleBreak&&t.ruleBreak!=='None'?' [BREAK:'+t.ruleBreak+']':'')+(t.notes?' Note:'+t.notes.slice(0,60):'');}).join('\n');
   const prompt='You are an elite trading coach reviewing a trader\'s monthly performance for '+range.label+'.\n\nMONTHLY STATS:\n- Total trades: '+mt.length+'\n- Win rate: '+wr+'%\n- Total R: '+totalR+'R\n- Rule breaks: '+breaks.length+'\n\nALL TRADES:\n'+tradesSummary+'\n\nRespond ONLY with valid JSON (no markdown):\n{"grade":"A/B/C/D/F","headline":"one sentence","narrative":"2-3 sentences","strengths":["s1","s2","s3"],"improvements":["i1","i2","i3"],"psychology":"one paragraph","nextMonth":"one focus"}';
   try{
-    const data=await callAI({model:'claude-haiku-4-5-20251001',purpose:'monthly_report',max_tokens:1000,messages:[{role:'user',content:prompt}]});
+    const data=await callAI({model:'claude-haiku-4-5-20251001',max_tokens:1000,messages:[{role:'user',content:prompt}]});
     const raw=data&&data.content&&data.content[0]?data.content[0].text:'';
     const clean=raw.replace(/```json|```/g,'').trim();
     const parsed=JSON.parse(clean);
