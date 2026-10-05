@@ -7,7 +7,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230F1923'/><line x1='16' y1='4' x2='16' y2='9' stroke='%23C9A84C' stroke-width='2.5' stroke-linecap='round'/><rect x='11' y='9' width='10' height='14' rx='1.5' fill='none' stroke='%23C9A84C' stroke-width='2.5'/><line x1='16' y1='23' x2='16' y2='28' stroke='%23C9A84C' stroke-width='2.5' stroke-linecap='round'/></svg>"/>
 <meta name="description" content="سجّل صفقاتك، تتبع أداءك، واحصل على تحليل AI. يومية التداول للمتداول الجاد."/>
 <link rel="manifest" href="/manifest.json"/>
-<meta name="theme-color" content="#15130D"/>
+<meta name="theme-color" content="#F8F5EF"/>
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"/>
 <meta name="apple-mobile-web-app-title" content="Unc's Journal"/>
 <link rel="canonical" href="https://uncsjournal.com"/>
@@ -502,6 +502,79 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
 #chat-btn svg{width:22px;height:22px;color:#12100A}
 .ch-send svg{width:14px;height:14px;color:#12100A}
 .ch-close svg{width:14px;height:14px}
+
+/* A lighter, quieter landing page. The journal app keeps its own theme. */
+:root{
+  --bg:#F8F5EF;--bg2:#F0EAE0;--card:#FFFCF7;--card2:#F6F0E6;
+  --border:#E5DBCB;--border2:#CDBDA4;--gold-line:rgba(137,102,44,.2);
+  --text:#20302F;--text2:#51615D;--text3:#6E7C74;
+  --gold:#8E6727;--gold2:#77531D;--gold-bg:#F2E4C7;--dark:#20302F;
+}
+nav{background:rgba(248,245,239,.94);border-bottom-color:var(--border);box-shadow:0 1px 0 rgba(32,48,47,.04)}
+nav.scrolled{box-shadow:0 10px 30px rgba(32,48,47,.08)}
+.nav-links a{color:var(--text2)}
+.nav-links a:hover{color:var(--dark)}
+.btn-solid,.btn-hero-dark,.calc-run{background:#DDB65E;color:#1D281E}
+.btn-solid:hover,.btn-hero-dark:hover,.calc-run:hover{background:#E9C876;color:#1D281E}
+.landing-hero{position:relative;overflow:hidden;background:radial-gradient(circle at 73% 35%,rgba(223,184,104,.23),transparent 36%),radial-gradient(circle at 8% 90%,rgba(145,173,151,.17),transparent 42%),linear-gradient(145deg,#FCFAF5 0%,#F5EFE3 100%);border-bottom:1px solid var(--border)}
+.landing-hero::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.36;background-image:linear-gradient(rgba(111,100,80,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(111,100,80,.08) 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(90deg,transparent 10%,#000 90%)}
+.hero-section{max-width:1260px;min-height:690px;padding:92px 48px 122px;gap:80px;margin-top:60px}
+.hero-eyebrow{font-size:11px;letter-spacing:1.7px;margin-bottom:25px}
+.hero-h1{font-size:clamp(58px,6vw,84px);line-height:.98;letter-spacing:-2.8px;max-width:650px;margin-bottom:28px}
+.hero-sub{font-size:17px;line-height:1.8;max-width:525px;margin-bottom:32px}
+.hero-ctas{margin-bottom:30px}
+.btn-hero{border-radius:10px;padding:14px 23px}
+.btn-hero-outline{border-color:var(--border2);color:var(--text)}
+.btn-hero-outline:hover{background:rgba(255,255,255,.7)}
+.hero-badges{gap:10px}
+.hbadge{background:rgba(255,252,247,.72);border-color:var(--border);backdrop-filter:none;box-shadow:0 4px 18px rgba(32,48,47,.04)}
+.hero-visual{max-width:525px;width:100%;margin-inline:auto;filter:drop-shadow(0 20px 40px rgba(39,47,38,.12))}
+.cursor-glow{display:none}
+.hp-main{padding:25px;border-color:#E5D5B7;border-radius:20px;box-shadow:0 22px 65px rgba(46,55,43,.13)}
+.hp-main-head{margin-bottom:20px}
+.hp-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;letter-spacing:0}
+.hp-pill{background:#E5F4E9;color:#216B48}
+.hp-dot{background:#3F9F6A}
+.hp-v.pos{color:#257348}
+.hp-row{padding:11px 14px}
+.hp-score{padding:15px}
+.hp-insight{background:#F9F1DE}
+.hp-ring{background:conic-gradient(var(--gold) calc(var(--pct)*1%),#E5DBCB 0)}
+.vstrip{margin-top:-55px}
+.vstrip-inner{box-shadow:0 18px 42px rgba(32,48,47,.08);border-color:var(--border);padding:25px 18px}
+.stat-box:hover{background:#FBF8F2}
+.how-section{background:#EDE8DE;border-block:1px solid var(--border)}
+.how-section .sec-eyebrow{color:var(--gold)}
+.how-section .sec-eyebrow::before{background:var(--gold)}
+.how-section .sec-h2{color:var(--text)}
+.how-section .sec-body{color:var(--text2)}
+.step{background:var(--card);border-color:var(--border);box-shadow:0 8px 24px rgba(32,48,47,.04)}
+.step-n{color:var(--gold)}
+.step-title{color:var(--text)}
+.step-desc{color:var(--text2)}
+.step-icon-wrap{background:var(--gold-bg);border-color:var(--gold-line)}
+.ftab.on .ftab-title,.feat-preview-title{color:var(--text)}
+.cta-section::before{background:radial-gradient(ellipse,rgba(223,184,104,.23),transparent 70%)}
+@media(max-width:960px){
+  .hero-section{grid-template-columns:1fr;gap:38px;min-height:0;padding:82px 22px 75px;text-align:center}
+  .hero-visual{order:2;max-width:560px}
+  .hero-h1{max-width:740px;margin-inline:auto;font-size:clamp(48px,7vw,68px)}
+  .hero-sub{margin-inline:auto}
+  .vstrip{margin-top:-28px}
+}
+@media(max-width:480px){
+  .nav-r .btn-ghost{display:none}
+  .nav-r .btn-solid{white-space:nowrap}
+  .hero-section{padding:70px 18px 56px;gap:30px}
+  .hero-h1{font-size:clamp(43px,10vw,54px)!important;letter-spacing:-1.8px;line-height:1.04}
+  .hero-sub{font-size:15px;line-height:1.7}
+  .hero-ctas{gap:10px;justify-content:center}
+  .btn-hero{justify-content:center;flex:1 1 165px}
+  .hbadge{flex:1 1 145px;text-align:start}
+  .hp-main{padding:17px}
+  .vstrip{margin-top:0}
+}
+@media(prefers-reduced-motion:reduce){.reveal,.reveal-pop{opacity:1;transform:none;transition:none}.strip-track{animation:none}}
 </style>
 </head>
 <body>
@@ -534,30 +607,23 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
 </nav>
 
 <!-- HERO -->
-<section style="position:relative">
-  <div class="hero-video-bg">
-    <video autoplay muted loop playsinline preload="auto">
-      <source src="/assets/hero-trader.mp4" type="video/mp4">
-    </video>
-  </div>
-  <div class="hero-video-vignette"></div>
-  <div class="hero-video-overlay"></div>
+<section class="landing-hero">
   <div class="hero-section">
     <div>
-      <div class="hero-eyebrow t reveal" data-ar="يومية التداول الذكية" data-en="Smart Trading Journal">يومية التداول الذكية</div>
+      <div class="hero-eyebrow t reveal" data-ar="مساحة أوضح لكل متداول" data-en="A clearer way to trade better">مساحة أوضح لكل متداول</div>
       <h1 class="hero-h1 t reveal reveal-delay-1"
-          data-ar="صفقاتك.<br/>بياناتك.<br/><em>تفوّقك.</em>"
-          data-en="Your trades.<br/>Your data.<br/><em>Your edge.</em>">
-        صفقاتك.<br/>بياناتك.<br/><em>تفوّقك.</em>
+          data-ar="كل صفقة تحمل<br/>درساً <em>للقادمة.</em>"
+          data-en="Every trade is<br/>a lesson for <em>the next.</em>">
+        كل صفقة تحمل<br/>درساً <em>للقادمة.</em>
       </h1>
       <p class="hero-sub t reveal reveal-delay-2"
-         data-ar="يومية التداول الذكية للعقود الآجلة، الفوركس، العملات الرقمية، والأسهم. سجّل صفقاتك، تتبّع أداءك، واحصل على تدريب AI مخصص لأسلوبك."
-         data-en="The intelligent trading journal for futures, forex, crypto, and stocks. Log every trade, track your performance, and get AI-powered coaching built around how you actually trade.">
-        يومية التداول الذكية للعقود الآجلة، الفوركس، العملات الرقمية، والأسهم. سجّل صفقاتك، تتبّع أداءك، واحصل على تدريب AI مخصص لأسلوبك.
+         data-ar="سجّل صفقاتك، اكتشف الأنماط التي تتكرر، واحصل على ملاحظات واضحة تساعدك على تحسين قراراتك. كل شيء في يومية واحدة."
+         data-en="Log your trades, spot the patterns behind your results, and get clear feedback on what to improve. Your whole process, in one journal.">
+        سجّل صفقاتك، اكتشف الأنماط التي تتكرر، واحصل على ملاحظات واضحة تساعدك على تحسين قراراتك. كل شيء في يومية واحدة.
       </p>
       <div class="hero-ctas reveal reveal-delay-3">
-        <a href="/app" class="btn-hero btn-hero-dark t" data-ar="ابدأ رحلتك مجاناً" data-en="Start your journey free">ابدأ رحلتك مجاناً</a>
-        <a href="#features" class="btn-hero btn-hero-outline t" data-ar="اكتشف المميزات" data-en="Explore features">اكتشف المميزات</a>
+        <a href="/app" class="btn-hero btn-hero-dark t" data-ar="ابدأ التسجيل مجاناً ←" data-en="Start journaling free →">ابدأ التسجيل مجاناً ←</a>
+        <a href="#how" class="btn-hero btn-hero-outline t" data-ar="شاهد كيف يعمل" data-en="See how it works">شاهد كيف يعمل</a>
       </div>
       <div class="hero-badges reveal reveal-delay-4">
         <div class="hbadge">
@@ -578,8 +644,8 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
       <div class="hp-main reveal-pop">
         <div class="hp-main-head">
           <div>
-            <div class="hp-title">UNC ALPHA</div>
-            <div class="hp-sub t" data-ar="ذكاء الأداء" data-en="Performance Intelligence">Performance Intelligence</div>
+            <div class="hp-title t" data-ar="نظرة أوضح على أدائك" data-en="Your trading, in focus">نظرة أوضح على أدائك</div>
+            <div class="hp-sub t" data-ar="مثال توضيحي من اليومية" data-en="Illustrative journal preview">مثال توضيحي من اليومية</div>
           </div>
           <span class="hp-pill"><span class="hp-dot"></span><span class="t" data-ar="تم التحليل" data-en="ANALYZED">ANALYZED</span></span>
         </div>
@@ -601,20 +667,6 @@ footer{border-top:1px solid var(--border);padding:36px 48px}
         <div class="hp-insight"><span class="hp-insight-ic" style="color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span><span class="t" data-ar="نسبة فوزك ترتفع 12% في إعدادات A+" data-en="Your win rate climbs 12% on A+ setups">Your win rate climbs 12% on A+ setups</span></div>
       </div>
 
-      <!-- Floating gauge card -->
-      <div class="hp-gauge reveal-pop">
-        <div class="hp-gauge-l t" data-ar="تحليل الذكاء الاصطناعي" data-en="AI ANALYSIS">AI ANALYSIS</div>
-        <div class="hp-ring lg" style="--pct:70"><span>70%</span></div>
-        <div class="hp-gauge-s t" data-ar="نسبة الفوز" data-en="Win rate">Win rate</div>
-      </div>
-
-      <!-- Floating latest-trade status card -->
-      <div class="hp-status reveal-pop">
-        <div class="hp-status-top"><span class="hp-dot"></span><span class="hp-status-l t" data-ar="آخر صفقة" data-en="LATEST TRADE">LATEST TRADE</span></div>
-        <div class="hp-status-row"><span class="hp-status-sym">NQ · Long</span><span class="hp-v pos">+3.2R</span></div>
-        <div class="hp-spark"></div>
-        <div class="hp-status-s t" data-ar="تم تحليلها بالذكاء الاصطناعي" data-en="AI analyzed">AI analyzed</div>
-      </div>
     </div>
   </div>
 </section>
