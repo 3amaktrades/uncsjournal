@@ -9,6 +9,25 @@ const SUPABASE_URL = 'https://qfqssedstzdgwkhhlzrn.supabase.co';
 // Prefer an env var if set, else fall back to the known-good public anon key.
 const SUPABASE_ANON_KEY_FALLBACK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmcXNzZWRzdHpkZ3draGhsenJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTE0OTIsImV4cCI6MjA5NTY2NzQ5Mn0.zsEe1Eh-iGztPIC6btPIsNajpUpxBKnhqDeCibZHWww';
 const FREE_AI_LIMIT = 5;
+const STRUCTURED_FIELDS = {
+  trade_analysis: { strings: ['grade', 'summary', 'psychology', 'pattern', 'verdict'], arrays: ['strengths', 'improvements'] },
+  weekly_summary: { strings: ['grade', 'headline', 'narrative', 'psychology', 'pattern'], arrays: ['strengths', 'improvements', 'focus'] },
+  monthly_report: { strings: ['grade', 'headline', 'narrative', 'psychology', 'nextMonth'], arrays: ['strengths', 'improvements'] },
+};
+
+function parseStructuredResponse(text, purpose) {
+  const clean = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+  let analysis;
+  try { analysis = JSON.parse(clean); } catch { throw new Error('AI returned invalid JSON. No credit was used.'); }
+  const fields = STRUCTURED_FIELDS[purpose];
+  if (!analysis || Array.isArray(analysis) || typeof analysis !== 'object'
+      || fields.strings.some(key => typeof analysis[key] !== 'string' || !analysis[key].trim())
+      || fields.arrays.some(key => !Array.isArray(analysis[key]) || !analysis[key].length
+        || analysis[key].some(item => typeof item !== 'string' || !item.trim()))) {
+    throw new Error('AI returned an incomplete response. No credit was used.');
+  }
+  return analysis;
+}
 
 export default {
   async fetch(request, env) {
@@ -167,6 +186,17 @@ export default {
             status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
+        const purpose = body.purpose || '';
+        if (purpose && !STRUCTURED_FIELDS[purpose]) {
+          return new Response(JSON.stringify({ error: { message: 'Unsupported AI request type' } }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        if (purpose === 'trade_analysis' && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.trade_id || '')) {
+          return new Response(JSON.stringify({ error: { message: 'Save the trade before requesting AI analysis' } }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
         const apiKey = env.ANTHROPIC_KEY || '';
         const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
@@ -178,6 +208,43 @@ export default {
           return new Response(JSON.stringify(anthropicRes.ok ? { error: { message: 'AI returned no usable response' } } : result), {
             status: anthropicRes.ok ? 502 : anthropicRes.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
+        }
+
+        if (purpose) {
+          const textBlock = result.content.find(item => item.type === 'text' && item.text?.trim());
+          let structured;
+          try { structured = parseStructuredResponse(textBlock.text, purpose); }
+          catch (error) {
+            return new Response(JSON.stringify({ error: { message: error.message } }), {
+              status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+          }
+          // Put validated JSON first, in the form expected by every journal caller.
+          result.content = [{ type: 'text', text: JSON.stringify(structured) }];
+
+          if (purpose === 'trade_analysis') {
+            const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/save_trade_ai_analysis`, {
+              method: 'POST',
+              headers: {
+                apikey: SUPABASE_ANON_KEY,
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ p_trade_id: body.trade_id, p_analysis: structured }),
+            });
+            if (!saveRes.ok) {
+              const detail = await saveRes.json().catch(() => ({}));
+              const message = detail.message || 'Could not save the AI analysis. No credit was used.';
+              return new Response(JSON.stringify({ error: { message } }), {
+                status: /credits remaining/i.test(message) ? 429 : 409,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              });
+            }
+            const savedUsed = await saveRes.json();
+            if (!Number.isInteger(savedUsed)) throw new Error('Could not verify saved AI credit usage');
+            result.aiUsed = savedUsed;
+            return new Response(JSON.stringify(result), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+          }
         }
 
         // Compare-and-swap prevents concurrent requests from silently overwriting usage.
