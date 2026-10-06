@@ -6,3 +6,8 @@ supabase/
 node_modules/
 work/
 outputs/
+.wrangler/
+.gitignore
+.assetsignore
+wrangler.jsonc
+wrangler.uncai.jsonc
